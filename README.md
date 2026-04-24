@@ -254,5 +254,6 @@ MIT -- see [LICENSE](LICENSE).
 **Dr. Manu Kumar Shetty**, MBBS MD
 Professor, Department of Pharmacology
 Maulana Azad Medical College & Lok Nayak Hospital, New Delhi, India
+https://www.linkedin.com/in/manukumarshetty/
 
 *Views expressed are personal.*
