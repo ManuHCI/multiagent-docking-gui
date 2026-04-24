@@ -1,0 +1,34 @@
+cff-version: 1.2.0
+message: "If you use this software in teaching, research, or publications, please cite it as below."
+title: "Multi-Agent Molecular Docking GUI: an offline AutoDock Vina pipeline with local LLM orchestration"
+authors:
+  - family-names: "Shetty"
+    given-names: "Manu Kumar"
+    affiliation: "Department of Pharmacology, Maulana Azad Medical College, New Delhi, India"
+    # If you have an ORCID, paste it here. Get one free at https://orcid.org
+    # orcid: "https://orcid.org/0000-0000-0000-0000"
+type: software
+license: MIT
+repository-code: "https://github.com/<<ManuHCI>>/multiagent-docking-gui"
+url: "https://github.com/<<ManuHCI>>/multiagent-docking-gui"
+version: "1.0.0"
+date-released: "2026-04-24"
+keywords:
+  - molecular-docking
+  - autodock-vina
+  - pharmacology-education
+  - structure-based-drug-design
+  - medical-education
+  - large-language-models
+  - ollama
+  - mbbs-teaching
+  - cbme
+abstract: >
+  An open-source desktop GUI wrapping a multi-agent pipeline for molecular
+  docking using AutoDock Vina. Accepts a compound name (PubChem) and one or
+  more receptor PDB IDs (RCSB), then runs the full end-to-end workflow:
+  ligand preparation with RDKit and Meeko, receptor cleanup, docking with
+  AutoDock Vina, and report generation. Agent orchestration uses a local
+  large language model via Ollama so the tool runs fully offline after
+  one-time setup. Designed as a teaching aid for MBBS and PG pharmacology
+  students learning structure-based drug design concepts.

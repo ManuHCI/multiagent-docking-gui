@@ -1,0 +1,57 @@
+# =============================================================================
+# Multi-Agent Molecular Docking -- Python dependencies
+# =============================================================================
+# Author:  Dr. Manu Kumar Shetty, MAMC & Lok Nayak Hospital, New Delhi
+#
+# Install everything in one go:
+#     py -3 -m pip install -r requirements.txt
+#
+# Python 3.10+ required (tested on 3.13).
+#
+# External tools NOT managed by pip (install separately, see README.md):
+#   - Ollama           https://ollama.com/download/windows   (for the LLM)
+#   - AutoDock Vina    https://vina.scripps.edu/             (for docking)
+#   - Open Babel       https://openbabel.org/                (optional, obabel)
+#
+# The `vina` pip package below gives you the Python API and avoids
+# needing the standalone executable for most workflows.
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# GUI
+# -----------------------------------------------------------------------------
+PySide6>=6.5
+
+# -----------------------------------------------------------------------------
+# LLM client  (planner / executor / report agents)
+#   aisuite[ollama] pulls in the `ollama` Python SDK so aisuite can talk to
+#   the local Ollama server at http://localhost:11434.
+#   No OPENAI_API_KEY needed -- fully offline once the model is pulled.
+# -----------------------------------------------------------------------------
+aisuite[ollama]>=0.1.6
+
+# -----------------------------------------------------------------------------
+# Cheminformatics -- ligand and receptor preparation
+# -----------------------------------------------------------------------------
+rdkit>=2023.9              # molecule parsing, 3D conformer generation, H addition
+meeko>=0.5                 # PDBQT generation for ligand and receptor
+scipy>=1.10                # transitive dep of meeko (silently required)
+networkx>=3.0              # transitive dep of meeko (molecular graph)
+gemmi>=0.6                 # transitive dep of meeko (structural file I/O)
+
+# NOTE: AutoDock Vina is used as an external executable (vina.exe), NOT the
+# `vina` Python package. The Python package requires compiling C++ Boost
+# which is painful on Windows. Download vina.exe from the Scripps release
+# page and add to PATH -- see README for steps.
+
+# -----------------------------------------------------------------------------
+# Data handling + plotting (visualization agent)
+# -----------------------------------------------------------------------------
+numpy>=1.24
+pandas>=2.0
+matplotlib>=3.7
+
+# -----------------------------------------------------------------------------
+# HTTP (PubChem + RCSB downloads)
+# -----------------------------------------------------------------------------
+requests>=2.31
