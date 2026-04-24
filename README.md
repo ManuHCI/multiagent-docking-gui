@@ -71,7 +71,7 @@ All orchestration is done by a **local language model** (via Ollama) - no cloud 
 ### Install
 
 ```bash
-git clone https://github.com/<<ManuHCI>>/multiagent-docking-gui.git
+git clone https://github.com/ManuHCI/multiagent-docking-gui.git
 cd multiagent-docking-gui
 pip install -r requirements.txt
 ollama pull llama3.2:3b
@@ -204,7 +204,7 @@ The tool has real scientific and technical limitations you should understand bef
 
 If this tool helps your teaching or research, please cite it:
 
-> Shetty, M.K. (2026). *Multi-Agent Molecular Docking GUI: an offline AutoDock Vina pipeline with local LLM orchestration* (Version 1.0.0) [Software]. https://github.com/<<ManuHCI>>/multiagent-docking-gui
+> Shetty, M.K. (2026). *Multi-Agent Molecular Docking GUI: an offline AutoDock Vina pipeline with local LLM orchestration* (Version 1.0.0) [Software]. https://github.com/ManuHCI/multiagent-docking-gui
 
 GitHub's "Cite this repository" button (top right) generates BibTeX from `CITATION.cff` automatically.
 
@@ -254,5 +254,6 @@ MIT -- see [LICENSE](LICENSE).
 **Dr. Manu Kumar Shetty**, MBBS MD
 Professor, Department of Pharmacology
 Maulana Azad Medical College & Lok Nayak Hospital, New Delhi, India
+ORCID: [0000-0002-9767-5092](https://orcid.org/0000-0002-9767-5092)
 
 *Views expressed are personal.*

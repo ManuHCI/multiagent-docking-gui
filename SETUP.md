@@ -108,7 +108,7 @@ Verify: `obabel --version`
 ## Step 6: Clone this repository
 
 ```bash
-git clone https://github.com/<<ManuHCI>>/multiagent-docking-gui.git
+git clone https://github.com/ManuHCI/multiagent-docking-gui.git
 cd multiagent-docking-gui
 ```
 

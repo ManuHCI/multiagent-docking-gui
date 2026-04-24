@@ -5,12 +5,11 @@ authors:
   - family-names: "Shetty"
     given-names: "Manu Kumar"
     affiliation: "Department of Pharmacology, Maulana Azad Medical College, New Delhi, India"
-    # If you have an ORCID, paste it here. Get one free at https://orcid.org
-    # orcid: "https://orcid.org/0000-0000-0000-0000"
+    orcid: "https://orcid.org/0000-0002-9767-5092"
 type: software
 license: MIT
-repository-code: "https://github.com/<<ManuHCI>>/multiagent-docking-gui"
-url: "https://github.com/<<ManuHCI>>/multiagent-docking-gui"
+repository-code: "https://github.com/ManuHCI/multiagent-docking-gui"
+url: "https://github.com/ManuHCI/multiagent-docking-gui"
 version: "1.0.0"
 date-released: "2026-04-24"
 keywords:
