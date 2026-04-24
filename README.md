@@ -1,6 +1,6 @@
 # Multi-Agent Molecular Docking GUI
 
-**An offline AutoDock Vina pipeline with local LLM orchestration, wrapped in a one-click desktop GUI for MBBS and PG pharmacology teaching.**
+**An Agentic AI - AutoDock Vina pipeline with local LLM orchestration, wrapped in a one-click desktop GUI for pharmacology teaching and Research.**
 
 Enter a compound name. Enter one or more receptor PDB IDs. Click **Run Docking**. Get a report.
 
