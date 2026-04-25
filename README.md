@@ -204,7 +204,7 @@ The tool has real scientific and technical limitations you should understand bef
 
 If this tool helps your teaching or research, please cite it:
 
-> Shetty, M.K. (2026). *Multi-Agent Molecular Docking GUI: an offline AutoDock Vina pipeline with local LLM orchestration* (Version 1.0.0) [Software]. https://github.com/<<ManuHCI>>/multiagent-docking-gui
+> Shetty, M.K. (2026). *Multi-Agent Molecular Docking GUI: an offline AutoDock Vina pipeline with local LLM orchestration* (Version 1.0.0) [Software]. [https://github.com/<<ManuHCI>>/multiagent-docking-gui](https://github.com/ManuHCI/multiagent-docking-gui)
 
 GitHub's "Cite this repository" button (top right) generates BibTeX from `CITATION.cff` automatically.
 
