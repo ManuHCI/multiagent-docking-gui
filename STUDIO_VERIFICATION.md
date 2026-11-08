@@ -65,3 +65,16 @@ Native Mac builds are recorded in the repository's Build macOS applications
 workflow, with separate Apple silicon and Intel build manifests and checksums.
 The public Mac minimum is macOS 15; binaries are ad-hoc signed and not
 Apple-notarized.
+
+## Native macOS acceptance
+
+Both Apple silicon and Intel builds passed all 56 source tests, packaged
+dependency checks, all five scientific checks, real two-target by two-drug
+docking and native Cocoa/WebKit Home navigation. Native reports verified
+the four menu items, localhost connection, downloads and complete server
+shutdown. App signatures passed strict verification before DMG/ZIP creation.
+The builds are ad-hoc signed, not Apple-notarized.
+
+Native build evidence: https://github.com/ManuHCI/multiagent-docking-gui/actions/runs/42494272837
+The release includes each architecture's final file hashes and verification
+manifest alongside its installers.

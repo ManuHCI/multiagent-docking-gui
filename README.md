@@ -15,7 +15,7 @@ answers are required. An LLM or Ollama installation is not needed.
 | Intel Mac, macOS 15 or newer | [Download Intel Mac DMG](https://github.com/ManuHCI/multiagent-docking-gui/releases/download/v1.3.0/InSilicoDockingStudio-1.3.0-macOS-x86_64.dmg) |
 
 The installers include Python and the scientific tools. On Windows, run
-setup and open the installed shortcut; Microsoft Edge WebView2 Runtime is
+setup and open the installed shortcut; [Microsoft Edge WebView2 Runtime](https://developer.microsoft.com/en-us/microsoft-edge/webview2/) is
 required. On Mac, open the DMG and drag the app into Applications. Mac ZIP
 alternatives and SHA256 checksums are also listed in the release.
 

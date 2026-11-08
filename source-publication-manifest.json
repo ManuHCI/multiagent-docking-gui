@@ -1,6 +1,6 @@
 {
   "product": "In-Silico Docking Studio",
-  "format": "public source export",
+  "format": "public source as committed to Git; text hashes include Git line-ending normalization",
   "excluded": [
     "user projects",
     "settings.json",
@@ -29,13 +29,13 @@
     },
     {
       "path": "DESKTOP.md",
-      "bytes": 4714,
-      "sha256": "6d84d3a669e19d6e3a5371adabf32b32c447eb2685cc512240c240a85ec6d010"
+      "bytes": 4625,
+      "sha256": "79573d69ff351f123df0e67627fe01ea2344ea9bbaf689cc394a509f4b47dc57"
     },
     {
       "path": "INSTALL.md",
-      "bytes": 4529,
-      "sha256": "dd89d2d5aba6ed0cfce27e5d532e59b35c76674f0b32d6956ec8a3e3a9428f4b"
+      "bytes": 4425,
+      "sha256": "2f85b75dd8628574b0364e9f7c602cac9c17785493bff6992aafcd9277332bf0"
     },
     {
       "path": "LICENSE",
@@ -44,18 +44,18 @@
     },
     {
       "path": "MACOS.md",
-      "bytes": 2412,
-      "sha256": "276acea6b774525a51bddbe5991b177ca694f2d8a0ba83cfb7ced1e3c3aaf228"
+      "bytes": 2358,
+      "sha256": "5dd2db9924fabe8dbbd9a6fc58b2e72da4978622613a6e44e915d8acfe7d3a6f"
     },
     {
       "path": "README.md",
-      "bytes": 4608,
-      "sha256": "18104d127540d58e4b3c920a74a0c3e82ae6ade1746eb5df7de4e3dbbd2f9128"
+      "bytes": 4580,
+      "sha256": "30c444d5ee16e04937fd609c2b015c629e93d9400b77219fb6a494e42cb4f1cf"
     },
     {
       "path": "STUDIO_VERIFICATION.md",
-      "bytes": 3782,
-      "sha256": "98df934f4b96a3d64d4e401f7019eb706db4c23e79fa8aca78d41110a68efeba"
+      "bytes": 4376,
+      "sha256": "634b358f0169eb5c445d8318d4b0d3be3c38ef68694ab0d0cb7e7289793536b0"
     },
     {
       "path": "app.py",
@@ -289,48 +289,48 @@
     },
     {
       "path": "assets/workshop/egfr/project.json",
-      "bytes": 180,
-      "sha256": "cba974285691f968fd75f308d51dbf46afceb1d87fe4e2776090198df6eb8001"
+      "bytes": 173,
+      "sha256": "998403854159354ee9744b048bb2d379c568c2dc3836182db74c7841c5aee9ec"
     },
     {
       "path": "assets/workshop/egfr/steps/02_structure/1M17.pdb",
-      "bytes": 255840,
-      "sha256": "c27ce2f2a21ec08718ae94212135805da94f9bc02826af2f9a12089ed62e8fda"
+      "bytes": 252720,
+      "sha256": "5b020cd186307d657de80611793554b074f6936a3443d33f81d9b1a58004962e"
     },
     {
       "path": "assets/workshop/egfr/steps/02_structure/6WXN.pdb",
-      "bytes": 887404,
-      "sha256": "989b17909bf030e096d054f8290a4e1ae3a662204ea1435dae8ec3d33efc22aa"
+      "bytes": 876582,
+      "sha256": "c5839cdab4a1ad69ba9422264a76d2c08310ff0bf98ecaa88bb29f62c689b9c4"
     },
     {
       "path": "assets/workshop/egfr/steps/03_receptor/1M17_prepared.pdb",
-      "bytes": 426324,
-      "sha256": "6d789797eba52be55b3dbd12cef0ca4aad25daa337e555ad4773c4e4ec4ffd6d"
+      "bytes": 421085,
+      "sha256": "6586537a765ed1189daf4f09feb9211bc9a1b6bb602e5d3597f68678e6f02f75"
     },
     {
       "path": "assets/workshop/egfr/steps/03_receptor/6WXN_prepared.pdb",
-      "bytes": 434083,
-      "sha256": "a97206ab16dd00f6080d9e506c906d35c520029e20cb31d88151f4e75cb9e106"
+      "bytes": 428751,
+      "sha256": "6860248bf92e6ff3584fef9729fd1d0d4d6b81f5f3c82ebbbce29447f6255840"
     },
     {
       "path": "assets/workshop/egfr/steps/05_ligands/Erlotinib.sdf",
-      "bytes": 4540,
-      "sha256": "0ba2e7aff511e042d39126fe6e1a3d111dc4824c7105d82049c85b56cd81a4e4"
+      "bytes": 4428,
+      "sha256": "d79949eb7b7c52a389f883641da2271da5bb78789452bc2ce4f45390d0f8d8bb"
     },
     {
       "path": "assets/workshop/egfr/steps/05_ligands/Gefitinib.sdf",
-      "bytes": 4809,
-      "sha256": "a5ee72212573e88d4e03e9bf6e7f7aba4a4007a19f33e72f4f2b339bddeca088"
+      "bytes": 4690,
+      "sha256": "32d7981ab546398404fe00b5fb0ec4f8daf7d80902d5212ce607e1ce60d3b76d"
     },
     {
       "path": "assets/workshop/egfr/steps/05_ligands/Risperidone.sdf",
-      "bytes": 4995,
-      "sha256": "7f1d212290e55e6236bdd895eeec7685cdf370f511aff68914791027ad34cc5c"
+      "bytes": 4871,
+      "sha256": "54c5d1fa6e77558410d592b174630713dad4afc4a2edbbf00982013f9270cdfa"
     },
     {
       "path": "assets/workshop/egfr/steps/06_dock/Erlotinib.pdbqt",
-      "bytes": 3100,
-      "sha256": "ce5b0d288f8117dd27a4cc7ef46fa2f8c7133dc0184f49134d24a52db4ab237f"
+      "bytes": 3042,
+      "sha256": "a8e45b07693cfbb255699abf6afd875702fdc96ff1519289fa83f8e06494b036"
     },
     {
       "path": "assets/workshop/egfr/steps/06_dock/Erlotinib_docked.pdbqt",
@@ -339,8 +339,8 @@
     },
     {
       "path": "assets/workshop/egfr/steps/06_dock/Gefitinib.pdbqt",
-      "bytes": 3207,
-      "sha256": "00729a3103ff26900f689e46542c862d46b763d85906be3f39c5f4a69559d0cf"
+      "bytes": 3151,
+      "sha256": "eef23a035c8601469630f73a65375bc7243cf5fda4e3332158bc45d241356c3b"
     },
     {
       "path": "assets/workshop/egfr/steps/06_dock/Gefitinib_docked.pdbqt",
@@ -349,8 +349,8 @@
     },
     {
       "path": "assets/workshop/egfr/steps/06_dock/Risperidone.pdbqt",
-      "bytes": 2897,
-      "sha256": "5b619351564cc2884bfd5f442752a3db0fb8dee0529bb1ac72175eeaf27878ee"
+      "bytes": 2851,
+      "sha256": "1a4efd47622ea4c9a83d38a6aee8aba610fcedd255a9f55cce21627639da7135"
     },
     {
       "path": "assets/workshop/egfr/steps/06_dock/Risperidone_docked.pdbqt",
@@ -359,8 +359,8 @@
     },
     {
       "path": "assets/workshop/egfr/steps/06_dock/decoy_a_benzyl_urea_piperidine.pdbqt",
-      "bytes": 3049,
-      "sha256": "7355da31ecc049b9d444b549e6a6e903bf8d22e3f1e5ec47fe89a47068b70e02"
+      "bytes": 2998,
+      "sha256": "bf519e82d60b6fc7e4755af1df387a5c20f2eec7e2bd630e03b9dd46a8a0aa74"
     },
     {
       "path": "assets/workshop/egfr/steps/06_dock/decoy_a_benzyl_urea_piperidine_docked.pdbqt",
@@ -369,8 +369,8 @@
     },
     {
       "path": "assets/workshop/egfr/steps/06_dock/decoy_a_larger_sulfonamide.pdbqt",
-      "bytes": 3266,
-      "sha256": "7234208f2c885d03ad6fa50fe6a5b4ba43bdf6bfd6683617113392d926193db5"
+      "bytes": 3211,
+      "sha256": "1ffe27b1868f816d3e86cb8c66baae6c870e57286b158826278600a30fe3dd46"
     },
     {
       "path": "assets/workshop/egfr/steps/06_dock/decoy_a_larger_sulfonamide_docked.pdbqt",
@@ -379,8 +379,8 @@
     },
     {
       "path": "assets/workshop/egfr/steps/06_dock/decoy_a_methylpiperazinyl_quinoline_amide.pdbqt",
-      "bytes": 3263,
-      "sha256": "0fa22d397e7cfc1be0fd87478fdc8da98788f6348c672514afb3e31a65c7898c"
+      "bytes": 3208,
+      "sha256": "e0c7ce2edf21b663030ce3789bffa3cbc310effdd9d9f502f045062f7784f98f"
     },
     {
       "path": "assets/workshop/egfr/steps/06_dock/decoy_a_methylpiperazinyl_quinoline_amide_docked.pdbqt",
@@ -389,8 +389,8 @@
     },
     {
       "path": "assets/workshop/egfr/steps/06_dock/receptor.pdbqt",
-      "bytes": 229321,
-      "sha256": "64437b370583b513bf370a881ea70e3c5badb93010b6e8f0599a2fec643f0f3c"
+      "bytes": 226488,
+      "sha256": "ae3ac5be4f39e8fd7d701075fafec03ba05bd8712f9f1d027e40a029c9475e09"
     },
     {
       "path": "assets/workshop/sv2a/project.db",
@@ -399,58 +399,58 @@
     },
     {
       "path": "assets/workshop/sv2a/project.json",
-      "bytes": 180,
-      "sha256": "b21ee268a5883bf07bcd76d9b9c62f9342085db1c141e39c0644d06c813f90a5"
+      "bytes": 173,
+      "sha256": "8c90a189ec08ebd2b30d803285960e78d0dcd5b3e02ee2d4aef215f3a42c0046"
     },
     {
       "path": "assets/workshop/sv2a/steps/02_structure/9OKG.pdb",
-      "bytes": 336856,
-      "sha256": "e5b3a8b9bddcb250f671001dbd88cf7f92a4837b26a31bc2130a2040d068047a"
+      "bytes": 332748,
+      "sha256": "f57bbbf699301491263a7c35afd0f8318001ed338e8da5fcea645d1e6a071e16"
     },
     {
       "path": "assets/workshop/sv2a/steps/03_receptor/9OKG_prepared.pdb",
-      "bytes": 612262,
-      "sha256": "44250950e225d1cc794277cbbb30bf3b97ba68c30e01a8558a704a0efe34a91b"
+      "bytes": 604784,
+      "sha256": "93d3d3ff3a33056d9829367651620a729ca810be5026cbd9c5c767dc62ace41b"
     },
     {
       "path": "assets/workshop/sv2a/steps/05_ligands/Levetiracetam.sdf",
-      "bytes": 2306,
-      "sha256": "144a110cbc82a3d09e4801219e2213202fc8ad861f61d7a91cf29691bd3d0404"
+      "bytes": 2248,
+      "sha256": "124521146b086766092143097398d992a042cd19a29315a0b1d07f29f3426125"
     },
     {
       "path": "assets/workshop/sv2a/steps/05_ligands/PHENYTOIN_SODIUM.sdf",
-      "bytes": 2762,
-      "sha256": "1130a76291c7513f8b6fffbd4a54efa742684e20358cbd2fe8fe23113b3d116c"
+      "bytes": 2692,
+      "sha256": "11780ed8c0e10cf3e6809b645a3489ca4c48899cd25ee465693c750d6fceba1b"
     },
     {
       "path": "assets/workshop/sv2a/steps/05_ligands/Paracetamol.sdf",
-      "bytes": 1794,
-      "sha256": "9ccec7cb5f3dbeae071ca0d84bcc702750d7a7075e604efa38eca32438035959"
+      "bytes": 1748,
+      "sha256": "07c06a0b44429141ac1cb8d1bb3e3ec702c4f32d475a77136415ae4981036cd6"
     },
     {
       "path": "assets/workshop/sv2a/steps/05_ligands/Piracetam.sdf",
-      "bytes": 1792,
-      "sha256": "aa59a77d4406c2f3e066a425ca49cfde9a0de413edf42e4df704d712ff0e2520"
+      "bytes": 1746,
+      "sha256": "4754d38610a87b655fb7214e7110ca5e6058846b3eb55bff61c4425fef335a02"
     },
     {
       "path": "assets/workshop/sv2a/steps/05_ligands/Seletracetam.sdf",
-      "bytes": 2645,
-      "sha256": "f369a89fafa14623a7cface1afc56be94e04e07d89f3af589bf6b2b387958697"
+      "bytes": 2579,
+      "sha256": "9c5ef56e9085d5f2b98981617f33911cd09ca2e429b7cff01d3a16a8ec14f117"
     },
     {
       "path": "assets/workshop/sv2a/steps/05_ligands/Valproic_acid.sdf",
-      "bytes": 2292,
-      "sha256": "d46ea5326b8d5eedd84034c389eb60d0412347ece56a15dca30714f42ce4c9b6"
+      "bytes": 2235,
+      "sha256": "cb24830c606a9cc733600b3354482d1709f84696fd1ded24a01e971d23f150b9"
     },
     {
       "path": "assets/workshop/sv2a/steps/05_ligands/brivaracetam.sdf",
-      "bytes": 3070,
-      "sha256": "559106c280ed3f459db87c3ae00a68ad980a30410083c32b37b38736946a60bd"
+      "bytes": 2994,
+      "sha256": "e8d78fe260edee2094945055ec738a92aa8d5ca65e8bb9c548061822abdc512f"
     },
     {
       "path": "assets/workshop/sv2a/steps/06_dock/Levetiracetam.pdbqt",
-      "bytes": 1405,
-      "sha256": "e9d633e7cda5c48e6e02013daecea3bdd79a6ef581478f5b948dd8ad8d812503"
+      "bytes": 1379,
+      "sha256": "ad9c29e5d569008a55c13a4fea1a3cf7e077c1507d7fabd236a140611db8a55c"
     },
     {
       "path": "assets/workshop/sv2a/steps/06_dock/Levetiracetam_docked.pdbqt",
@@ -459,8 +459,8 @@
     },
     {
       "path": "assets/workshop/sv2a/steps/06_dock/PHENYTOIN_SODIUM.pdbqt",
-      "bytes": 2008,
-      "sha256": "84bfcb603fad7f38d2f748bf1d46b5ecc432ff5924ad955cf23f3eea854bfc1a"
+      "bytes": 1976,
+      "sha256": "6dcc8f589df5f51e586632fb073e99d51dc1f49fe45b29f81b8932dcbbd89fd6"
     },
     {
       "path": "assets/workshop/sv2a/steps/06_dock/PHENYTOIN_SODIUM_docked.pdbqt",
@@ -469,8 +469,8 @@
     },
     {
       "path": "assets/workshop/sv2a/steps/06_dock/Paracetamol.pdbqt",
-      "bytes": 1277,
-      "sha256": "8fb7a17460d3d29c57dfd2be5212eb9e750bde0ddfc7604849a969a5095ca893"
+      "bytes": 1254,
+      "sha256": "58518de1ef5ffd3f5d1425c3a230ad2fe7ad2d6c6d561a6d38831fee8c59cf6c"
     },
     {
       "path": "assets/workshop/sv2a/steps/06_dock/Paracetamol_docked.pdbqt",
@@ -479,8 +479,8 @@
     },
     {
       "path": "assets/workshop/sv2a/steps/06_dock/Piracetam.pdbqt",
-      "bytes": 1188,
-      "sha256": "eefb2d26e395dcffc13e5ff262f3fe17cb9ade60007a71d187ecce4e97f9285d"
+      "bytes": 1166,
+      "sha256": "977aa4fbee802c65935e8d84cfccd7a13aa155dec752715a0b9350f8b46305d3"
     },
     {
       "path": "assets/workshop/sv2a/steps/06_dock/Piracetam_docked.pdbqt",
@@ -489,8 +489,8 @@
     },
     {
       "path": "assets/workshop/sv2a/steps/06_dock/Seletracetam.pdbqt",
-      "bytes": 1822,
-      "sha256": "fce43d95184dedc9b5e742281aa1c1bbe27ef8a92c628c17d55556032dc724d5"
+      "bytes": 1789,
+      "sha256": "208516366456a4a0da1778b83193e58e33331a93ddc775a9e787a308bd32f971"
     },
     {
       "path": "assets/workshop/sv2a/steps/06_dock/Seletracetam_docked.pdbqt",
@@ -499,8 +499,8 @@
     },
     {
       "path": "assets/workshop/sv2a/steps/06_dock/Valproic_acid.pdbqt",
-      "bytes": 1242,
-      "sha256": "f3d3f9f1f0eb0d65fda71455d4d47a47688b901d467674157f957daaba03978c"
+      "bytes": 1213,
+      "sha256": "934384e7465e261144d2bcb80651b07f70415d9026cf6dcd872667341c85eece"
     },
     {
       "path": "assets/workshop/sv2a/steps/06_dock/Valproic_acid_docked.pdbqt",
@@ -509,8 +509,8 @@
     },
     {
       "path": "assets/workshop/sv2a/steps/06_dock/brivaracetam.pdbqt",
-      "bytes": 1770,
-      "sha256": "f69c1bb68c7b1538b0be83595d88c1cb2031eb3950c9d668f76d70066e9b0686"
+      "bytes": 1736,
+      "sha256": "d4d416562303c8569c81f46798b4becfa4bdb5465d6129fdcca8d0a0bbbfd62a"
     },
     {
       "path": "assets/workshop/sv2a/steps/06_dock/brivaracetam_docked.pdbqt",
@@ -519,8 +519,8 @@
     },
     {
       "path": "assets/workshop/sv2a/steps/06_dock/decoy_a_diethylbenzamide.pdbqt",
-      "bytes": 1316,
-      "sha256": "503f3af03ccac76942c35bd1caa84bd0176c9b69ed428b816a4b18037c658c64"
+      "bytes": 1291,
+      "sha256": "21a54d30982a46e7d88041c1a6ef799f8c5838772a4656586ff34d286b740616"
     },
     {
       "path": "assets/workshop/sv2a/steps/06_dock/decoy_a_diethylbenzamide_docked.pdbqt",
@@ -529,8 +529,8 @@
     },
     {
       "path": "assets/workshop/sv2a/steps/06_dock/decoy_a_methoxy_benzylbenzamide.pdbqt",
-      "bytes": 1898,
-      "sha256": "359c2e74a911be6c83f7ad49c55d147d1503bb5e6afcd54506cfaee29db96cd9"
+      "bytes": 1864,
+      "sha256": "f016c01660398f0d6d798c3ba872053f8b061a30e789b557a26f72a60ea3b74c"
     },
     {
       "path": "assets/workshop/sv2a/steps/06_dock/decoy_a_methoxy_benzylbenzamide_docked.pdbqt",
@@ -539,8 +539,8 @@
     },
     {
       "path": "assets/workshop/sv2a/steps/06_dock/decoy_a_phenylsulfonyl_piperidine.pdbqt",
-      "bytes": 1479,
-      "sha256": "e58b1f1fee8b45abf04c0bf614406922bd7e98a4619929439daffb66ec86ea9a"
+      "bytes": 1453,
+      "sha256": "f498efe40e529592aa3f6f4dc8aabe45a8c8102302e9355432137bc6d44cef63"
     },
     {
       "path": "assets/workshop/sv2a/steps/06_dock/decoy_a_phenylsulfonyl_piperidine_docked.pdbqt",
@@ -549,8 +549,8 @@
     },
     {
       "path": "assets/workshop/sv2a/steps/06_dock/decoy_benzanilide.pdbqt",
-      "bytes": 1562,
-      "sha256": "89b457ef11e0e922855c7f686dce2c9c9c8c7c25b98ba3d0febe6714bf71c65c"
+      "bytes": 1535,
+      "sha256": "e57f9a15c20b18ba87cbaa646f11f4a4164a754ccb926f5d26f766a684535839"
     },
     {
       "path": "assets/workshop/sv2a/steps/06_dock/decoy_benzanilide_docked.pdbqt",
@@ -559,13 +559,13 @@
     },
     {
       "path": "assets/workshop/sv2a/steps/06_dock/receptor.pdbqt",
-      "bytes": 340291,
-      "sha256": "1b1bb832a344356890d5a1032a71a75c65cfec18942b743358fece89451aadd5"
+      "bytes": 336088,
+      "sha256": "ccaa44e27ba4850fb37f976f50db802eb387581c0addae4cbbc4bf1e1673eb74"
     },
     {
       "path": "build_desktop.py",
-      "bytes": 9374,
-      "sha256": "c6a51a472a724da5ce4eaef3d6dbf3078b9c9f6bbeb991ec620b8aea5b678726"
+      "bytes": 9183,
+      "sha256": "3378a8b8291f780e43d394bc9202928a32aee564fe4f37a73cc4fef801c8c924"
     },
     {
       "path": "build_macos.py",
@@ -574,8 +574,8 @@
     },
     {
       "path": "build_setup.py",
-      "bytes": 4334,
-      "sha256": "b1888ac27d75d8b9946bb6605da6549f7e385a373492cd694daface0ad44ee5d"
+      "bytes": 4248,
+      "sha256": "2be494661066a358b07a839d93270b20ad3ca3d67e6015963473e05881e00d7f"
     },
     {
       "path": "core/__init__.py",
@@ -679,8 +679,8 @@
     },
     {
       "path": "desktop.py",
-      "bytes": 15771,
-      "sha256": "e1cf3585a033ddff8f58b6607fd2a089dedb1b8277355bff51a1b62970820582"
+      "bytes": 15435,
+      "sha256": "f273ef656f83ea678540fa08109e675d1b3fdd09dbdfc5417fcf066140eab013"
     },
     {
       "path": "desktop.spec",
@@ -693,19 +693,24 @@
       "sha256": "0f4349685f65077d5a676a95e09a31f941f7a1a3d0e25b62168d8ac2832b8627"
     },
     {
+      "path": "docs/home.png",
+      "bytes": 51947,
+      "sha256": "cd34a8d104d5427810a0ded0d916eee91f716fa82abd2806d55a63fc254e2a62"
+    },
+    {
       "path": "environment-macos.yml",
       "bytes": 348,
       "sha256": "f35d7195f64c60d3f5e43ac252a1e78cf0e121aad8c77d5c964f6297a10eb157"
     },
     {
       "path": "environment.yml",
-      "bytes": 458,
-      "sha256": "3243f48d79f985e8e52f071ce8fc5f7c3cef80567bb10aa4d618cb593deda3a6"
+      "bytes": 440,
+      "sha256": "26812f4631f832c614d4047489a61435d168814b3aaa4788073021fc0660048b"
     },
     {
       "path": "export_source.py",
-      "bytes": 8935,
-      "sha256": "a0275191db377dbe5acb74182d7811e0f8d5b63b320734a23e82a839133cfc6e"
+      "bytes": 8763,
+      "sha256": "397f08890dafe9f208daf75143adeb11270c4c2594f0c0a4615cbc3445b93778"
     },
     {
       "path": "forms.py",
@@ -729,8 +734,8 @@
     },
     {
       "path": "installer/desktop.nsi",
-      "bytes": 7597,
-      "sha256": "b849d98da6bef8a9c9f6d98c837e0516513f062be5ad57682dfb1d4da86702db"
+      "bytes": 7439,
+      "sha256": "481f4a67ea51a4cbd1ad63eb6ee238964ff46f3e54232638fe4a991345c76aa3"
     },
     {
       "path": "packaging/macos/READ_ME_FIRST.txt",
@@ -744,8 +749,8 @@
     },
     {
       "path": "run.bat",
-      "bytes": 2624,
-      "sha256": "8092f05486a47fc27db3b96f1212998d5ab200393e0d1e219f6a929c269f35a0"
+      "bytes": 2554,
+      "sha256": "f10e74049923bf7fed5266e5121d194f1feb4b4199cb503a3dbe50f39c049105"
     },
     {
       "path": "stages/__init__.py",
@@ -754,8 +759,8 @@
     },
     {
       "path": "stages/admet.py",
-      "bytes": 16500,
-      "sha256": "ee1476412fcd077e85d38529f356536e734cf41a24d335f315cb0430f8cc98b1"
+      "bytes": 16128,
+      "sha256": "e1dbf5c808ed1d240cbeb958e5e4b36156356ebc5a741896851b00d59a19989b"
     },
     {
       "path": "stages/dock.py",
@@ -849,8 +854,8 @@
     },
     {
       "path": "verify_setup.py",
-      "bytes": 6133,
-      "sha256": "2ad0b0c52c35cbace057ded3f721b418b6f4ce04e8c68c42e26fe16360d3359e"
+      "bytes": 6027,
+      "sha256": "5abdcfe7dc4ce14d1ab27a2b23d1510e088a34f8528be4100239bd377a813bd8"
     },
     {
       "path": "verify_studio_ui.py",
@@ -859,8 +864,8 @@
     },
     {
       "path": "verify_upgrade.py",
-      "bytes": 10877,
-      "sha256": "69fbcebd5a7e277879f0277f202a95148ed85dcd5dac274e57001e19531e1fe5"
+      "bytes": 10663,
+      "sha256": "63398b18e49bc9ab1c15a24c0d2b754ebb04124757593ee85bd93898c902d3e4"
     },
     {
       "path": "vina.exe",
