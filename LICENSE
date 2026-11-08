@@ -1,33 +1,86 @@
 MIT License
 
-Copyright (c) 2026 Dr. Manu Kumar Shetty
+Copyright (c) 2026 Dr Manu Kumar Shetty, Professor, Department of
+Pharmacology, Maulana Azad Medical College, New Delhi.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+Developed under the guidance of Dr Pratibha Nadig.
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
 
-================================================================================
-Third-party dependencies retain their own licenses:
-- AutoDock Vina         Apache 2.0
-- RDKit                 BSD 3-Clause
-- Meeko                 LGPL 2.1
-- PySide6               LGPL v3
-- aisuite               MIT
-- Ollama (runtime)      MIT
-- Language models (Gemma, Llama, Qwen, etc.) are subject to their respective
-  license terms. Users are responsible for compliance.
-================================================================================
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+
+-----------------------------------------------------------------------
+THIS SOFTWARE IS NOT A MEDICAL DEVICE
+-----------------------------------------------------------------------
+
+It is a teaching tool. Nothing it produces is a clinical finding, a
+prediction of drug activity, or evidence of safety or efficacy in any
+patient. Every result is a computational estimate and the software
+says so at each step. It must not be used to make any decision about
+the care of any person.
+
+
+-----------------------------------------------------------------------
+THIRD-PARTY SOFTWARE INCLUDED IN THE INSTALLER
+-----------------------------------------------------------------------
+
+This software orchestrates established tools; it does not reimplement
+them. The installer carries the following, each under its own licence,
+and each is named and cited in the record of every run.
+
+  AutoDock Vina      Apache-2.0
+                     Eberhardt J, Santos-Martins D, Tillack AF,
+                     Forli S. AutoDock Vina 1.2.0. J Chem Inf Model.
+                     2021;61(8):3891-3898.
+
+  RDKit              BSD-3-Clause
+                     Landrum G et al. RDKit: Open-source
+                     cheminformatics.
+
+  OpenMM             MIT and LGPL-3.0
+                     Eastman P et al. OpenMM 7. PLoS Comput Biol.
+                     2017;13(7):e1005659.
+
+  PDBFixer           MIT
+
+  Meeko              LGPL-2.1
+                     Forli Lab, Scripps Research.
+
+  NumPy              BSD-3-Clause
+  SciPy              BSD-3-Clause
+  NiceGUI            MIT
+  PyYAML             MIT
+
+The LGPL components are included unmodified and are dynamically
+linked. Their source is available from conda-forge.
+
+
+-----------------------------------------------------------------------
+DATA SOURCES USED AT RUN TIME
+-----------------------------------------------------------------------
+
+  UniProt            CC-BY-4.0
+  RCSB Protein Data Bank    CC0-1.0
+  Open Targets       CC0-1.0
+  AlphaFold DB       CC-BY-4.0
+  ChEMBL             CC-BY-SA-3.0
+
+SwissADME is reached as a link in the user's own browser. This
+software never contacts it automatically, because its terms do not
+permit that.

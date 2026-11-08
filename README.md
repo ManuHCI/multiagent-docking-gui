@@ -1,259 +1,92 @@
-# Multi-Agent Molecular Docking GUI
+# In-Silico Docking Studio
 
-**Multi-Agent AI Desktop Tool for Molecular Docking Using AutoDock Vina.**
+Molecular docking software for medical education, with a clear five-step
+workflow and local AutoDock Vina calculations. No quiz questions or written
+answers are required. An LLM or Ollama installation is not needed.
 
-Enter a compound name. Enter one or more receptor PDB IDs. Click **Run Docking**. Get a report.
+## Download and install
 
-No command-line gymnastics. No MGLTools. No cloud API keys. No patient data leaving your machine.
+**[Public release and all downloads](https://github.com/ManuHCI/multiagent-docking-gui/releases/tag/v1.3.0)**
 
----
+| Computer | Installer |
+| --- | --- |
+| Windows 10/11, 64-bit | [Download Windows setup](https://github.com/ManuHCI/multiagent-docking-gui/releases/download/v1.3.0/InSilicoTeachingSuite-1.3.0-Setup.exe) |
+| Mac with Apple silicon, macOS 15 or newer | [Download Apple silicon DMG](https://github.com/ManuHCI/multiagent-docking-gui/releases/download/v1.3.0/InSilicoDockingStudio-1.3.0-macOS-arm64.dmg) |
+| Intel Mac, macOS 15 or newer | [Download Intel Mac DMG](https://github.com/ManuHCI/multiagent-docking-gui/releases/download/v1.3.0/InSilicoDockingStudio-1.3.0-macOS-x86_64.dmg) |
 
-## Screenshot
+The installers include Python and the scientific tools. On Windows, run
+setup and open the installed shortcut; Microsoft Edge WebView2 Runtime is
+required. On Mac, open the DMG and drag the app into Applications. Mac ZIP
+alternatives and SHA256 checksums are also listed in the release.
 
-<!-- Replace this placeholder with a real screenshot of your GUI after a successful run -->
-<!-- Put the image in docs/screenshot.png and reference it below -->
+The public binaries are not signed with a publisher certificate or notarized
+by Apple. Windows may display a publisher prompt. On Mac, first launch may
+require approval in System Settings > Privacy & Security. See
+[Mac installation](MACOS.md) and [Windows installation](DESKTOP.md).
 
-![GUI screenshot](docs/screenshot.png)
+## Four clear sections
 
----
+- **Home:** Start a new drug and target docking project or try the offline example.
+- **Projects:** Reopen saved work, see disk sizes, or delete a selected project after confirmation.
+- **Reference:** Scientific references, protein/drug download links and methods export.
+- **About:** Logo and full developer credits.
 
-## Important — read this first
+Inside a project, follow **Targets → Drugs → Prepare → Dock → Results**.
+Add multiple proteins and drugs to calculate every target–drug combination.
+Each target keeps its own preparation, binding box, results and scientific
+checks. Review poses in 3D and export a CSV or complete project ZIP with
+structures, methods, parameters, sources and references.
 
-This software is an **educational and exploratory tool**. Before using it, please understand:
+Local PDB/mmCIF files, SMILES/SDF molecules and the bundled EGFR example work
+offline. New RCSB/PubChem retrieval requires internet. A completed calculation
+can still have a failed scientific check; the outcome stays visible.
 
-- **Docking scores are not binding affinities.** The Vina score (kcal/mol) is a rough estimate. Correlation with experimental Ki/IC50 is typically weak (r ~ 0.3-0.5). Use scores to hypothesize, not to conclude.
-- **Rigid-receptor docking misses real biology.** Induced fit, water-mediated H-bonds, allosteric states, and covalent binding are not modelled.
-- **No validation step is built in.** A proper workflow re-docks the co-crystallized ligand and checks RMSD. This tool does not. Results must be interpreted with appropriate caution.
-- **The LLM report can hallucinate.** Small local models occasionally produce plausible-sounding but incorrect summaries. Always verify the report against the raw `.pdbqt` and Vina log files.
-- **Not for clinical, regulatory, or publication use** without independent validation and an experienced computational chemist's review.
+## Saved work
 
-**Appropriate uses:** MBBS/PG teaching, hypothesis generation, exploratory research before wet-lab validation.
+Projects are separate from the installed application and are retained on
+update or uninstall:
 
-**Inappropriate uses:** clinical decision-making, regulatory submissions, unvalidated claims in peer-reviewed drug discovery literature.
+- Windows: `%LOCALAPPDATA%\InSilicoTeachingSuite\Projects`
+- Mac: `~/Library/Application Support/InSilicoTeachingSuite/Projects`
 
-See [full limitations](#limitations) below.
+Saved projects occupy disk space; their molecular data is loaded when opened.
+Export a complete ZIP before deleting a project or moving it between machines.
+Earlier individual projects remain available from Projects. Your own projects
+and settings are excluded from this public source repository.
 
----
+## Developers
 
-## What it does
+**Dr Manu Kumar Shetty**, Professor, Department of Pharmacology,
+Maulana Azad Medical College, New Delhi.
 
-A desktop app that runs the complete docking workflow end-to-end:
+**Dr Pratibha Nadig**, Founder, Akshaisarathi Healthcare.
 
-1. **Ligand agent** - downloads your compound from PubChem, generates a 3D conformer with RDKit, converts to PDBQT using Meeko.
-2. **Receptor agent** - downloads PDB entries from RCSB, removes heteroatoms/waters, prepares PDBQT receptor files.
-3. **Docking agent** - runs AutoDock Vina with a default binding-site box, collects poses and scores.
-4. **Visualization agent** - generates score plots and per-pose figures.
-5. **Report agent** - writes a Markdown report summarizing all results.
+## Source and builds
 
-All orchestration is done by a **local language model** (via Ollama) - no cloud API, no internet usage beyond one-shot PubChem and RCSB downloads.
-
----
-
-## Quick start
-
-### Prerequisites (one-time)
-
-1. **Python 3.10 or newer** (tested on 3.12 and 3.13)
-   Download: https://www.python.org/downloads/
-   Tick "Add Python to PATH" during install.
-
-2. **Ollama** (for the local LLM)
-   Download: https://ollama.com/download
-   Runs as a background service; no admin rights needed on Windows.
-
-3. **AutoDock Vina executable** on PATH
-   Download: https://github.com/ccsb-scripps/AutoDock-Vina/releases
-   Rename to `vina.exe` (Windows) or `vina` (Linux/Mac), add parent folder to PATH.
-
-4. **Open Babel** (optional, recommended)
-   Download: https://openbabel.org/
-
-### Install
-
-```bash
-git clone https://github.com/<<ManuHCI>>/multiagent-docking-gui.git
+```sh
+git clone https://github.com/ManuHCI/multiagent-docking-gui.git
 cd multiagent-docking-gui
-pip install -r requirements.txt
-ollama pull llama3.2:3b
+conda env create -f environment.yml
+conda activate insilico
+python app.py
 ```
 
-### Run
+For Mac source use `environment-macos.yml` instead. See [MACOS.md](MACOS.md).
+The Windows source environment also needs the official bundled `vina.exe`.
+For a desktop source window, install pywebview and run `python desktop.py`.
+Use [DESKTOP.md](DESKTOP.md) for Windows packaging. GitHub's **Build macOS
+applications** workflow builds and verifies Apple silicon and Intel apps.
 
-```bash
-python docking_gui.py
-```
+The previous local-LLM application remains in the
+[archived branch](https://github.com/ManuHCI/multiagent-docking-gui/tree/archive/pre-docking-studio-20261108)
+and its original version tags. This repository now opens Docking Studio.
 
-Enter `Levetiracetam` as ligand, `6CM4` as PDB ID, click Run. Output goes to `MultiAgent_Project/reports/`.
+## Interpretation and licence
 
-Full setup details: see [SETUP.md](SETUP.md).
+For medical education and exploratory in-silico studies. Docking scores and
+poses do not establish potency, selectivity, clinical benefit or safety.
+Compare scores within each target's setup and review the recorded checks.
 
----
-
-## How it works
-
-```
-   Ligand name         PDB ID(s)
-         |                  |
-         v                  v
-   +---------------------------+
-   |     PySide6 GUI (main)    |
-   +-------------+-------------+
-                 |  (QThread -- keeps UI responsive)
-                 v
-   +---------------------------+
-   |      Planner agent        |  --+
-   |   (local LLM via Ollama)  |    |
-   +-------------+-------------+    |
-                 |                  |  LLM orchestrates which
-                 v                  |  deterministic agent runs next
-   +---------------------------+    |
-   |   Executor / Router       | <--+
-   +-------------+-------------+
-                 v
-   +---------------------------+
-   |  Deterministic Python     |
-   |  ---------------------    |
-   |  Ligand    -> RDKit,Meeko |
-   |  Receptor  -> PDB cleanup |
-   |  Docking   -> Vina (exec) |
-   |  Viz       -> matplotlib  |
-   |  Report    -> LLM summary |
-   +-------------+-------------+
-                 v
-         Markdown report + figures
-```
-
-**The science is deterministic. The LLM is just an orchestrator** - it decides what runs when, but never touches scoring functions or structural math.
-
----
-
-## Configuration
-
-### Switching the LLM
-
-By default the tool uses `llama3.2:3b`. To use a different local model, pull it with Ollama and change one line at the top of `docking_pipeline.py`:
-
-```python
-DEFAULT_MODEL = "ollama:llama3.2:3b"      # default, 2 GB, fast
-# DEFAULT_MODEL = "ollama:llama3.2:8b"    # better reports, needs ~8 GB RAM
-# DEFAULT_MODEL = "ollama:qwen2.5:7b"     # good structured output
-# DEFAULT_MODEL = "ollama:phi4-mini"      # best for strict JSON
-```
-
-Format is always `"ollama:<name-from-ollama-list>"`.
-
-### Hardware recommendations
-
-| Component | Minimum | Recommended |
-|---|---|---|
-| RAM | 8 GB | 16 GB+ |
-| Disk | 10 GB free | 50 GB (for multiple models) |
-| GPU | Not required | Optional -- Vina has GPU variants |
-
-Typical runtime with `llama3.2:3b` on CPU: **3-10 minutes per run** (2 receptors).
-
----
-
-## Limitations
-
-The tool has real scientific and technical limitations you should understand before relying on its output.
-
-### Scientific
-
-- Vina scores are weakly correlated with experimental affinity
-- Rigid-receptor docking ignores induced fit and conformational change
-- Single crystal structure per target (no ensemble docking)
-- No automatic re-dock validation of the co-crystal ligand
-- Default binding-site box is the co-crystal ligand's centre of mass -- may not suit allosteric or apo targets
-- 3D ligand geometry comes from PubChem/RDKit (not experimental)
-- No ADMET, drug-likeness filters, or off-target screening built in
-
-### Technical
-
-- Small local LLMs (3B-8B) can hallucinate in reports -- verify against raw data
-- No fixed random seed or replicate averaging
-- No GPU acceleration of docking (CPU only)
-- No cached downloads -- PDB/PubChem is re-fetched each run
-- Sequential execution -- multiple receptors run one at a time
-- No machine-readable run manifest (versions, seeds, parameters)
-
-### Regulatory
-
-- **Not a medical device. Not CDSCO-approved. Not for clinical decisions.**
-- LLM-generated report text is not medical or scientific advice
-- Not suitable for regulatory submissions or published drug-discovery claims without independent validation
-
----
-
-## Appropriate use cases
-
-| Use case | Suitable? |
-|---|---|
-| Teaching MBBS/PG students about structure-based drug design | Yes -- primary purpose |
-| Exploratory research before wet-lab experiments | Yes -- with understanding of limits |
-| Demonstrating docking workflow concretely in lectures | Yes |
-| Hypothesis generation for research projects | Yes -- starting point |
-| Published drug-discovery claims | No -- needs validated pipeline, replicates, orthogonal assays |
-| Clinical treatment decisions | No -- never |
-| Regulatory submissions | No -- never |
-| Patient-data-linked analyses | No -- tool is not validated for this |
-
----
-
-## Citation
-
-If this tool helps your teaching or research, please cite it:
-
-> Shetty, M.K. (2026). *Multi-Agent AI Desktop Tool for Molecular Docking Using AutoDock Vina* (Version 1.0.0) [Software]. [https://github.com/<<ManuHCI>>/multiagent-docking-gui](https://github.com/ManuHCI/multiagent-docking-gui)
-
-GitHub's "Cite this repository" button (top right) generates BibTeX from `CITATION.cff` automatically.
-
-**Always also cite the underlying tools:**
-- AutoDock Vina: Eberhardt, J. *et al.* (2021). *J. Chem. Inf. Model.* **61**, 3891-3898.
-- RDKit: Landrum, G. *et al.* https://www.rdkit.org
-- Meeko: Forli Lab, Scripps Research. https://github.com/forlilab/Meeko
-- Whichever language model you used (Llama, Gemma, Qwen, etc.) -- see its license page
-
----
-
-## Contributing
-
-Feedback, issues, and pull requests welcome -- especially:
-
-- Dependency issues on fresh Windows/Linux installs
-- Support for newer PDB structures or unusual ligands
-- Validation/replicate features
-- Improved binding-site detection
-- Teaching scenarios where the tool falls short
-
-Please open an issue before starting a large PR so we can discuss scope.
-
----
-
-## Disclaimer
-
-This software is provided **as is, without warranty of any kind**. The author (Dr. Manu Kumar Shetty) provides this freely for educational and research purposes. Users are solely responsible for:
-
-- Interpreting results appropriately
-- Understanding the scientific limitations listed above
-- Complying with the license terms of all third-party dependencies, including language-model licenses
-- Not using the tool for any purpose for which it is demonstrably unsuitable (clinical, regulatory, or patient-linked work)
-
-The views expressed in this project are those of the author in a personal capacity and do not represent the official positions of Maulana Azad Medical College or Lok Nayak Hospital.
-
----
-
-## License
-
-MIT -- see [LICENSE](LICENSE).
-
----
-
-## Author
-
-**Dr. Manu Kumar Shetty**, MBBS MD
-Professor, Department of Pharmacology
-Maulana Azad Medical College & Lok Nayak Hospital, New Delhi, India
-https://www.linkedin.com/in/manukumarshetty/
-
-*Views expressed are personal.*
+Project source is MIT licensed; scientific dependencies retain their own
+licences. Full Vina and 3Dmol notices accompany the bundled assets. Use
+**Reference** and the exported methods to cite the tools and data actually used.

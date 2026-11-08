@@ -1,0 +1,876 @@
+{
+  "product": "In-Silico Docking Studio",
+  "format": "public source export",
+  "excluded": [
+    "user projects",
+    "settings.json",
+    "backups",
+    "build outputs",
+    "verification/temporary data",
+    "local environments",
+    "internal handoff notes"
+  ],
+  "teaching_cases": "Only bundled public-data examples; exported paths are portable.",
+  "files": [
+    {
+      "path": ".github/workflows/build-macos.yml",
+      "bytes": 2549,
+      "sha256": "06e6a028ec982799e90e3cd3f7631b75954c627626a79509d380a92c4674f746"
+    },
+    {
+      "path": ".gitignore",
+      "bytes": 230,
+      "sha256": "27829ad8591cc1c3ff66e6dd6006dd095899f5414e0a7164023295bcdedeb147"
+    },
+    {
+      "path": "CITATION.cff",
+      "bytes": 757,
+      "sha256": "9124c05f7da06b788ad55dfd3c929c0af6b5638f772d2ee1563a39d5cc86b48d"
+    },
+    {
+      "path": "DESKTOP.md",
+      "bytes": 4714,
+      "sha256": "6d84d3a669e19d6e3a5371adabf32b32c447eb2685cc512240c240a85ec6d010"
+    },
+    {
+      "path": "INSTALL.md",
+      "bytes": 4398,
+      "sha256": "a271e057af9f8d2beac3f0fd8688b9c16cb2d461d925333e27d2fd423a5a164a"
+    },
+    {
+      "path": "LICENSE",
+      "bytes": 3395,
+      "sha256": "26ac4decda325d7550b031ce2c3344c0e9b744ac3be2bc00028b483c95e88228"
+    },
+    {
+      "path": "MACOS.md",
+      "bytes": 2412,
+      "sha256": "276acea6b774525a51bddbe5991b177ca694f2d8a0ba83cfb7ced1e3c3aaf228"
+    },
+    {
+      "path": "README.md",
+      "bytes": 4575,
+      "sha256": "db94700fb98b9628233eec8f85a07d25a24e16e73787a992835098a3bb4030f4"
+    },
+    {
+      "path": "STUDIO_VERIFICATION.md",
+      "bytes": 3052,
+      "sha256": "37727f280003efb966f695e6503c8a5a32fd7e42d3e6a3a8321bf23f468877bc"
+    },
+    {
+      "path": "app.py",
+      "bytes": 61784,
+      "sha256": "f87254e0d2162ec96d159b8e5706ed14078ac842064a19b0f1068d7dab3d6e43"
+    },
+    {
+      "path": "assets/licenses/AutoDock-Vina-LICENSE.txt",
+      "bytes": 11358,
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+    },
+    {
+      "path": "assets/logo.png",
+      "bytes": 132739,
+      "sha256": "1541ca34047b3779d9167e6d084bfa425dd83c41a127dbdb6b5f80501e099615"
+    },
+    {
+      "path": "assets/reference_drugs.json",
+      "bytes": 9421,
+      "sha256": "a8172ca218950dd577940269fe8245c7b67afe5173bd3f1437fa8220302da39d"
+    },
+    {
+      "path": "assets/vendor/3Dmol-LICENSE.txt",
+      "bytes": 4283,
+      "sha256": "4c6eaaed856f3f28a3b1a98e74f4a8a71618de7d51ea4155c29f6f793bcef861"
+    },
+    {
+      "path": "assets/vendor/3Dmol-min.js",
+      "bytes": 545215,
+      "sha256": "4ab374e1830bccec950b280fd285a430e05e91bd13c9ef0097c611c66de6cb36"
+    },
+    {
+      "path": "assets/vendor/3Dmol-min.js.LICENSE.txt",
+      "bytes": 4283,
+      "sha256": "4c6eaaed856f3f28a3b1a98e74f4a8a71618de7d51ea4155c29f6f793bcef861"
+    },
+    {
+      "path": "assets/vendor/README.txt",
+      "bytes": 532,
+      "sha256": "b4323a50bc50c312bd6e94c4b8ad314c640a7cf7700f8211d23c8bd167cf481c"
+    },
+    {
+      "path": "assets/workshop/egfr/cache/041328e56dcc13bfd76d.json",
+      "bytes": 887526,
+      "sha256": "cb3ac5a24695ed43e2adda1f28cf4a43ffb52e2189dc529f022b9598d35b5a01"
+    },
+    {
+      "path": "assets/workshop/egfr/cache/0424ad47597508b55117.json",
+      "bytes": 15519,
+      "sha256": "894fc704ed7f375be352813f97bf650d5ff37cfe4d8683ad0a661639c8b4a1e7"
+    },
+    {
+      "path": "assets/workshop/egfr/cache/0b65b6fe6f200ccf5e52.json",
+      "bytes": 43495,
+      "sha256": "247c5b7f09114bc6ce9b0f5407d4c9c9118a05cf49b016ce05f648b38ca35fc3"
+    },
+    {
+      "path": "assets/workshop/egfr/cache/165e64ab9a44dfbc8204.json",
+      "bytes": 16821,
+      "sha256": "aaf6c403a1be30fb7cda4b893ae312b56d0f9765ee127b4e43168b53a713fc39"
+    },
+    {
+      "path": "assets/workshop/egfr/cache/2dc0b3c5917b11fcbb7c.json",
+      "bytes": 584095,
+      "sha256": "6e0a47d4491c022109ef9b020434cf9fb5717daf3ba75c095bc4a046979dd5c4"
+    },
+    {
+      "path": "assets/workshop/egfr/cache/2e1c6114b8f2236ae60c.json",
+      "bytes": 23873,
+      "sha256": "7f7ea88072f94c5397a067cdd14ab80a22f69bc2aa509d609d61c91b1265f942"
+    },
+    {
+      "path": "assets/workshop/egfr/cache/3398615faa01f9da5260.json",
+      "bytes": 60507,
+      "sha256": "26ceba0960fde0f696b1d8b20673237e8d119f8a2d286b29d23e1c57cfb49268"
+    },
+    {
+      "path": "assets/workshop/egfr/cache/36d479a6ca7466375585.json",
+      "bytes": 14312,
+      "sha256": "23a3f16df1aca6ad31edba0be1a389c771cae4611a0c1e1efa57cd850889e963"
+    },
+    {
+      "path": "assets/workshop/egfr/cache/3a63336eef97c5d978af.json",
+      "bytes": 14322,
+      "sha256": "3bacfd49985b3f279ab4ae96429198cf1355aff288c2af96e853b7b88bd717c0"
+    },
+    {
+      "path": "assets/workshop/egfr/cache/44842a6bd9d405536af9.json",
+      "bytes": 1355,
+      "sha256": "abf535155fdff6c22cbca81df8b944640b04012ef365554b6c6550b6d0a25d55"
+    },
+    {
+      "path": "assets/workshop/egfr/cache/55340bedeb21688395c5.json",
+      "bytes": 10854,
+      "sha256": "3310d82d77a63cbe8b739890fcae01390d4cf0aae31fac657de49f1d451f9f2f"
+    },
+    {
+      "path": "assets/workshop/egfr/cache/6648f7fb5f77b358054d.json",
+      "bytes": 25205,
+      "sha256": "fd4c87e4b6c7ac840bfc3cce492b9fb5325235de443e897bc1c63bd5665bf6d8"
+    },
+    {
+      "path": "assets/workshop/egfr/cache/6ae8623184d9153c5874.json",
+      "bytes": 15469,
+      "sha256": "0c211b55ee0a29976763b64eba101a366f84d4265ebf60979668dfe64a1ba66b"
+    },
+    {
+      "path": "assets/workshop/egfr/cache/74f2d17ebdc4ff63709f.json",
+      "bytes": 23205,
+      "sha256": "16efd40933d9b37086edbc8d0ab1e079fa2089897e4ae488bbf3e1403c01ac04"
+    },
+    {
+      "path": "assets/workshop/egfr/cache/7b08339025a91985e1cf.json",
+      "bytes": 11335,
+      "sha256": "eb14c9d797c82f3a2784b93327fdcd9100aaf9cde686997376864358a315b1d3"
+    },
+    {
+      "path": "assets/workshop/egfr/cache/82de0780ad2ae16aece1.json",
+      "bytes": 16147,
+      "sha256": "f2966f5481ec346305617e70a5b3558009c512bb995a8c52b3f9d1e28395e5e8"
+    },
+    {
+      "path": "assets/workshop/egfr/cache/8835eb372f4d48450ca5.json",
+      "bytes": 14650,
+      "sha256": "ea2120be2ab080e4379cc32edfcadd0d8f767737f43d625583aa190c620a9add"
+    },
+    {
+      "path": "assets/workshop/egfr/cache/8abbaf22873dc7b0f748.json",
+      "bytes": 10453,
+      "sha256": "2a544eefd71e64757e04b48f7104f59af25cc2332b0723fce052ec692dba88c0"
+    },
+    {
+      "path": "assets/workshop/egfr/cache/8c5e1c2d5dcd716c0f6f.json",
+      "bytes": 12702,
+      "sha256": "4de997bebda587a8887178989fba1cc63c6d4f4b98cf5772c0da6eaa66ad7c16"
+    },
+    {
+      "path": "assets/workshop/egfr/cache/8e0001436eec4c6d57ca.json",
+      "bytes": 255960,
+      "sha256": "2cbd7e2ed85ff589a61151b97517ce75fe42bc039337c01ec160d625b283fd7a"
+    },
+    {
+      "path": "assets/workshop/egfr/cache/93a26cd97c0f479d13d9.json",
+      "bytes": 14220,
+      "sha256": "e1f4a12a9768a8d4a7b8dffb9ba591e710875fa4d01118712b079d90d33d4b61"
+    },
+    {
+      "path": "assets/workshop/egfr/cache/9a937c099e3815e64b02.json",
+      "bytes": 24045,
+      "sha256": "feeadcf4c5df48473569f5efa0a3b22f22e62c7219762a8368ae3c4f99dc4666"
+    },
+    {
+      "path": "assets/workshop/egfr/cache/a948ff943cee1f993c89.json",
+      "bytes": 10158,
+      "sha256": "4b007350f930965e9c7e86a994b9c7530578fdad95515cabcb9775ececccc53a"
+    },
+    {
+      "path": "assets/workshop/egfr/cache/ad72f90481622fde3324.json",
+      "bytes": 14297,
+      "sha256": "0d2c7f7cef4055550b8702022a1067b7a011c0ce51dccdf264638024ef605a3a"
+    },
+    {
+      "path": "assets/workshop/egfr/cache/b5afd86b14d863ff0406.json",
+      "bytes": 15813,
+      "sha256": "d4e209699ede4a895be13c69ad58c0900ff5c5c255ae625a0ad323146a34e19d"
+    },
+    {
+      "path": "assets/workshop/egfr/cache/b7730da3cb442d355fb1.json",
+      "bytes": 101637,
+      "sha256": "1f93335bfbfb80dc70214e43d5880f082b7c181ebc383d8f1eab53ba2434f159"
+    },
+    {
+      "path": "assets/workshop/egfr/cache/c7887494395c23b21021.json",
+      "bytes": 280,
+      "sha256": "810060d2dbab29b697c79da4db9c969133766baa2d8bdc871e1d41e5a579da48"
+    },
+    {
+      "path": "assets/workshop/egfr/cache/db73517b26e95b30e6e6.json",
+      "bytes": 510181,
+      "sha256": "b0a8ddf96e608081f30b32301b0a2c7df0e7907db463ce480bfb572692837d11"
+    },
+    {
+      "path": "assets/workshop/egfr/cache/e12dfe36c09fa1ccc468.json",
+      "bytes": 14959,
+      "sha256": "05896a71d7ddac61323f6dbfcdd9f3d17fea834cd7c90195585c9413c91eee25"
+    },
+    {
+      "path": "assets/workshop/egfr/cache/e156d87f08700af645a5.json",
+      "bytes": 13679,
+      "sha256": "623f7f33fc5dca628ecc45d0b664ea9d22fce973fd3553e8473d4325c28dbe25"
+    },
+    {
+      "path": "assets/workshop/egfr/cache/e66ee26b261276391269.json",
+      "bytes": 14276,
+      "sha256": "6305becbfbdcb1a1bcaae950f68ce238f7a0f98de52a5de43014016438f7326b"
+    },
+    {
+      "path": "assets/workshop/egfr/cache/eae42706e422f6bf790a.json",
+      "bytes": 14246,
+      "sha256": "cc622ba7d0c0c6e818ba15e9d2e1917f03109c799c163f91b588ad925d79fca7"
+    },
+    {
+      "path": "assets/workshop/egfr/cache/ee810fa980e6464360b6.json",
+      "bytes": 14141,
+      "sha256": "af7d03267e7e77ba7504b4ecbd32271df317f75fbf8bebe3fccedcf28fa1a299"
+    },
+    {
+      "path": "assets/workshop/egfr/cache/eeffb61ce6bad2771df8.json",
+      "bytes": 17875,
+      "sha256": "46adec8c6bb9fad0133cff665eaa0e747fc9b8c19d1f54a599c5106049e49e6b"
+    },
+    {
+      "path": "assets/workshop/egfr/cache/f3df8a1b562510fcffa8.json",
+      "bytes": 16177,
+      "sha256": "808fb8d14b47388e91683b0d2ce17a51482e3db88178a1e78f6991d18da3f990"
+    },
+    {
+      "path": "assets/workshop/egfr/cache/fbb42cb2eb07617cc895.json",
+      "bytes": 15449,
+      "sha256": "e5b020d6b94b6fb433ed6a3a3ceaedba742f0a7338332fce30d6df8cb18e780d"
+    },
+    {
+      "path": "assets/workshop/egfr/cache/fc5da1553e0af6a37e92.json",
+      "bytes": 20743,
+      "sha256": "4c0beb442b732c9e7e3f52183e4f760a43d80995cc2c58aa65d11b9d929fac9a"
+    },
+    {
+      "path": "assets/workshop/egfr/project.db",
+      "bytes": 94208,
+      "sha256": "48ea5f360c9f56790fae1cedf757cd07cb11580b143dabf693f9aa5fb9aad749"
+    },
+    {
+      "path": "assets/workshop/egfr/project.json",
+      "bytes": 180,
+      "sha256": "cba974285691f968fd75f308d51dbf46afceb1d87fe4e2776090198df6eb8001"
+    },
+    {
+      "path": "assets/workshop/egfr/steps/02_structure/1M17.pdb",
+      "bytes": 255840,
+      "sha256": "c27ce2f2a21ec08718ae94212135805da94f9bc02826af2f9a12089ed62e8fda"
+    },
+    {
+      "path": "assets/workshop/egfr/steps/02_structure/6WXN.pdb",
+      "bytes": 887404,
+      "sha256": "989b17909bf030e096d054f8290a4e1ae3a662204ea1435dae8ec3d33efc22aa"
+    },
+    {
+      "path": "assets/workshop/egfr/steps/03_receptor/1M17_prepared.pdb",
+      "bytes": 426324,
+      "sha256": "6d789797eba52be55b3dbd12cef0ca4aad25daa337e555ad4773c4e4ec4ffd6d"
+    },
+    {
+      "path": "assets/workshop/egfr/steps/03_receptor/6WXN_prepared.pdb",
+      "bytes": 434083,
+      "sha256": "a97206ab16dd00f6080d9e506c906d35c520029e20cb31d88151f4e75cb9e106"
+    },
+    {
+      "path": "assets/workshop/egfr/steps/05_ligands/Erlotinib.sdf",
+      "bytes": 4540,
+      "sha256": "0ba2e7aff511e042d39126fe6e1a3d111dc4824c7105d82049c85b56cd81a4e4"
+    },
+    {
+      "path": "assets/workshop/egfr/steps/05_ligands/Gefitinib.sdf",
+      "bytes": 4809,
+      "sha256": "a5ee72212573e88d4e03e9bf6e7f7aba4a4007a19f33e72f4f2b339bddeca088"
+    },
+    {
+      "path": "assets/workshop/egfr/steps/05_ligands/Risperidone.sdf",
+      "bytes": 4995,
+      "sha256": "7f1d212290e55e6236bdd895eeec7685cdf370f511aff68914791027ad34cc5c"
+    },
+    {
+      "path": "assets/workshop/egfr/steps/06_dock/Erlotinib.pdbqt",
+      "bytes": 3100,
+      "sha256": "ce5b0d288f8117dd27a4cc7ef46fa2f8c7133dc0184f49134d24a52db4ab237f"
+    },
+    {
+      "path": "assets/workshop/egfr/steps/06_dock/Erlotinib_docked.pdbqt",
+      "bytes": 30474,
+      "sha256": "0eb06acc8badd9276cfa157b352e15fb69d982112b9e3823f7ddc89e836ce1eb"
+    },
+    {
+      "path": "assets/workshop/egfr/steps/06_dock/Gefitinib.pdbqt",
+      "bytes": 3207,
+      "sha256": "00729a3103ff26900f689e46542c862d46b763d85906be3f39c5f4a69559d0cf"
+    },
+    {
+      "path": "assets/workshop/egfr/steps/06_dock/Gefitinib_docked.pdbqt",
+      "bytes": 31419,
+      "sha256": "e7cb05b8db5e0bd0e141ea6a6fc569d030c7069e73112765eb5061956fb99a31"
+    },
+    {
+      "path": "assets/workshop/egfr/steps/06_dock/Risperidone.pdbqt",
+      "bytes": 2897,
+      "sha256": "5b619351564cc2884bfd5f442752a3db0fb8dee0529bb1ac72175eeaf27878ee"
+    },
+    {
+      "path": "assets/workshop/egfr/steps/06_dock/Risperidone_docked.pdbqt",
+      "bytes": 28539,
+      "sha256": "4a6832baa0fe6ea9fdf3a66a4c601f40dedda6557a258219127a2c5644372a45"
+    },
+    {
+      "path": "assets/workshop/egfr/steps/06_dock/decoy_a_benzyl_urea_piperidine.pdbqt",
+      "bytes": 3049,
+      "sha256": "7355da31ecc049b9d444b549e6a6e903bf8d22e3f1e5ec47fe89a47068b70e02"
+    },
+    {
+      "path": "assets/workshop/egfr/steps/06_dock/decoy_a_benzyl_urea_piperidine_docked.pdbqt",
+      "bytes": 9984,
+      "sha256": "5523e02652d5840fc9d0d28d802d4bdfbfa5ce8363e4db303d0f846c81d0c642"
+    },
+    {
+      "path": "assets/workshop/egfr/steps/06_dock/decoy_a_larger_sulfonamide.pdbqt",
+      "bytes": 3266,
+      "sha256": "7234208f2c885d03ad6fa50fe6a5b4ba43bdf6bfd6683617113392d926193db5"
+    },
+    {
+      "path": "assets/workshop/egfr/steps/06_dock/decoy_a_larger_sulfonamide_docked.pdbqt",
+      "bytes": 10647,
+      "sha256": "04c8370eeca0c4b654c142bdddb812171ff3b30a9bef3544d5ab76eab21c5df2"
+    },
+    {
+      "path": "assets/workshop/egfr/steps/06_dock/decoy_a_methylpiperazinyl_quinoline_amide.pdbqt",
+      "bytes": 3263,
+      "sha256": "0fa22d397e7cfc1be0fd87478fdc8da98788f6348c672514afb3e31a65c7898c"
+    },
+    {
+      "path": "assets/workshop/egfr/steps/06_dock/decoy_a_methylpiperazinyl_quinoline_amide_docked.pdbqt",
+      "bytes": 10638,
+      "sha256": "d5252b35f4d3eeddc540162879b3cb8feff6fc2139bdeb904850ab1f2453678f"
+    },
+    {
+      "path": "assets/workshop/egfr/steps/06_dock/receptor.pdbqt",
+      "bytes": 229321,
+      "sha256": "64437b370583b513bf370a881ea70e3c5badb93010b6e8f0599a2fec643f0f3c"
+    },
+    {
+      "path": "assets/workshop/sv2a/project.db",
+      "bytes": 49152,
+      "sha256": "bc4eaac13d61f2e43fae0052284dc711747a796563e43f29412778224c223ae8"
+    },
+    {
+      "path": "assets/workshop/sv2a/project.json",
+      "bytes": 180,
+      "sha256": "b21ee268a5883bf07bcd76d9b9c62f9342085db1c141e39c0644d06c813f90a5"
+    },
+    {
+      "path": "assets/workshop/sv2a/steps/02_structure/9OKG.pdb",
+      "bytes": 336856,
+      "sha256": "e5b3a8b9bddcb250f671001dbd88cf7f92a4837b26a31bc2130a2040d068047a"
+    },
+    {
+      "path": "assets/workshop/sv2a/steps/03_receptor/9OKG_prepared.pdb",
+      "bytes": 612262,
+      "sha256": "44250950e225d1cc794277cbbb30bf3b97ba68c30e01a8558a704a0efe34a91b"
+    },
+    {
+      "path": "assets/workshop/sv2a/steps/05_ligands/Levetiracetam.sdf",
+      "bytes": 2306,
+      "sha256": "144a110cbc82a3d09e4801219e2213202fc8ad861f61d7a91cf29691bd3d0404"
+    },
+    {
+      "path": "assets/workshop/sv2a/steps/05_ligands/PHENYTOIN_SODIUM.sdf",
+      "bytes": 2762,
+      "sha256": "1130a76291c7513f8b6fffbd4a54efa742684e20358cbd2fe8fe23113b3d116c"
+    },
+    {
+      "path": "assets/workshop/sv2a/steps/05_ligands/Paracetamol.sdf",
+      "bytes": 1794,
+      "sha256": "9ccec7cb5f3dbeae071ca0d84bcc702750d7a7075e604efa38eca32438035959"
+    },
+    {
+      "path": "assets/workshop/sv2a/steps/05_ligands/Piracetam.sdf",
+      "bytes": 1792,
+      "sha256": "aa59a77d4406c2f3e066a425ca49cfde9a0de413edf42e4df704d712ff0e2520"
+    },
+    {
+      "path": "assets/workshop/sv2a/steps/05_ligands/Seletracetam.sdf",
+      "bytes": 2645,
+      "sha256": "f369a89fafa14623a7cface1afc56be94e04e07d89f3af589bf6b2b387958697"
+    },
+    {
+      "path": "assets/workshop/sv2a/steps/05_ligands/Valproic_acid.sdf",
+      "bytes": 2292,
+      "sha256": "d46ea5326b8d5eedd84034c389eb60d0412347ece56a15dca30714f42ce4c9b6"
+    },
+    {
+      "path": "assets/workshop/sv2a/steps/05_ligands/brivaracetam.sdf",
+      "bytes": 3070,
+      "sha256": "559106c280ed3f459db87c3ae00a68ad980a30410083c32b37b38736946a60bd"
+    },
+    {
+      "path": "assets/workshop/sv2a/steps/06_dock/Levetiracetam.pdbqt",
+      "bytes": 1405,
+      "sha256": "e9d633e7cda5c48e6e02013daecea3bdd79a6ef581478f5b948dd8ad8d812503"
+    },
+    {
+      "path": "assets/workshop/sv2a/steps/06_dock/Levetiracetam_docked.pdbqt",
+      "bytes": 14931,
+      "sha256": "791c947f917931f7057bc7c26151593e9f11e90c3514a376a156e2913e4e998c"
+    },
+    {
+      "path": "assets/workshop/sv2a/steps/06_dock/PHENYTOIN_SODIUM.pdbqt",
+      "bytes": 2008,
+      "sha256": "84bfcb603fad7f38d2f748bf1d46b5ecc432ff5924ad955cf23f3eea854bfc1a"
+    },
+    {
+      "path": "assets/workshop/sv2a/steps/06_dock/PHENYTOIN_SODIUM_docked.pdbqt",
+      "bytes": 18144,
+      "sha256": "ec0e224b07b2db9804a451cf85e3181d0e4bd1e7019695d74afc54d7d85188de"
+    },
+    {
+      "path": "assets/workshop/sv2a/steps/06_dock/Paracetamol.pdbqt",
+      "bytes": 1277,
+      "sha256": "8fb7a17460d3d29c57dfd2be5212eb9e750bde0ddfc7604849a969a5095ca893"
+    },
+    {
+      "path": "assets/workshop/sv2a/steps/06_dock/Paracetamol_docked.pdbqt",
+      "bytes": 12224,
+      "sha256": "600d19eae8b49799ca48b538f81ac2fb9e6d1f6bf7bed17702941876ae9b7067"
+    },
+    {
+      "path": "assets/workshop/sv2a/steps/06_dock/Piracetam.pdbqt",
+      "bytes": 1188,
+      "sha256": "eefb2d26e395dcffc13e5ff262f3fe17cb9ade60007a71d187ecce4e97f9285d"
+    },
+    {
+      "path": "assets/workshop/sv2a/steps/06_dock/Piracetam_docked.pdbqt",
+      "bytes": 12942,
+      "sha256": "b78053d4eb663b2ef1dc911b33b86323b927b60046f26feba48ad9eb1391350d"
+    },
+    {
+      "path": "assets/workshop/sv2a/steps/06_dock/Seletracetam.pdbqt",
+      "bytes": 1822,
+      "sha256": "fce43d95184dedc9b5e742281aa1c1bbe27ef8a92c628c17d55556032dc724d5"
+    },
+    {
+      "path": "assets/workshop/sv2a/steps/06_dock/Seletracetam_docked.pdbqt",
+      "bytes": 16664,
+      "sha256": "e511526b3b201e71ee507aa392805abff4aabd6c1c607263ba9168bb7b6d3d60"
+    },
+    {
+      "path": "assets/workshop/sv2a/steps/06_dock/Valproic_acid.pdbqt",
+      "bytes": 1242,
+      "sha256": "f3d3f9f1f0eb0d65fda71455d4d47a47688b901d467674157f957daaba03978c"
+    },
+    {
+      "path": "assets/workshop/sv2a/steps/06_dock/Valproic_acid_docked.pdbqt",
+      "bytes": 13491,
+      "sha256": "32f9ce62453b68792b64243e4db366edc1798c347d116a32048a01ec41c10392"
+    },
+    {
+      "path": "assets/workshop/sv2a/steps/06_dock/brivaracetam.pdbqt",
+      "bytes": 1770,
+      "sha256": "f69c1bb68c7b1538b0be83595d88c1cb2031eb3950c9d668f76d70066e9b0686"
+    },
+    {
+      "path": "assets/workshop/sv2a/steps/06_dock/brivaracetam_docked.pdbqt",
+      "bytes": 16256,
+      "sha256": "8e167ee23489153c2eb2d80700faa11627c3760a49556251495ecb20dbb2e5b6"
+    },
+    {
+      "path": "assets/workshop/sv2a/steps/06_dock/decoy_a_diethylbenzamide.pdbqt",
+      "bytes": 1316,
+      "sha256": "503f3af03ccac76942c35bd1caa84bd0176c9b69ed428b816a4b18037c658c64"
+    },
+    {
+      "path": "assets/workshop/sv2a/steps/06_dock/decoy_a_diethylbenzamide_docked.pdbqt",
+      "bytes": 4707,
+      "sha256": "762902d06e0a7ec2537238eaefd8b215e9901c791b3632000cabca2159ef1bcb"
+    },
+    {
+      "path": "assets/workshop/sv2a/steps/06_dock/decoy_a_methoxy_benzylbenzamide.pdbqt",
+      "bytes": 1898,
+      "sha256": "359c2e74a911be6c83f7ad49c55d147d1503bb5e6afcd54506cfaee29db96cd9"
+    },
+    {
+      "path": "assets/workshop/sv2a/steps/06_dock/decoy_a_methoxy_benzylbenzamide_docked.pdbqt",
+      "bytes": 6480,
+      "sha256": "4ce110bd5f67c0d1f5ae3f27c613f69b54e0b586bb68d0ba07ef211f74a6ffda"
+    },
+    {
+      "path": "assets/workshop/sv2a/steps/06_dock/decoy_a_phenylsulfonyl_piperidine.pdbqt",
+      "bytes": 1479,
+      "sha256": "e58b1f1fee8b45abf04c0bf614406922bd7e98a4619929439daffb66ec86ea9a"
+    },
+    {
+      "path": "assets/workshop/sv2a/steps/06_dock/decoy_a_phenylsulfonyl_piperidine_docked.pdbqt",
+      "bytes": 5199,
+      "sha256": "e237e1dddf88d44b34ead0f1a857749303d728340d30447612dbe78394b36063"
+    },
+    {
+      "path": "assets/workshop/sv2a/steps/06_dock/decoy_benzanilide.pdbqt",
+      "bytes": 1562,
+      "sha256": "89b457ef11e0e922855c7f686dce2c9c9c8c7c25b98ba3d0febe6714bf71c65c"
+    },
+    {
+      "path": "assets/workshop/sv2a/steps/06_dock/decoy_benzanilide_docked.pdbqt",
+      "bytes": 3634,
+      "sha256": "3a322813b2a309bafe7daf84bd5439b72a0f89ac71ec4dd86a9d0987f2c8ed15"
+    },
+    {
+      "path": "assets/workshop/sv2a/steps/06_dock/receptor.pdbqt",
+      "bytes": 340291,
+      "sha256": "1b1bb832a344356890d5a1032a71a75c65cfec18942b743358fece89451aadd5"
+    },
+    {
+      "path": "build_desktop.py",
+      "bytes": 9374,
+      "sha256": "c6a51a472a724da5ce4eaef3d6dbf3078b9c9f6bbeb991ec620b8aea5b678726"
+    },
+    {
+      "path": "build_macos.py",
+      "bytes": 12453,
+      "sha256": "246aedffa32e737b2c009c45edf03dad5363cd7fd94c32d01abafd054078cc1d"
+    },
+    {
+      "path": "build_setup.py",
+      "bytes": 4334,
+      "sha256": "b1888ac27d75d8b9946bb6605da6549f7e385a373492cd694daface0ad44ee5d"
+    },
+    {
+      "path": "core/__init__.py",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "core/contract.py",
+      "bytes": 9614,
+      "sha256": "6562463c8a344c6a08cdee38e7c930a560e509eb622127acaedca63423bdc4d7"
+    },
+    {
+      "path": "core/desktop_checks.py",
+      "bytes": 12637,
+      "sha256": "b4785e4883e4f3d517b9ece1ee578bad188ad695483a880d4e0acbcf96f8e644"
+    },
+    {
+      "path": "core/education_ui.py",
+      "bytes": 10104,
+      "sha256": "26a6c6f3ec1901ffb2e434ea46d9f61c6201c5a112f768c6b365b8fa2de16941"
+    },
+    {
+      "path": "core/install.py",
+      "bytes": 2193,
+      "sha256": "2731947f35f4d3249219ee00367c2397896a952ab340ef6b0c11c604577f0b16"
+    },
+    {
+      "path": "core/mmcif.py",
+      "bytes": 10003,
+      "sha256": "7410bc6fc233a4fbfc689b2b1bfd230fbb58c9c386b645792a2886a60d511eb6"
+    },
+    {
+      "path": "core/pdbqt.py",
+      "bytes": 12866,
+      "sha256": "c596189f03434be46859d4652b42f92541c34a761209b429b5326dcba43cf7b3"
+    },
+    {
+      "path": "core/project.py",
+      "bytes": 13581,
+      "sha256": "25711ff4d7cb29fdf72023aff57ad6358323e1fe12eed408625e5eb8f4ee5a61"
+    },
+    {
+      "path": "core/project_library.py",
+      "bytes": 7484,
+      "sha256": "79fa2a18615acd7af0b2fd5ce2cbcb1aa97d2327002401241c8fe7c3114ba2f6"
+    },
+    {
+      "path": "core/receptor_pdbqt.py",
+      "bytes": 13207,
+      "sha256": "a007463ce8a9bed1d4580e1dd041a1612c6f4d3114ab0b053e1f5353cf9eaa53"
+    },
+    {
+      "path": "core/references.py",
+      "bytes": 21550,
+      "sha256": "b4b286a66fd4fbf5e8c4d562c5d4f9b5fc67db77c0a9937efec9b57533e98380"
+    },
+    {
+      "path": "core/runtime.py",
+      "bytes": 2973,
+      "sha256": "2d7df1b5545466b565b71e03f9c168df43b3d17f5beb99b974bbd8811a24f723"
+    },
+    {
+      "path": "core/selftest.py",
+      "bytes": 9252,
+      "sha256": "94b68b6233e00200350d0045d0dfd8be1dff3b20fc10911c278c8954b6229786"
+    },
+    {
+      "path": "core/settings.py",
+      "bytes": 5683,
+      "sha256": "f3ecc203d18308eb96be0eca78555e50450f817f00776973ff7daad084615c81"
+    },
+    {
+      "path": "core/station.py",
+      "bytes": 7822,
+      "sha256": "3246c35141d2bd21f8e157b9072a738a78665b49dd8b40540d22cc4be7b000d9"
+    },
+    {
+      "path": "core/study.py",
+      "bytes": 33099,
+      "sha256": "ab64342c1dc71f96b6cfe0f0c332aafc30ba9b41bc8d8967e1f0bbc31816dba9"
+    },
+    {
+      "path": "core/study_checks.py",
+      "bytes": 4580,
+      "sha256": "b5bc094aac9b24aa686d7e5d087066e062cd92f5340952d0686f325adf6d2ded"
+    },
+    {
+      "path": "core/viewer.py",
+      "bytes": 8799,
+      "sha256": "64d7c82d6e58bf9b174a88953e0228f5eb8f42e61f0768e88111c3937152702b"
+    },
+    {
+      "path": "core/web.py",
+      "bytes": 9235,
+      "sha256": "35fc5b81ab2036b6d3e3650a27e0d34bdcc32d04604fa719363f7dd902cd538b"
+    },
+    {
+      "path": "core/workshop.py",
+      "bytes": 25354,
+      "sha256": "3391cfd59f9caa4b9ff7c1e560f35d3d233184177ea557e8c98c539c00e2ae25"
+    },
+    {
+      "path": "desktop.py",
+      "bytes": 11903,
+      "sha256": "dbff6c6473d1d481cb8ce3b770be2f1fe2fdecf76f754fd3a765bfc375f393f9"
+    },
+    {
+      "path": "desktop.spec",
+      "bytes": 5957,
+      "sha256": "9a467d647abc7de781ba8e75352d3a45e553af042b44fe1f82a8dc2592d9b951"
+    },
+    {
+      "path": "desktop_macos.spec",
+      "bytes": 5740,
+      "sha256": "44965ea752b45b1725764e604d34b262f1a89b966b76a7947939305a5ac4b642"
+    },
+    {
+      "path": "environment-macos.yml",
+      "bytes": 333,
+      "sha256": "a1854fbb8345f1a254c4b85c51cd9ff040221e8b27c5152a9a3cbeb5a3c63340"
+    },
+    {
+      "path": "environment.yml",
+      "bytes": 458,
+      "sha256": "3243f48d79f985e8e52f071ce8fc5f7c3cef80567bb10aa4d618cb593deda3a6"
+    },
+    {
+      "path": "export_source.py",
+      "bytes": 8935,
+      "sha256": "a0275191db377dbe5acb74182d7811e0f8d5b63b320734a23e82a839133cfc6e"
+    },
+    {
+      "path": "forms.py",
+      "bytes": 34513,
+      "sha256": "739470c11ee1bb5c49aa2ab1a4cebe1205de5968b4e3daf2c146c718527d879d"
+    },
+    {
+      "path": "installer/assets/header.png",
+      "bytes": 11921,
+      "sha256": "1286994bcea59f04a4950846e4be63a9e033ebbf61be47b4ae5a32e82ac76ad4"
+    },
+    {
+      "path": "installer/assets/icon.ico",
+      "bytes": 36266,
+      "sha256": "03502c95ebdb884383d6a314edadaecf44eedab59adfc58723647b36c0acde36"
+    },
+    {
+      "path": "installer/assets/welcome.png",
+      "bytes": 17778,
+      "sha256": "f4beacd7cb54e7d7071d7489ef3f289662eaa546f5120562b68039f240edfa23"
+    },
+    {
+      "path": "installer/desktop.nsi",
+      "bytes": 7597,
+      "sha256": "b849d98da6bef8a9c9f6d98c837e0516513f062be5ad57682dfb1d4da86702db"
+    },
+    {
+      "path": "packaging/macos/READ_ME_FIRST.txt",
+      "bytes": 1816,
+      "sha256": "4ba23aff45fe098d31c77be53182bd8a7498353b1e857d307c3caf3d306877ce"
+    },
+    {
+      "path": "packaging/macos/entitlements.plist",
+      "bytes": 389,
+      "sha256": "421dbebf2519d10470d1d8b6153eadab6820e487f1706e41033143576f64a380"
+    },
+    {
+      "path": "run.bat",
+      "bytes": 2624,
+      "sha256": "8092f05486a47fc27db3b96f1212998d5ab200393e0d1e219f6a929c269f35a0"
+    },
+    {
+      "path": "stages/__init__.py",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "stages/admet.py",
+      "bytes": 16500,
+      "sha256": "ee1476412fcd077e85d38529f356536e734cf41a24d335f315cb0430f8cc98b1"
+    },
+    {
+      "path": "stages/dock.py",
+      "bytes": 60968,
+      "sha256": "058fd1b74c79b149aa68f314df406710fbea0672bf8a5b37c47eb711d07bec6e"
+    },
+    {
+      "path": "stages/ligands.py",
+      "bytes": 19966,
+      "sha256": "db27c483e4ffabd037af7e3d9881a6a075f7ace36054a2defb9d132b91d05972"
+    },
+    {
+      "path": "stages/md.py",
+      "bytes": 43661,
+      "sha256": "98d05ad68c09f6b0a405616573c16e27334ce17fa1def3ba9cfcbaeec0a1600a"
+    },
+    {
+      "path": "stages/receptor.py",
+      "bytes": 44386,
+      "sha256": "b83f7be08bd118c964899029632a44ae37b6402d3cc7037415847cfde7fccbd7"
+    },
+    {
+      "path": "stages/site.py",
+      "bytes": 37212,
+      "sha256": "e15044fc03fc1a8e43859b5ecfa7c37c60effa3a4de6a0f36fa60a2c65b65db6"
+    },
+    {
+      "path": "stages/structure.py",
+      "bytes": 41650,
+      "sha256": "da24a69a7a5bc5241f2d4c99c193acf9ddb10d95626f0c8f2190e828f39119db"
+    },
+    {
+      "path": "stages/target.py",
+      "bytes": 26966,
+      "sha256": "b38a893c769182bf23407a059676cb39819d68c9a449b4762d3248b74c3baa4a"
+    },
+    {
+      "path": "stations/__init__.py",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "stations/swissadme.py",
+      "bytes": 10298,
+      "sha256": "b1db42bdaff703deba59f3fa244ef05b629f5c8e21bbd57b9b7c77aab9c23a81"
+    },
+    {
+      "path": "study_ui.py",
+      "bytes": 57693,
+      "sha256": "e57f8e35bf778fd752296fdc9eff3b816c5eb8ed118b87c0653dc655471a7e59"
+    },
+    {
+      "path": "tests/test_desktop.py",
+      "bytes": 8489,
+      "sha256": "bcbe9084742ed3887ae5249f87a8b9b46c953e79bd6a39129aedc15eacd1f509"
+    },
+    {
+      "path": "tests/test_project_library.py",
+      "bytes": 5971,
+      "sha256": "7a65f49ad8fdefd04d58137d6937e4337ec9e5404e6e67b78e2adb2a9d2be372"
+    },
+    {
+      "path": "tests/test_references.py",
+      "bytes": 6618,
+      "sha256": "235c16a809f5a306047c8495979848418e9ab033bd739c7221ebb8d2a851067b"
+    },
+    {
+      "path": "tests/test_study.py",
+      "bytes": 11087,
+      "sha256": "67b58a74e5d07521f6c7b4962d6054996518095d2ec150baa2971a8d7993c734"
+    },
+    {
+      "path": "tests/test_viewer_targets.py",
+      "bytes": 1353,
+      "sha256": "4c4381eaa8b3aacbc785ad266ba276d16dd2d67ee221d969ee1b451b10813516"
+    },
+    {
+      "path": "tests/test_workshop.py",
+      "bytes": 12879,
+      "sha256": "a373167cdcf3904e07c0808f664ae9c6fe5282807f459afdf8076bb6c8bf9238"
+    },
+    {
+      "path": "verify_desktop_ui.py",
+      "bytes": 169,
+      "sha256": "f7c1b3b21bfcf8b9dd209400c1f56841454b224172d8f003c352cce50d53315d"
+    },
+    {
+      "path": "verify_live_docking.py",
+      "bytes": 4724,
+      "sha256": "82a01f80d44d05b7fad44743ce3d323d15ce5255f8e9799e59c86932a8e9c618"
+    },
+    {
+      "path": "verify_setup.py",
+      "bytes": 6133,
+      "sha256": "2ad0b0c52c35cbace057ded3f721b418b6f4ce04e8c68c42e26fe16360d3359e"
+    },
+    {
+      "path": "verify_studio_ui.py",
+      "bytes": 20352,
+      "sha256": "8a783cd3059061e44f558737d5f3dafb31bb63ce13ffa70fa58302774b8ae7dc"
+    },
+    {
+      "path": "verify_upgrade.py",
+      "bytes": 10877,
+      "sha256": "69fbcebd5a7e277879f0277f202a95148ed85dcd5dac274e57001e19531e1fe5"
+    },
+    {
+      "path": "vina.exe",
+      "bytes": 1233920,
+      "sha256": "e0c4b2715e0c1a74f6e92d0f3be0328ac97542eafbc111e6b1efad897a73cce5"
+    },
+    {
+      "path": "workshop_ui.py",
+      "bytes": 357,
+      "sha256": "d821024dee3b3abacc85259a7481e659e4b2ba02fcb556e9d7d44811ff542f29"
+    }
+  ]
+}

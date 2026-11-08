@@ -1,0 +1,80 @@
+name: Build macOS applications
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, codex/docking-studio-macos]
+    paths:
+      - '**.py'
+      - 'assets/**'
+      - 'environment-macos.yml'
+      - 'desktop_macos.spec'
+      - 'packaging/macos/**'
+      - '.github/workflows/build-macos.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: macos-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: macOS ${{ matrix.arch }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: macos-15
+            arch: arm64
+          - runner: macos-15-intel
+            arch: x86_64
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 60
+    defaults:
+      run:
+        shell: micromamba-shell {0}
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v6
+      - name: Create native scientific build environment
+        uses: mamba-org/setup-micromamba@v3
+        with:
+          environment-file: environment-macos.yml
+          cache-environment: true
+          cache-environment-key: macos-${{ matrix.arch }}
+          init-shell: none
+          generate-run-shell: true
+          post-cleanup: all
+      - name: Check architecture and source tests
+        env:
+          EXPECTED_ARCH: ${{ matrix.arch }}
+        run: |
+          python -c "import os,platform; assert platform.machine() == os.environ['EXPECTED_ARCH'], platform.machine()"
+          python -m unittest discover -s tests -v
+      - name: Build app, run native and scientific checks, create DMG and ZIP
+        run: python build_macos.py --arch ${{ matrix.arch }}
+      - name: Upload verified macOS downloads
+        uses: actions/upload-artifact@v4
+        with:
+          name: InSilicoDockingStudio-macOS-${{ matrix.arch }}
+          path: |
+            dist/macos/${{ matrix.arch }}/*.dmg
+            dist/macos/${{ matrix.arch }}/*.zip
+            dist/macos/${{ matrix.arch }}/*.sha256
+            dist/macos/${{ matrix.arch }}/release-manifest.json
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
+      - name: Upload build and verification diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: macOS-${{ matrix.arch }}-verification
+          path: |
+            build/macos/${{ matrix.arch }}/*.json
+            build/macos/${{ matrix.arch }}/pyinstaller/**/warn-*.txt
+            build/macos/${{ matrix.arch }}/verification-user/logs/**
+          if-no-files-found: ignore
+          retention-days: 30

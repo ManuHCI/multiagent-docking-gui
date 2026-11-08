@@ -1,0 +1,18 @@
+name: insilico
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - rdkit>=2024.03
+  - openmm>=8.1
+  - pdbfixer>=1.9
+  - numpy>=1.26,<2.2
+  - scipy>=1.13
+  - pyyaml>=6.0
+  - pip
+  - pip:
+      - nicegui>=3.18,<4
+      - meeko>=0.6
+# Vina is a separate official executable on Windows. Put vina.exe beside
+# app.py, or on PATH. See INSTALL.md. The bundled 3D viewer needs no
+# py3Dmol Python package and makes no runtime CDN requests.
