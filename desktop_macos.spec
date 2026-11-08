@@ -89,7 +89,9 @@ app = BUNDLE(coll, name="In-Silico Docking Studio.app", icon=str(INPUTS / "icon.
                  "CFBundleShortVersionString": metadata["version"],
                  "CFBundleVersion": metadata["version"],
                  "NSPrincipalClass": "NSApplication", "NSHighResolutionCapable": True,
-                 "LSMinimumSystemVersion": "15.0", "NSAppTransportSecurity": {"NSAllowsLocalNetworking": True},
+                 "LSMinimumSystemVersion": "15.0",
+                 # The native window uses localhost for the loopback UI.
+                 "NSAppTransportSecurity": {"NSAllowsLocalNetworking": True},
                  "NSHumanReadableCopyright": "Dr Manu Kumar Shetty and Dr Pratibha Nadig, 2026",
              })
 

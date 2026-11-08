@@ -15,7 +15,7 @@ The root address and previous workshop address lead to the same Home screen.
 
 ## Completed verification
 
-- All 54 source unit tests passed, including eight project-library tests.
+- All 56 source unit tests passed, including eight project-library tests.
   Bounded deletion rejects storage-root/outside paths, links/junctions and
   running work, and preserves other projects. Listing is read-only.
 - Source and packaged UI acceptance each passed all 12 checks. The packaged
@@ -59,7 +59,7 @@ and combined 3Dmol notices. Its final setup was reinstalled in an isolated
 folder and passed the in-use upgrade guard, native window/download/shutdown
 checks, all 3,623 payload hashes and saved-data preservation. The installed
 local copy also received these notices without changing its executable or
-projects. The sanitized public source passed all 54 tests on Windows.
+projects. The sanitized public source passed all 56 tests on Windows.
 
 Native Mac builds are recorded in the repository's Build macOS applications
 workflow, with separate Apple silicon and Intel build manifests and checksums.

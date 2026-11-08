@@ -14,8 +14,8 @@
   "files": [
     {
       "path": ".github/workflows/build-macos.yml",
-      "bytes": 2591,
-      "sha256": "0f524f2087f062f724672cda4d603bf570fd6dfe207c424bfae92d17e9751f9f"
+      "bytes": 2649,
+      "sha256": "648b7f5970cd7b8d9eba6cef6c77f70cc8617de0561847f1eec0c9c620afce15"
     },
     {
       "path": ".gitignore",
@@ -55,7 +55,7 @@
     {
       "path": "STUDIO_VERIFICATION.md",
       "bytes": 3782,
-      "sha256": "ce23370ef5e9a5868920379163786d86b17a70f515cacd19a962f890161c69ec"
+      "sha256": "98df934f4b96a3d64d4e401f7019eb706db4c23e79fa8aca78d41110a68efeba"
     },
     {
       "path": "app.py",
@@ -679,8 +679,8 @@
     },
     {
       "path": "desktop.py",
-      "bytes": 11903,
-      "sha256": "dbff6c6473d1d481cb8ce3b770be2f1fe2fdecf76f754fd3a765bfc375f393f9"
+      "bytes": 15771,
+      "sha256": "e1cf3585a033ddff8f58b6607fd2a089dedb1b8277355bff51a1b62970820582"
     },
     {
       "path": "desktop.spec",
@@ -689,8 +689,8 @@
     },
     {
       "path": "desktop_macos.spec",
-      "bytes": 5758,
-      "sha256": "eadac1b518f0e806e3749985f7b960595d483a171a867d9aa011cfd233bda744"
+      "bytes": 5848,
+      "sha256": "0f4349685f65077d5a676a95e09a31f941f7a1a3d0e25b62168d8ac2832b8627"
     },
     {
       "path": "environment-macos.yml",
@@ -809,8 +809,8 @@
     },
     {
       "path": "tests/test_desktop.py",
-      "bytes": 8489,
-      "sha256": "bcbe9084742ed3887ae5249f87a8b9b46c953e79bd6a39129aedc15eacd1f509"
+      "bytes": 9743,
+      "sha256": "9b3d2c2ad1d7a045433104116d045aef8dd0241137c42e2b0461241d8316c0c1"
     },
     {
       "path": "tests/test_project_library.py",

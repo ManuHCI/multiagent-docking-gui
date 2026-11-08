@@ -33,6 +33,46 @@ def webview_backend() -> tuple[str | None, str]:
     return None, "System WebView"
 
 
+def desktop_origin(port: int) -> str:
+    """Use a local hostname for WebKit while keeping the server loopback-only."""
+    host = "localhost" if sys.platform == "darwin" else "127.0.0.1"
+    return f"http://{host}:{port}"
+
+
+def native_page_state(window) -> dict:
+    """Read primitive JSON through Cocoa rather than its native object bridge."""
+    script = r"""JSON.stringify({
+        url: location.href,
+        document_title: document.title,
+        ready_state: document.readyState,
+        product_title: !!document.body && document.body.innerText.includes('In-Silico Docking Studio'),
+        navigation: Array.from(document.querySelectorAll('[data-testid="primary-navigation"] button'))
+            .map(button => {
+                const label = button.querySelector('.q-btn__content .block');
+                return (label ? label.innerText : button.innerText).trim();
+            }),
+        start_project: Array.from(document.querySelectorAll('button'))
+            .some(button => button.innerText.includes('Start new project')),
+        body_excerpt: document.body ? document.body.innerText.slice(0, 700) : '',
+        html_excerpt: document.documentElement.outerHTML.slice(0, 700)
+    })"""
+    # Cocoa run_js returns the WebKit primitive string directly. It avoids
+    # depending on pywebview's injected object-conversion bridge for this
+    # acceptance probe; the application itself uses NiceGUI's own connection.
+    raw = window.run_js(script) if sys.platform == "darwin" else window.evaluate_js(script)
+    state = json.loads(raw) if isinstance(raw, str) else raw
+    if not isinstance(state, dict):
+        raise ValueError(f"The native page probe returned {type(raw).__name__}: {str(raw)[:160]}")
+    return state
+
+
+def native_page_ready(state: dict) -> bool:
+    return (state.get("url", "").endswith("/study")
+            and state.get("navigation") == ["Home", "Projects", "Reference", "About"]
+            and bool(state.get("start_project"))
+            and state.get("ready_state") in {"interactive", "complete"})
+
+
 def server_process_options() -> dict:
     """Give the local server its own process group on macOS/POSIX."""
     if sys.platform == "win32":
@@ -168,7 +208,7 @@ def open_desktop(port: int, test_output: str = "") -> int:
         TITLE, html=splash(), width=1280, height=860, min_size=(960, 640),
         background_color="#f1f6f8", text_select=True)
     window.events.closed += stop
-    url = f"http://127.0.0.1:{port}"
+    url = desktop_origin(port)
 
     def ready():
         nonlocal test_passed
@@ -181,20 +221,46 @@ def open_desktop(port: int, test_output: str = "") -> int:
                     if response.status == 200:
                         window.load_url(url + "/study")
                         if test_output:
+                            last_state = {}
+                            last_error = ""
                             test_deadline = time.monotonic() + 45
                             while not stopped and time.monotonic() < test_deadline:
                                 try:
-                                    state = window.evaluate_js("({url:location.href,ready:document.body.innerText.includes('In-Silico Docking Studio')})")
-                                    if state.get("ready") and state.get("url", "").endswith("/study"):
+                                    last_state = native_page_state(window)
+                                    if native_page_ready(last_state):
                                         test_passed = True
                                         break
-                                except Exception:
-                                    pass
+                                except Exception as error:
+                                    last_error = f"{type(error).__name__}: {error}"
                                 time.sleep(0.25)
+                            page_events = {name: getattr(window.events, name).is_set()
+                                           for name in ("shown", "loaded", "before_load")}
+                            current_url = ""
+                            if page_events["loaded"]:
+                                try:
+                                    current_url = window.get_current_url() or ""
+                                except Exception as error:
+                                    last_error = f"{type(error).__name__}: {error}"
+                            screenshot = ""
+                            screenshot_error = ""
+                            if sys.platform == "darwin":
+                                capture = Path(test_output).with_suffix(".png")
+                                try:
+                                    result = subprocess.run(["/usr/sbin/screencapture", "-x", str(capture)],
+                                        capture_output=True, text=True, timeout=10)
+                                    if result.returncode == 0 and capture.is_file():
+                                        screenshot = str(capture)
+                                    else:
+                                        screenshot_error = (result.stderr or f"exit {result.returncode}")[:500]
+                                except (OSError, subprocess.SubprocessError) as error:
+                                    screenshot_error = str(error)
                             Path(test_output).write_text(json.dumps(
                                 {"passed": test_passed, "native_window": True,
                                  "engine": webview_backend()[1], "route": "/study",
-                                 "downloads_enabled": bool(webview.settings["ALLOW_DOWNLOADS"])}, indent=2), encoding="utf-8")
+                                 "downloads_enabled": bool(webview.settings["ALLOW_DOWNLOADS"]),
+                                 "page_state": last_state, "page_events": page_events,
+                                 "current_url": current_url, "last_probe_error": last_error,
+                                 "screenshot": screenshot, "screenshot_error": screenshot_error}, indent=2), encoding="utf-8")
                             window.destroy()
                         return
             except (OSError, ValueError):

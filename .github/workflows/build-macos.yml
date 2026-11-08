@@ -74,6 +74,7 @@ jobs:
           name: macOS-${{ matrix.arch }}-verification
           path: |
             build/macos/${{ matrix.arch }}/*.json
+            build/macos/${{ matrix.arch }}/native-window*
             build/macos/${{ matrix.arch }}/pyinstaller/**/warn-*.txt
             build/macos/${{ matrix.arch }}/verification-user/logs/**
           if-no-files-found: ignore

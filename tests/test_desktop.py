@@ -12,7 +12,8 @@ import unittest
 from unittest.mock import MagicMock, call, patch
 
 from core.runtime import configure, data_root, resource_root
-from desktop import free_port, server_process_options, splash, stop_server, webview_backend
+from desktop import (desktop_origin, free_port, native_page_ready, native_page_state, server_process_options,
+                     splash, stop_server, webview_backend)
 
 
 class DesktopStorageTests(unittest.TestCase):
@@ -73,6 +74,26 @@ print(json.dumps({"settings":str(SETTINGS_FILE), "initial":str(initial),
 
 
 class DesktopStartupTests(unittest.TestCase):
+    def test_native_origin_stays_local_without_a_webkit_network_exception(self):
+        with patch("desktop.sys.platform", "darwin"):
+            self.assertEqual(desktop_origin(43210), "http://localhost:43210")
+        with patch("desktop.sys.platform", "win32"):
+            self.assertEqual(desktop_origin(43210), "http://127.0.0.1:43210")
+
+    def test_mac_probe_reads_json_string_and_requires_the_working_home_page(self):
+        window = MagicMock()
+        state = {"url": "http://127.0.0.1:8111/study", "ready_state": "complete",
+                 "navigation": ["Home", "Projects", "Reference", "About"], "start_project": True,
+                 "product_title": False}
+        window.run_js.return_value = json.dumps(state)
+        with patch("desktop.sys.platform", "darwin"):
+            self.assertEqual(native_page_state(window), state)
+        window.evaluate_js.assert_not_called()
+        self.assertTrue(native_page_ready(state))
+        self.assertFalse(native_page_ready({**state, "url": "about:blank"}))
+        self.assertFalse(native_page_ready({**state, "navigation": []}))
+        self.assertFalse(native_page_ready({**state, "start_project": False}))
+
     def test_native_renderer_matches_operating_system(self):
         with patch("desktop.sys.platform", "darwin"):
             self.assertEqual(webview_backend(), ("cocoa", "Cocoa WebKit"))
