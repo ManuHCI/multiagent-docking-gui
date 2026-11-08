@@ -31,7 +31,7 @@ hiddenimports = [
     "rdkit.Chem.AllChem", "rdkit.Chem.Descriptors", "rdkit.Chem.Crippen",
     "rdkit.Chem.Draw", "rdkit.Chem.MolStandardize.rdMolStandardize",
     "rdkit.Chem.rdMolAlign", "rdkit.Chem.rdFMCS", "rdkit.Chem.rdMolTransforms",
-    "scipy.spatial", "scipy.stats", "scipy.optimize", "openmm.app", "openmm.unit", "pdbfixer", "meeko",
+    "scipy.spatial", "scipy.stats", "scipy.optimize", "openmm.app", "openmm.unit", "pdbfixer", "meeko", "gemmi",
     "webview", "webview.platforms.cocoa", "AppKit", "Foundation", "WebKit", "Quartz", "Security",
     "objc", "UniformTypeIdentifiers", "uvicorn.logging", "uvicorn.loops.asyncio",
     "uvicorn.protocols.http.h11_impl", "uvicorn.protocols.websockets.websockets_impl", "uvicorn.lifespan.on",
@@ -44,7 +44,7 @@ for package in ("rdkit", "openmm", "pdbfixer", "meeko", "certifi", "webview"):
     binaries += collect_dynamic_libs(package)
 for package in ("numpy", "scipy"):
     binaries += collect_dynamic_libs(package)
-for distribution in ("nicegui", "pywebview", "pdbfixer", "meeko", "openmm", "rdkit", "numpy", "scipy"):
+for distribution in ("nicegui", "pywebview", "pdbfixer", "meeko", "gemmi", "openmm", "rdkit", "numpy", "scipy"):
     datas += copy_metadata(distribution)
 
 # Conda scientific dylibs and dynamically loaded OpenMM CPU plugins. GPU

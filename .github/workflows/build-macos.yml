@@ -43,7 +43,7 @@ jobs:
         with:
           environment-file: environment-macos.yml
           cache-environment: true
-          cache-environment-key: macos-${{ matrix.arch }}
+          cache-environment-key: macos-${{ matrix.arch }}-${{ hashFiles('environment-macos.yml') }}
           init-shell: none
           generate-run-shell: true
           post-cleanup: all

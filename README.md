@@ -24,6 +24,8 @@ by Apple. Windows may display a publisher prompt. On Mac, first launch may
 require approval in System Settings > Privacy & Security. See
 [Mac installation](MACOS.md) and [Windows installation](DESKTOP.md).
 
+![Home screen](docs/home.png)
+
 ## Four clear sections
 
 - **Home:** Start a new drug and target docking project or try the offline example.

@@ -21,7 +21,7 @@ import tempfile
 
 ROOT = Path(__file__).resolve().parent
 APP_NAME = "In-Silico Docking Studio.app"
-PACKAGES = ("nicegui", "pywebview", "pyinstaller", "rdkit", "openmm", "pdbfixer", "meeko", "numpy", "scipy", "vina")
+PACKAGES = ("nicegui", "pywebview", "pyinstaller", "rdkit", "openmm", "pdbfixer", "meeko", "gemmi", "numpy", "scipy", "vina")
 
 
 def sha256(path: Path) -> str:
@@ -45,6 +45,9 @@ def check_prerequisites(architecture: str) -> Path:
                if importlib.util.find_spec(name) is None]
     if missing:
         raise RuntimeError("Missing build dependencies: " + ", ".join(missing))
+    # Meeko's top-level import also requires Gemmi. Check real imports before
+    # freezing, rather than merely detecting an installed module's directory.
+    from meeko import MoleculePreparation  # noqa: F401
     native_vina = Path(sys.prefix) / "bin/vina"
     if not native_vina.is_file() or not os.access(native_vina, os.X_OK):
         raise RuntimeError("Native conda-forge Vina is missing; create environment-macos.yml first.")
