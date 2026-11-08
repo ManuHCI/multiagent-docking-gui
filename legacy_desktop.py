@@ -20,6 +20,7 @@ TITLE = "In-Silico Docking Studio — Legacy Beta"
 def bootstrap():
     default = Path(os.environ.get("LOCALAPPDATA", str(Path.home()))) / "InSilicoDockingStudioLegacy"
     os.environ.setdefault("INSILICO_DATA_DIR", str(default))
+    os.environ["INSILICO_LEGACY_SHORT_PATHS"] = "1"
     from legacy.compat import install_compatibility
     install_compatibility()
     from core.runtime import configure, data_root

@@ -2,13 +2,35 @@
 from __future__ import annotations
 
 import ast
+import os
 from pathlib import Path, PurePosixPath, PureWindowsPath
+import tempfile
 import unittest
+from unittest.mock import patch
 
 from legacy.compat import _is_relative_to, install_compatibility
 
 
 class LegacyCompatibilityTests(unittest.TestCase):
+    def test_legacy_project_paths_fit_classic_limits_without_losing_drug_identity(self):
+        from core.study import DrugSpec, TargetSpec, create_study
+        with tempfile.TemporaryDirectory(prefix="legacy_paths_") as temporary:
+            root = Path(temporary)
+            protein = root / "input.pdb"
+            protein.write_text("ATOM\n", encoding="utf-8")
+            names = ["Drug with a very long shared prefix " + suffix * 50 for suffix in ("A", "B")]
+            with patch.dict(os.environ, {"INSILICO_LEGACY_SHORT_PATHS": "1"}):
+                study = create_study(root, "A long educational project name " * 3,
+                                     [TargetSpec("A long protein target label " * 3, file=str(protein))],
+                                     [DrugSpec(name, "CCO") for name in names])
+            self.assertEqual([drug["name"] for drug in study.data["drugs"]], names)
+            self.assertNotEqual(study.data["drugs"][0]["internal_name"], study.data["drugs"][1]["internal_name"])
+            prefix = PureWindowsPath("C:/" + "p" * 136)
+            for drug in study.data["drugs"]:
+                filename = drug["internal_name"].replace("-", "_") + "_docked.pdbqt"
+                path = prefix / study.folder.name / study.data["targets"][0]["project"] / "steps/06_dock" / filename
+                self.assertLess(len(str(path)), 260, str(path))
+
     def test_containment_backport_handles_siblings_and_multiple_components(self):
         path = PurePosixPath("/projects/Study/poses/drug.pdbqt")
         self.assertTrue(_is_relative_to(path, "/projects", "Study"))

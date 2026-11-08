@@ -12,6 +12,7 @@ import hashlib
 import io
 import json
 import math
+import os
 from pathlib import Path
 import re
 import shutil
@@ -38,7 +39,11 @@ def _now() -> str:
 
 
 def _slug(name: str) -> str:
-    return (re.sub(r"[^A-Za-z0-9_-]+", "_", name).strip("_") or "item")[:55]
+    # Legacy Windows has a 260-character file-path limit, including the user
+    # profile and project directories. IDs already disambiguate each target
+    # and drug; full human-readable names are retained in study.json.
+    limit = 12 if os.environ.get("INSILICO_LEGACY_SHORT_PATHS") == "1" else 55
+    return (re.sub(r"[^A-Za-z0-9_-]+", "_", name).strip("_") or "item")[:limit]
 
 
 @dataclass

@@ -27,6 +27,10 @@ replaced. A modern 3D-capable browser is needed only for optional HTML pose
 viewing; the native interface, preparation, docking and CSV/ZIP exports do
 not depend on a browser.
 
+New legacy studies use compact internal folder and file names to stay within
+classic Windows path limits. Full project, target and drug names remain in
+the interface and exported records. Keep project storage paths short.
+
 Windows XP, Vista and 32-bit Windows are not included. The application and
 installer are not publisher-code-signed. SHA256 checksums accompany the
 downloads. Local files and the offline example work without internet;

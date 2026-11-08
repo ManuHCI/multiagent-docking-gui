@@ -39,8 +39,8 @@
     },
     {
       "path": "LEGACY_WINDOWS.md",
-      "bytes": 3594,
-      "sha256": "418e69f38176d42378a2eb71d3e5f6b94ab1d8f2e31bb25785db0ddcd2d4cbc7"
+      "bytes": 3817,
+      "sha256": "1a49d6c5378bcffce5e502fa5eb29f7c6f66f761629abaff823cf78b61660140"
     },
     {
       "path": "LICENSE",
@@ -664,8 +664,8 @@
     },
     {
       "path": "core/study.py",
-      "bytes": 33112,
-      "sha256": "6062cf4002ca594801cc5c0dd6b2d8efc21abba3807b88d5c239ab1d5d264330"
+      "bytes": 33427,
+      "sha256": "e8b5ac86f046176564f6f03ff1fd9912fd18f18c76a13b27e9c14f978a7f711c"
     },
     {
       "path": "core/study_checks.py",
@@ -774,8 +774,8 @@
     },
     {
       "path": "legacy_desktop.py",
-      "bytes": 7280,
-      "sha256": "06f7ca6ca607cf16181e799bbf0dde9dbf23559262474fab71320edb0a64d70b"
+      "bytes": 7332,
+      "sha256": "23a13cd78e625e69d76ca70d11ca98805e50c5804b7b66dd8d07849aac9b1573"
     },
     {
       "path": "legacy_pe_audit.py",
@@ -879,8 +879,8 @@
     },
     {
       "path": "tests/test_legacy_compat.py",
-      "bytes": 1970,
-      "sha256": "28b2272ca2496f094f8f31e2d6903a8bfa41b2c535aebe8e59e220b6970e1f0c"
+      "bytes": 3411,
+      "sha256": "30685acb1699fdaff6428048fe67b06e413abb1cde041974fcf6f5d524add740"
     },
     {
       "path": "tests/test_project_library.py",
