@@ -24,7 +24,7 @@ ROOT_FILES = {
     "verify_desktop_ui.py", "verify_studio_ui.py", "verify_setup.py",
     "verify_upgrade.py", "verify_live_docking.py",
     "legacy_desktop.py", "legacy.spec", "build_legacy.py", "legacy_pe_audit.py",
-    "requirements-legacy.txt", "LEGACY_WINDOWS.md", "verify_legacy_ui.py", "verify_legacy_setup.py",
+    "requirements-legacy.txt", "LEGACY_WINDOWS.md", "LEGACY_VERIFICATION.md", "verify_legacy_ui.py", "verify_legacy_setup.py",
 }
 DIRECTORY_PATTERNS = {
     "legacy": {".py"}, "core": {".py"}, "stages": {".py"}, "stations": {".py"}, "tests": {".py"},

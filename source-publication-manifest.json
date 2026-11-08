@@ -38,6 +38,11 @@
       "sha256": "2f85b75dd8628574b0364e9f7c602cac9c17785493bff6992aafcd9277332bf0"
     },
     {
+      "path": "LEGACY_VERIFICATION.md",
+      "bytes": 2785,
+      "sha256": "fd7417225df0f05c480b12c9cb4df66720d4b522092c73154ff0f078adf63bfe"
+    },
+    {
       "path": "LEGACY_WINDOWS.md",
       "bytes": 3817,
       "sha256": "1a49d6c5378bcffce5e502fa5eb29f7c6f66f761629abaff823cf78b61660140"
@@ -719,8 +724,8 @@
     },
     {
       "path": "export_source.py",
-      "bytes": 8973,
-      "sha256": "96fd9d5a340a14306cedfa15146ea33d89622bf6e10c3468132818635db2b6e8"
+      "bytes": 8999,
+      "sha256": "b29fd13096d034943f111fc8a4f6036fbecce30341df706bdd3caf39be0cb5e4"
     },
     {
       "path": "forms.py",
@@ -919,8 +924,8 @@
     },
     {
       "path": "verify_legacy_ui.py",
-      "bytes": 10753,
-      "sha256": "6e80c1a20764fd11fa49a8bc02e298c84f9674f8804a504994ea5c034d93f007"
+      "bytes": 10805,
+      "sha256": "4dde2f8b7bb6d71eaccb7a3b5428f99547d71c23892ab1884d4ea0d05886a524"
     },
     {
       "path": "verify_live_docking.py",

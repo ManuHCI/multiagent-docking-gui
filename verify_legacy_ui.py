@@ -33,6 +33,7 @@ def run_ui_checks(output):
     temporary.mkdir(parents=True)
     os.environ["INSILICO_DATA_DIR"] = str(temporary / "user")
     os.environ["INSILICO_PROJECTS"] = str(temporary / "Projects")
+    os.environ["INSILICO_LEGACY_SHORT_PATHS"] = "1"
 
     import tkinter as tk
     from legacy.ui import DockingStudio, DEVELOPERS
