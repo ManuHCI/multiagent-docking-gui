@@ -26,6 +26,24 @@ require approval in System Settings > Privacy & Security. See
 
 ![Home screen](docs/home.png)
 
+## Older Windows — experimental legacy beta
+
+A separate native edition is available for **Windows 7 SP1, Windows 8 and
+Windows 8.1, 64-bit**:
+
+**[Download the legacy beta installer](https://github.com/ManuHCI/multiagent-docking-gui/releases/download/v1.3.0/InSilicoDockingStudio-1.3.0-Legacy-Windows-x64-Setup.exe)**
+
+It includes Python 3.8 and older scientific libraries and does not require
+WebView2. It installs separately from the modern edition. Windows 7 requires
+SP1 and the DLL-directory update KB2533623 or a later update containing it.
+
+**This is an experimental compatibility build, not a verified Windows 7/8/8.1
+release.** Its scientific workflow and installer were tested on the current
+Windows host, and the native libraries were screened for known incompatible
+APIs. Actual execution on the original operating systems remains unverified.
+See [legacy installation and limitations](LEGACY_WINDOWS.md). The maintained
+Windows 10/11 edition remains the preferred choice on those systems.
+
 ## Four clear sections
 
 - **Home:** Start a new drug and target docking project or try the offline example.

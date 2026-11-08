@@ -17,14 +17,14 @@ import re
 import shutil
 import tempfile
 import threading
-from typing import Any, Callable
+from typing import Any, Callable, Optional
 from uuid import uuid4
 import zipfile
 
 from .contract import ControlOutcome, ProvenanceEntry, StageResult, Verdict
 from .project import Project
 
-Progress = Callable[[str], None] | None
+Progress = Optional[Callable[[str], None]]
 _locks: dict[str, threading.Lock] = {}
 _lock_guard = threading.Lock()
 PAIR_COLUMNS = ["target_id", "target", "pdb_id", "drug_id", "drug", "smiles", "prepared_smiles",

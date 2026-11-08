@@ -1,0 +1,20 @@
+# Separate Python 3.8.10 x64 build prefix. Do not install into the modern app.
+numpy==1.22.4
+scipy==1.7.3
+pandas==1.3.5
+python-dateutil==2.8.2
+pytz==2024.2
+six==1.16.0
+Pillow==9.5.0
+rdkit-pypi==2022.9.5
+OpenMM==8.1.1
+meeko==0.5.1
+certifi==2024.8.30
+pdbfixer @ https://github.com/openmm/pdbfixer/archive/6bf10e138f6475f6f1850dae78d7bf1b420a1612.tar.gz
+pyinstaller==5.13.2
+pyinstaller-hooks-contrib==2023.8
+pefile==2023.2.7
+pywin32-ctypes==0.2.2
+altgraph==0.17.4
+setuptools==68.2.2
+wheel==0.41.3

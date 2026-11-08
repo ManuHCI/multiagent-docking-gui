@@ -38,6 +38,11 @@
       "sha256": "2f85b75dd8628574b0364e9f7c602cac9c17785493bff6992aafcd9277332bf0"
     },
     {
+      "path": "LEGACY_WINDOWS.md",
+      "bytes": 3594,
+      "sha256": "418e69f38176d42378a2eb71d3e5f6b94ab1d8f2e31bb25785db0ddcd2d4cbc7"
+    },
+    {
       "path": "LICENSE",
       "bytes": 3395,
       "sha256": "26ac4decda325d7550b031ce2c3344c0e9b744ac3be2bc00028b483c95e88228"
@@ -49,8 +54,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 4580,
-      "sha256": "30c444d5ee16e04937fd609c2b015c629e93d9400b77219fb6a494e42cb4f1cf"
+      "bytes": 5583,
+      "sha256": "61762148a65d1a613610fc21b11275b4991303f3a6cd678d419b67150c0bbeef"
     },
     {
       "path": "STUDIO_VERIFICATION.md",
@@ -568,6 +573,11 @@
       "sha256": "3378a8b8291f780e43d394bc9202928a32aee564fe4f37a73cc4fef801c8c924"
     },
     {
+      "path": "build_legacy.py",
+      "bytes": 10045,
+      "sha256": "697debb235a0b5464cf676ba63428e5ba51793109f742f532f098539f7a80b49"
+    },
+    {
       "path": "build_macos.py",
       "bytes": 12674,
       "sha256": "f9e7a9b7405a2d7c540f094b2ffbe769cdbc998ef9094292ed497457840c4edd"
@@ -654,8 +664,8 @@
     },
     {
       "path": "core/study.py",
-      "bytes": 33099,
-      "sha256": "ab64342c1dc71f96b6cfe0f0c332aafc30ba9b41bc8d8967e1f0bbc31816dba9"
+      "bytes": 33112,
+      "sha256": "6062cf4002ca594801cc5c0dd6b2d8efc21abba3807b88d5c239ab1d5d264330"
     },
     {
       "path": "core/study_checks.py",
@@ -709,8 +719,8 @@
     },
     {
       "path": "export_source.py",
-      "bytes": 8763,
-      "sha256": "397f08890dafe9f208daf75143adeb11270c4c2594f0c0a4615cbc3445b93778"
+      "bytes": 8973,
+      "sha256": "96fd9d5a340a14306cedfa15146ea33d89622bf6e10c3468132818635db2b6e8"
     },
     {
       "path": "forms.py",
@@ -738,6 +748,51 @@
       "sha256": "481f4a67ea51a4cbd1ad63eb6ee238964ff46f3e54232638fe4a991345c76aa3"
     },
     {
+      "path": "installer/legacy.nsi",
+      "bytes": 7664,
+      "sha256": "232aced26f8d02712f13c349493eed88677c7603b6fad5c7167ff0052556902f"
+    },
+    {
+      "path": "legacy.spec",
+      "bytes": 5048,
+      "sha256": "6dc362ceccc5c1c5a0c90a4da75d635dc047469be3b52fd6327ed0722ecb3ae3"
+    },
+    {
+      "path": "legacy/__init__.py",
+      "bytes": 71,
+      "sha256": "270922d88ce5b57b580e1cbe642e2d4fcaf847d49baf191b3cf5da0b904be1e1"
+    },
+    {
+      "path": "legacy/compat.py",
+      "bytes": 822,
+      "sha256": "b5b7c4b083aff9830891f0559a168aa989dcab4697a90bb2e5bac322b47f4540"
+    },
+    {
+      "path": "legacy/ui.py",
+      "bytes": 52328,
+      "sha256": "b9a0d2e1b45562c524dfe3fb0d1baa10a073f2915dde86933016c493f46746fa"
+    },
+    {
+      "path": "legacy_desktop.py",
+      "bytes": 7280,
+      "sha256": "06f7ca6ca607cf16181e799bbf0dde9dbf23559262474fab71320edb0a64d70b"
+    },
+    {
+      "path": "legacy_pe_audit.py",
+      "bytes": 5299,
+      "sha256": "e5f5da95b937c34bd586a4addad3141cefe56e9281d6e4ac68869858a4e1acf7"
+    },
+    {
+      "path": "packaging/legacy/runtime-provenance.json",
+      "bytes": 12097,
+      "sha256": "554e047372818c5a05618517250a9940eee7401b5e90aeebcdeb7338c1fc1cdd"
+    },
+    {
+      "path": "packaging/legacy/runtime_hook.py",
+      "bytes": 932,
+      "sha256": "4bb64093c51b4aa69a7bbb9cbf373ace0c87e2df784f311a8fc0652eb1924ad4"
+    },
+    {
       "path": "packaging/macos/READ_ME_FIRST.txt",
       "bytes": 1816,
       "sha256": "4ba23aff45fe098d31c77be53182bd8a7498353b1e857d307c3caf3d306877ce"
@@ -746,6 +801,11 @@
       "path": "packaging/macos/entitlements.plist",
       "bytes": 389,
       "sha256": "421dbebf2519d10470d1d8b6153eadab6820e487f1706e41033143576f64a380"
+    },
+    {
+      "path": "requirements-legacy.txt",
+      "bytes": 494,
+      "sha256": "031fb8112bf96dd38a14df882452720a2a6b5981327c40c4037c5e6b28c316f5"
     },
     {
       "path": "run.bat",
@@ -818,6 +878,11 @@
       "sha256": "9b3d2c2ad1d7a045433104116d045aef8dd0241137c42e2b0461241d8316c0c1"
     },
     {
+      "path": "tests/test_legacy_compat.py",
+      "bytes": 1970,
+      "sha256": "28b2272ca2496f094f8f31e2d6903a8bfa41b2c535aebe8e59e220b6970e1f0c"
+    },
+    {
       "path": "tests/test_project_library.py",
       "bytes": 5971,
       "sha256": "7a65f49ad8fdefd04d58137d6937e4337ec9e5404e6e67b78e2adb2a9d2be372"
@@ -846,6 +911,16 @@
       "path": "verify_desktop_ui.py",
       "bytes": 169,
       "sha256": "f7c1b3b21bfcf8b9dd209400c1f56841454b224172d8f003c352cce50d53315d"
+    },
+    {
+      "path": "verify_legacy_setup.py",
+      "bytes": 12983,
+      "sha256": "fe4ee35b0650c4ec302efff098cb8097c725c003a17d1d22f38ccbb2f765b361"
+    },
+    {
+      "path": "verify_legacy_ui.py",
+      "bytes": 10753,
+      "sha256": "6e80c1a20764fd11fa49a8bc02e298c84f9674f8804a504994ea5c034d93f007"
     },
     {
       "path": "verify_live_docking.py",
