@@ -73,7 +73,11 @@ class DependencyTests(unittest.TestCase):
         q=Project.open(copied)
         try:
             path=Path(json.loads(q.get_step("05_ligands")["values_json"])["file"])
-            self.assertTrue(path.is_relative_to(copied));self.assertEqual(path.read_text(),"actual data")
+            # macOS exposes temporary folders through /var -> /private/var;
+            # Project canonicalizes its location before rebasing file paths.
+            self.assertTrue(path.is_relative_to(copied.resolve()))
+            self.assertEqual(path, copied.resolve()/"steps"/"05_ligands"/"ligand.sdf")
+            self.assertEqual(path.read_text(),"actual data")
         finally:q.close()
 
 

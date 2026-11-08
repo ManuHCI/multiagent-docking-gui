@@ -34,8 +34,8 @@
     },
     {
       "path": "INSTALL.md",
-      "bytes": 4398,
-      "sha256": "a271e057af9f8d2beac3f0fd8688b9c16cb2d461d925333e27d2fd423a5a164a"
+      "bytes": 4529,
+      "sha256": "dd89d2d5aba6ed0cfce27e5d532e59b35c76674f0b32d6956ec8a3e3a9428f4b"
     },
     {
       "path": "LICENSE",
@@ -834,8 +834,8 @@
     },
     {
       "path": "tests/test_workshop.py",
-      "bytes": 12879,
-      "sha256": "a373167cdcf3904e07c0808f664ae9c6fe5282807f459afdf8076bb6c8bf9238"
+      "bytes": 13141,
+      "sha256": "7944d5347854f20d877d5fbb9ad1a8fb16bd9e4de502648b6082cea5d38acea6"
     },
     {
       "path": "verify_desktop_ui.py",

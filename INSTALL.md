@@ -5,17 +5,18 @@
 Use Windows 10/11 x64 with Microsoft Edge WebView2 Runtime. Students do not
 need Python, Anaconda or individual scientific-package installation.
 
-The current setup is v1.2.1 and installs Docking Studio application v1.2.0:
+The current setup is v1.3.0 and installs Docking Studio application v1.3.0:
 
-    dist\InSilicoTeachingSuite-1.2.1-Setup.exe
+    dist\InSilicoTeachingSuite-1.3.0-Setup.exe
 
 Close all running copies before updating. Setup refuses an in-use upgrade
 and verifies the copied executable before changing version metadata.
 Run setup and open **In-Silico Teaching Suite**.
-Docking Studio starts at /study with five practical steps: protein targets,
+Docking Studio starts at Home with a fixed Home, Projects, Reference, About menu.
+A new project follows five practical steps: protein targets,
 drug molecules, preparation, docking, and results/export. There are no quizzes
 or question forms. **About** contains the logo and both developers;
-**References & downloads** contains citations and original source links.
+**Reference** contains citations and original source links.
 
 For portable use, open dist/InSilicoTeachingSuite/InSilicoTeachingSuite.exe
 with its complete folder and _internal/ directory intact. Extract a ZIP first.
@@ -26,7 +27,7 @@ The adjacent data folder contains settings, example copies and logs.
 INSILICO_DATA_DIR selects an isolated data folder. Close the app window to
 stop its server. See [DESKTOP.md](DESKTOP.md).
 
-## Source edition on this prepared computer
+## Source edition
 
 Run run.bat and open <http://127.0.0.1:8111/study>. The Windows launcher
 validates Python environments. The previously verified scientific interpreter
@@ -91,9 +92,9 @@ hosting has no login system, so use individual copies for private work.
 
 Use python build_desktop.py --zip for a complete portable ZIP. The desktop
 build includes packaged scientific checks and a file-hash manifest. The setup
-output for this revision is the v1.2.0 EXE named above.
+output for this revision is the v1.3.0 EXE named above.
 
-Version 1.2.0 passed source, packaged and isolated installer acceptance on
+Version 1.3.0 passed source, packaged and isolated installer acceptance on
 this computer. See STUDIO_VERIFICATION.md and .verification/studio/ for
 results. Rehearse installation, normal shortcut creation, a multi-target/
 multi-drug run, exports and reopening a saved study on a separate participant
