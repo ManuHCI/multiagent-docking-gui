@@ -2,6 +2,7 @@ name: Build and publish Docking Studio
 
 on:
   push:
+    branches: [codex/studio-1.4.0]
     tags: ['v1.4.*']
   workflow_dispatch:
 
@@ -40,6 +41,7 @@ jobs:
           if-no-files-found: ignore
 
   windows:
+    if: startsWith(github.ref, 'refs/tags/')
     runs-on: windows-2022
     timeout-minutes: 60
     defaults:
@@ -91,6 +93,7 @@ jobs:
           if-no-files-found: ignore
 
   macos:
+    if: startsWith(github.ref, 'refs/tags/')
     strategy:
       fail-fast: false
       matrix:

@@ -8,7 +8,7 @@ import time
 import urllib.request
 
 HASHES = {
-    "linux-64": "e7274528ceb9c20d048a428d6c22d7e02e268f8ffb762c4c365422347c8b8ba2",
+    "linux-64": "a934c3709c997feae403a27fd1e321c106d26ffa4f294800ffb11cbc9a3e8515",
     "osx-64": "49c2375bc7553287404f3e348494f3dc7f7987bcd99fe996d2099a654b384b95",
     "osx-arm64": "bd5b8d3f151c3ad2d92f0fb918806543d713c7f67895c020db4041097a7f004d",
     "win-64": "df531329cb3dd59d93f569bb597c715cc8ac239144718b5c530ca325d5d2e42d",
@@ -20,7 +20,8 @@ def main():
     parser.add_argument("--platform", choices=HASHES, required=True)
     parser.add_argument("--destination", type=Path, required=True)
     args = parser.parse_args()
-    url = f"https://github.com/mamba-org/micromamba-releases/releases/download/2.3.3-0/micromamba-{args.platform}.tar.bz2"
+    version = "2.8.1-0" if args.platform == "linux-64" else "2.3.3-0"
+    url = f"https://github.com/mamba-org/micromamba-releases/releases/download/{version}/micromamba-{args.platform}.tar.bz2"
     for attempt in range(1, 11):
         try:
             request_url = url + f"?download=1&studio_attempt={attempt}"
