@@ -1,8 +1,11 @@
-# In-Silico Docking Studio
+# In Silico Docking Studio
 
-Molecular docking software for medical education, with a clear five-step
-workflow and local AutoDock Vina calculations. No quiz questions or written
-answers are required. An LLM or Ollama installation is not needed.
+This app helps students and teachers prepare proteins and drug molecules,
+run docking, view structures in 3D and save reports.
+
+Developed by Dr Manu Kumar Shetty, Professor, Department of Pharmacology,
+Maulana Azad Medical College, New Delhi, and Dr Pratibha Nadig, Founder,
+Akshaisarathi Healthcare.
 
 ## Download and install
 
@@ -102,13 +105,6 @@ Saved projects occupy disk space; their molecular data is loaded when opened.
 Export a complete ZIP before deleting a project or moving it between machines.
 Earlier individual projects remain available from Projects. Your own projects
 and settings are excluded from this public source repository.
-
-## Developers
-
-**Dr Manu Kumar Shetty**, Professor, Department of Pharmacology,
-Maulana Azad Medical College, New Delhi.
-
-**Dr Pratibha Nadig**, Founder, Akshaisarathi Healthcare.
 
 ## Source and builds
 
