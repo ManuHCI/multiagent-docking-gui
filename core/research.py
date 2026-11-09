@@ -135,18 +135,25 @@ def notebook(title: str, script: str, md: bool = False) -> bytes:
     def cell(kind, source):
         return {"cell_type": kind, "id": hashlib.sha256(source.encode("utf-8")).hexdigest()[:12], "metadata": {}, "source": source.splitlines(keepends=True),
                 **({"execution_count": None, "outputs": []} if kind == "code" else {})}
-    install = ("%pip -q install condacolab\nimport condacolab\ncondacolab.install()\n"
-               if md else "%pip -q install vina==1.2.7\n")
+    packages = (["openmm>=8.1,<9", "openmmforcefields", "openff-toolkit-base", "openff-forcefields", "ambertools", "rdkit"]
+                if md else ["vina=1.2.7"])
+    install = ("import subprocess, sys, os\nfrom pathlib import Path\n"
+               "tools = Path('/content/studio_tools')\nmicromamba = tools / 'micromamba'\nscience = tools / '" + ("md" if md else "docking") + "'\n"
+               "environment = os.environ.copy()\nenvironment['MAMBA_ROOT_PREFIX'] = str(tools / 'root')\n"
+               "subprocess.run([sys.executable, 'install_environment.py', '--platform', 'linux-64', '--destination', str(micromamba)], check=True)\n"
+               "subprocess.run([str(micromamba), 'create', '--yes', '--prefix', str(science), '--override-channels', '--channel', 'conda-forge', 'python=3.11', "
+               + ", ".join(repr(p) for p in packages) + "], env=environment, check=True)\n")
     cells = [cell("markdown", "# " + title + "\nUpload this notebook at https://colab.research.google.com/. Run the cells in order.\n"
-                  + ("For MD, choose a GPU in Runtime > Change runtime type when available. Installation restarts the runtime. After that restart, continue with the next cell.\n"
+                  + "The notebook creates a separate Python 3.11 scientific environment. It keeps Colab's Python unchanged and does not restart the runtime.\n"
+                  + ("For MD, choose a GPU in Runtime > Change runtime type when available.\n"
                      "This notebook is a starting protocol. Review job.json and README.txt. Membrane proteins such as SV2A need a prepared lipid membrane system.\n" if md else
-                     "This uses the recorded receptor, drug input, box and settings. Scores can differ between platforms and processor counts. Comparison checks are recorded in the report and are not rerun by this selected-pair notebook.\n")),
-             cell("code", install)]
-    if md:
-        cells.append(cell("code", "import subprocess\nsubprocess.run(['conda', 'install', '-y', '-c', 'conda-forge', 'openmm>=8.1,<9', 'openmmforcefields', 'openff-toolkit-base', 'openff-forcefields', 'ambertools', 'rdkit', 'mdtraj', 'matplotlib'], check=True)\n"))
+                     "This uses the recorded receptor, drug input, box and settings. Scores can differ between platforms and processor counts. Comparison checks are recorded in the report and are not rerun by this selected-pair notebook.\n"))]
     cells += [cell("markdown", "Upload the matching ZIP downloaded from Docking Studio. The ZIP contains the selected protein, selected drug, code and recorded settings.\n"),
-              cell("code", "from google.colab import files\nfrom pathlib import Path\nimport zipfile, os\nuploaded = files.upload()\narchives = [name for name in uploaded if name.endswith('.zip')]\nassert len(archives) == 1, 'Upload exactly one Docking Studio ZIP.'\nwork = Path('/content/docking_studio_job').resolve()\nwork.mkdir(exist_ok=True)\nwith zipfile.ZipFile(archives[0]) as archive:\n    for member in archive.infolist():\n        assert (work / member.filename).resolve().is_relative_to(work), 'Unsafe archive path'\n    archive.extractall(work)\nos.chdir(work)\nprint(Path('README.txt').read_text())\n"),
-              cell("code", "import subprocess, sys\nsubprocess.run([sys.executable, '" + script + "'], check=True)\n"),
+              cell("code", "from google.colab import files\nfrom pathlib import Path\nimport zipfile, os, tempfile\nuploaded = files.upload()\narchives = [name for name in uploaded if name.endswith('.zip')]\nassert len(archives) == 1, 'Upload exactly one Docking Studio ZIP.'\nwork = Path(tempfile.mkdtemp(prefix='studio_job_', dir='/content')).resolve()\nwith zipfile.ZipFile(archives[0]) as archive:\n    for member in archive.infolist():\n        assert (work / member.filename).resolve().is_relative_to(work), 'Unsafe archive path'\n    archive.extractall(work)\nos.chdir(work)\nprint(Path('README.txt').read_text())\n")]
+    if md:
+        cells.append(cell("code", "import json\nif json.loads(Path('job.json').read_text())['system_type'] == 'membrane':\n    print('Upload the reviewed membrane_system.xml and matching membrane.pdb described in README.txt.')\n    files.upload()\n    assert all(Path(name).is_file() for name in ['membrane_system.xml', 'membrane.pdb']), 'Both prepared membrane files are required.'\n"))
+    cells += [cell("code", install),
+              cell("code", "import subprocess\nsubprocess.run([str(micromamba), 'run', '--prefix', str(science), 'python', '-u', '" + script + "'], env=environment, check=True)\n"),
               cell("code", "import shutil\nfrom google.colab import files\nshutil.make_archive('/content/studio_results', 'zip', 'output')\nfiles.download('/content/studio_results.zip')\n")]
     return json.dumps({"nbformat": 4, "nbformat_minor": 5, "metadata": {"kernelspec": {"name": "python3", "display_name": "Python 3"}, "colab": {"provenance": []}}, "cells": cells}, indent=2).encode("utf-8")
 
@@ -204,6 +211,7 @@ def export_pair(study, target_id: str, drug_id: str, kind: str = "docking", *, s
                "checks": dock.get("checks", {}), "redock_rmsd_angstrom": dock.get("redock_rmsd"),
                "purpose": "Selected pair rerun; comparison checks are preserved, not rerun."}
         files = {"receptor.pdbqt": receptor.read_bytes(), "ligand.pdbqt": ligand_input.read_bytes(), "recorded_pose.pdbqt": pose.read_bytes(),
+                 "install_environment.py": (resource_root() / "assets/templates/bootstrap_micromamba.py").read_bytes(),
                  "Docking_report.txt": report_text(study).encode("utf-8")}
         if kind == "docking":
             files["run_docking.py"] = (resource_root() / "assets/templates/run_docking.py").read_bytes()
@@ -214,7 +222,7 @@ def export_pair(study, target_id: str, drug_id: str, kind: str = "docking", *, s
                 "It runs AutoDock Vina through its Python interface. It does not repeat preparation or the comparison controls.\n"
                 "The desktop uses the Vina command line interface. Differences in processors, platforms and interfaces can affect results.\n"
                 "The original checks remain in job.json and Docking_report.txt. Interpret scores with those checks.\n"
-                "Local use: install vina==1.2.7, then run python run_docking.py in this folder.\n").encode("utf-8")
+                "Local Linux use: install vina==1.2.7, then run python run_docking.py in this folder.\n").encode("utf-8")
         else:
             files.update(_md_files(project, pose, drug, target, system_type, nanoseconds))
             job.update(system_type=system_type, nanoseconds=nanoseconds, timestep_fs=2.0, temperature_K=310,
@@ -269,7 +277,8 @@ def _md_files(project, pose, drug, target, system_type, nanoseconds):
             "README.txt": (f"Selected protein: {target['name']}\nSelected drug: {drug['name']}\nRequested production duration: {nanoseconds:g} ns\n\n" + instruction +
                 "\nThis is downloadable code. No MD simulation has been run by the desktop app.\n"
                 "ligand.sdf contains the docked coordinates and chemical bond orders recovered from Meeko mapping.\n"
-                "Upload Run_MD.ipynb to Colab and follow its cells. Installation restarts the runtime before you upload this ZIP.\n"
+                "Upload Run_MD.ipynb to Colab and follow its cells. Upload this ZIP first, then install its separate scientific environment. No runtime restart is needed.\n"
+                "In membrane mode, the notebook also asks you to upload the two prepared membrane files before running.\n"
                 "The default soluble protocol uses AMBER ff14SB, TIP3P water, OpenFF 2.2.1, AM1-BCC charges, 310 K and a 2 fs timestep.\n"
                 "It minimises energy, runs 100 ps of NVT equilibration and 100 ps of NPT equilibration, then production. These durations require review for your system.\n"
                 "Membrane mode preserves the supplied System's force fields and barostat. Its settings must be documented separately.\n"

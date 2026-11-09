@@ -13,7 +13,7 @@ from pathlib import Path
 def main():
     import argparse
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--smoke", action="store_true", help="Only 10 NVT, 10 NPT and 10 production steps to check execution. Not a scientific trajectory.")
+    parser.add_argument("--smoke", action="store_true", help="Limit minimisation to 200 iterations; only 10 NVT, 10 NPT and 10 production steps. Execution check, not a scientific trajectory.")
     args = parser.parse_args()
     import numpy as np
     import openmm as mm
@@ -27,6 +27,7 @@ def main():
         raise ValueError("Duration must be greater than zero and no more than 1000 ns.")
     steps = 10 if args.smoke else int(duration * 1_000_000 / 2.0)
     equilibration_steps = 10 if args.smoke else 50_000
+    minimization_max_iterations = 200 if args.smoke else 0
     out = Path("output")
     out.mkdir(exist_ok=True)
     signature = hashlib.sha256(Path("job.json").read_bytes() + Path(__file__).read_bytes() + str(args.smoke).encode()).hexdigest()
@@ -68,6 +69,7 @@ def main():
         if rdmol is None:
             raise ValueError("Cannot read the docked ligand with its chemical bond information.")
         ligand = Molecule.from_rdkit(rdmol, allow_undefined_stereo=False)
+        print("Preparing drug charges and force field parameters. This can take several minutes.", flush=True)
         ligand.assign_partial_charges("am1bcc")
         template = SMIRNOFFTemplateGenerator(molecules=[ligand], forcefield="openff-2.2.1")
         forcefield = app.ForceField("amber14/protein.ff14SB.xml", "amber14/tip3p.xml")
@@ -75,6 +77,7 @@ def main():
         pdb = app.PDBFile("protein.pdb")
         modeller = app.Modeller(pdb.topology, pdb.positions)
         # Unknown retained cofactors deliberately fail unless parameters exist.
+        print("Preparing protein hydrogens, water and ions.", flush=True)
         modeller.addHydrogens(forcefield, pH=7.4)
         ligand_topology = ligand.to_topology().to_openmm()
         for residue in ligand_topology.residues():
@@ -104,7 +107,7 @@ def main():
         properties = {"Precision": "mixed"}
         simulation = app.Simulation(topology, system, integrator, platform, properties)
     except Exception as error:
-        print("CUDA could not start; trying the CPU:", error)
+        print("CUDA could not start; trying the CPU:", error, flush=True)
         platform = mm.Platform.getPlatformByName("CPU")
         properties = {}
         integrator = mm.LangevinMiddleIntegrator(310 * unit.kelvin, 1 / unit.picosecond, 0.002 * unit.picoseconds)
@@ -114,8 +117,10 @@ def main():
     if restarting:
         simulation.loadCheckpoint(str(checkpoint))
     else:
-        print(f"Minimising energy, then running {equilibration_steps} NVT and {equilibration_steps} NPT steps.")
-        simulation.minimizeEnergy()
+        print(f"Minimising energy, then running {equilibration_steps} NVT and {equilibration_steps} NPT steps.", flush=True)
+        if args.smoke:
+            print("Execution check only: minimisation is limited to 200 iterations.", flush=True)
+        simulation.minimizeEnergy(maxIterations=minimization_max_iterations)
         simulation.context.setVelocitiesToTemperature(310 * unit.kelvin, int(job["seed"]))
         simulation.step(equilibration_steps)
         barostat.setFrequency(frequency or 25)
@@ -129,7 +134,8 @@ def main():
         (out / "system.xml").write_text(mm.XmlSerializer.serialize(system))
         (out / "run.json").write_text(json.dumps({"signature": signature, "openmm_version": mm.version.version,
               "platform": platform.getName(), "job": job, "barostat": type(barostat).__name__,
-              "smoke_test_only": args.smoke, "production_steps": steps, "equilibration_steps_per_ensemble": equilibration_steps}, indent=2))
+              "smoke_test_only": args.smoke, "minimization_max_iterations": minimization_max_iterations,
+              "production_steps": steps, "equilibration_steps_per_ensemble": equilibration_steps}, indent=2))
         simulation.saveCheckpoint(str(checkpoint))
     remaining = max(0, steps - simulation.currentStep)
     if remaining:
@@ -137,7 +143,7 @@ def main():
         simulation.reporters.append(app.StateDataReporter(str(out / "energy.csv"), 500, step=True, time=True,
                           potentialEnergy=True, temperature=True, density=True, append=(out / "energy.csv").exists()))
         simulation.reporters.append(app.CheckpointReporter(str(checkpoint), 5000))
-        print(f"Running {remaining} production steps on {platform.getName()}.")
+        print(f"Running {remaining} production steps on {platform.getName()}.", flush=True)
         simulation.step(remaining)
     simulation.saveCheckpoint(str(checkpoint))
     state = simulation.context.getState(getPositions=True, getEnergy=True)

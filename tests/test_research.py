@@ -62,6 +62,10 @@ class ResearchExportTests(unittest.TestCase):
             except ImportError:
                 self.assertEqual(notebook["nbformat"], 4)
             self.assertIn("not rerun", job["purpose"])
+            self.assertIn("install_environment.py", archive.namelist())
+            for cell in notebook["cells"]:
+                if cell["cell_type"] == "code":
+                    ast.parse("".join(cell["source"]))
 
     def test_md_preserves_docked_chemistry_and_removes_reference(self):
         from rdkit import Chem
@@ -75,9 +79,11 @@ class ResearchExportTests(unittest.TestCase):
             self.assertFalse(viewer.reference_atoms(protein, label))
             ast.parse(archive.read("run_md.py").decode())
             notebook = json.loads(archive.read("Run_MD.ipynb"))
-            install = next(i for i,c in enumerate(notebook["cells"]) if "condacolab.install" in "".join(c["source"]))
+            install = next(i for i,c in enumerate(notebook["cells"]) if "'python=3.11'" in "".join(c["source"]))
             upload = next(i for i,c in enumerate(notebook["cells"]) if "files.upload" in "".join(c["source"]))
-            self.assertLess(install, upload)
+            self.assertLess(upload, install)
+            execute = next("".join(c["source"]) for c in notebook["cells"] if "'run', '--prefix'" in "".join(c["source"]))
+            self.assertNotIn("sys.executable", execute)
 
     def test_export_refuses_stale_pair_and_different_drug(self):
         project, drug, pose = self.record_dock()
