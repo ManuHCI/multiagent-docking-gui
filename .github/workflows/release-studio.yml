@@ -39,6 +39,7 @@ jobs:
           name: research-code-verification
           path: .verification/research-code/verification.json
           if-no-files-found: ignore
+          include-hidden-files: true
 
   windows:
     if: startsWith(github.ref, 'refs/tags/')
@@ -89,8 +90,13 @@ jobs:
         if: always()
         with:
           name: windows-verification
-          path: build/desktop/*verification*.json
+          path: |
+            build/desktop/*verification*.json
+            .verification/studio/*.json
+            .verification/studio/*.log
+            .verification/studio/failure-page.txt
           if-no-files-found: ignore
+          include-hidden-files: true
 
   macos:
     if: startsWith(github.ref, 'refs/tags/')

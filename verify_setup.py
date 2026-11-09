@@ -52,9 +52,14 @@ def main() -> int:
                            ("--verify-science", "installed-science.json"),
                            ("--verify-study", "installed-batch.json"),
                            ("--window-test-output", "installed-native-window.json")]:
-        subprocess.run([str(executable), flag, str(output / filename)], cwd=case,
-                       env=environment, check=True, timeout=180)
-        result = json.loads((output / filename).read_text(encoding="utf-8"))
+        completed = subprocess.run([str(executable), flag, str(output / filename)], cwd=case,
+                                   env=environment, check=False, timeout=180)
+        report_path = output / filename
+        if not report_path.is_file():
+            raise AssertionError(f"Installed check wrote no report: {flag}; exit code {completed.returncode}")
+        result = json.loads(report_path.read_text(encoding="utf-8"))
+        print(f"Installed check {flag}: {json.dumps(result, indent=2)}", flush=True)
+        completed.check_returncode()
         if not result.get("can_start", result.get("passed", False)):
             raise AssertionError(f"Installed acceptance failed: {filename}")
         if flag == "--window-test-output" and not (result.get("downloads_enabled") and result.get("server_stopped")):

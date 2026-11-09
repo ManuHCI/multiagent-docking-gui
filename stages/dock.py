@@ -177,11 +177,36 @@ def run_vina(
     if exe is None:
         return DockResult(ok=False, error="AutoDock Vina is not installed.")
 
+    if sys.platform == "win32":
+        # Vina's native file reader retains classic Windows path limits, even
+        # when Python can save a study there. Stage unchanged bytes under short
+        # names, then return the poses to the selected study. Each concurrent
+        # search gets its own private temporary directory.
+        try:
+            with tempfile.TemporaryDirectory(prefix="vina_") as temporary:
+                scratch = Path(temporary)
+                receptor, ligand, output = (scratch / name for name in ("receptor.pdbqt", "ligand.pdbqt", "poses.pdbqt"))
+                shutil.copyfile(receptor_pdbqt, receptor)
+                shutil.copyfile(ligand_pdbqt, ligand)
+                result = _execute_vina(exe, receptor, ligand, box, output, exhaustiveness, n_poses, seed, timeout)
+                if result.ok:
+                    shutil.copyfile(output, out_pdbqt)
+                return result
+        except Exception as exc:
+            return DockResult(ok=False, error=f"Could not prepare or save Vina files: {exc}")
+
+    return _execute_vina(exe, receptor_pdbqt, ligand_pdbqt, box, out_pdbqt, exhaustiveness, n_poses, seed, timeout)
+
+
+def _execute_vina(exe, receptor_pdbqt, ligand_pdbqt, box, out_pdbqt, exhaustiveness, n_poses, seed, timeout):
+
+    # Keep file arguments relative without changing the application's own cwd.
+    workdir = out_pdbqt.resolve().parent
     cmd = [
         exe,
-        "--receptor", str(receptor_pdbqt),
-        "--ligand", str(ligand_pdbqt),
-        "--out", str(out_pdbqt),
+        "--receptor", os.path.relpath(receptor_pdbqt.resolve(), workdir),
+        "--ligand", os.path.relpath(ligand_pdbqt.resolve(), workdir),
+        "--out", out_pdbqt.name,
         "--center_x", str(box["center_x"]),
         "--center_y", str(box["center_y"]),
         "--center_z", str(box["center_z"]),
@@ -193,7 +218,7 @@ def run_vina(
         "--seed", str(seed),
     ]
     try:
-        proc = subprocess.run(cmd, capture_output=True, text=True,
+        proc = subprocess.run(cmd, cwd=workdir, capture_output=True, text=True,
                               timeout=timeout)
     except subprocess.TimeoutExpired:
         return DockResult(

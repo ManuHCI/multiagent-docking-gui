@@ -39,10 +39,10 @@ def _now() -> str:
 
 
 def _slug(name: str) -> str:
-    # Legacy Windows has a 260-character file-path limit, including the user
-    # profile and project directories. IDs already disambiguate each target
-    # and drug; full human-readable names are retained in study.json.
-    limit = 12 if os.environ.get("INSILICO_LEGACY_SHORT_PATHS") == "1" else 55
+    # Native scientific libraries can retain the classic Windows path limit
+    # on modern systems too. IDs disambiguate shortened names; the full names
+    # displayed to the user are retained in study.json.
+    limit = 12 if os.name == "nt" or os.environ.get("INSILICO_LEGACY_SHORT_PATHS") == "1" else 55
     return (re.sub(r"[^A-Za-z0-9_-]+", "_", name).strip("_") or "item")[:limit]
 
 
