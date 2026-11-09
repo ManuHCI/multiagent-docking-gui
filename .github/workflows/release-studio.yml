@@ -14,7 +14,9 @@ concurrency:
 
 jobs:
   research-code:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    env:
+      CONDA_OVERRIDE_CUDA: '0'
     timeout-minutes: 45
     defaults:
       run:
@@ -50,26 +52,31 @@ jobs:
       - name: Create scientific build environment
         run: |
           & "${{ runner.temp }}/micromamba.exe" create --yes --prefix "${{ runner.temp }}/science" --file environment.yml --override-channels --channel conda-forge
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          if (-not (Test-Path -LiteralPath "${{ runner.temp }}/science/python.exe")) { throw 'The build Python was not created.' }
+          "${{ runner.temp }}/science/Library/bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          "${{ runner.temp }}/science/Scripts" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          "${{ runner.temp }}/science" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
       - name: Install build tools
         run: |
-          & "${{ runner.temp }}/micromamba.exe" run --prefix "${{ runner.temp }}/science" python -m pip install 'pyinstaller>=6.22,<7' 'pywebview>=6.2,<7' 'meeko>=0.7,<0.8' gemmi playwright
+          & "${{ runner.temp }}/science/python.exe" -m pip install 'nicegui>=3.18,<4' 'pyinstaller>=6.22,<7' 'pywebview>=6.2,<7' 'meeko>=0.7,<0.8' gemmi playwright
       - name: Source tests
         run: |
-          & "${{ runner.temp }}/micromamba.exe" run --prefix "${{ runner.temp }}/science" python -m unittest discover -s tests -v
+          & "${{ runner.temp }}/science/python.exe" -m unittest discover -s tests -v
       - name: Install installer compiler
         shell: pwsh
         run: choco install nsis --yes --no-progress
       - name: Build and verify application
         run: |
-          & "${{ runner.temp }}/micromamba.exe" run --prefix "${{ runner.temp }}/science" python build_desktop.py
+          & "${{ runner.temp }}/science/python.exe" build_desktop.py
       - name: Build setup
         shell: pwsh
         run: |
           $env:PATH += ';C:\Program Files (x86)\NSIS'
-          & "${{ runner.temp }}/micromamba.exe" run --prefix "${{ runner.temp }}/science" python build_setup.py
+          & "${{ runner.temp }}/science/python.exe" build_setup.py
       - name: Verify isolated installation, native window and exported downloads
         run: |
-          & "${{ runner.temp }}/micromamba.exe" run --prefix "${{ runner.temp }}/science" python verify_setup.py
+          & "${{ runner.temp }}/science/python.exe" verify_setup.py
       - uses: actions/upload-artifact@v4
         with:
           name: release-windows

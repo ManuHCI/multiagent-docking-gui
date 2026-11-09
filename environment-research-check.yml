@@ -5,7 +5,8 @@ dependencies:
   - python=3.11
   - openmm>=8.1,<9
   - openmmforcefields
-  - openff-toolkit
+  - openff-toolkit-base
+  - openff-forcefields
   - ambertools
   - rdkit
   - pdbfixer
