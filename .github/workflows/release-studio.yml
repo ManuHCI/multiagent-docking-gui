@@ -19,6 +19,7 @@ jobs:
       - uses: actions/checkout@v6
       - uses: mamba-org/setup-micromamba@v3
         with:
+          micromamba-url: https://github.com/mamba-org/micromamba-releases/releases/download/2.3.3-0/micromamba-linux-64
           environment-file: environment-research-check.yml
           init-shell: none
           generate-run-shell: true
@@ -36,31 +37,33 @@ jobs:
     timeout-minutes: 60
     defaults:
       run:
-        shell: micromamba-shell {0}
+        shell: pwsh
     steps:
       - uses: actions/checkout@v6
       - uses: mamba-org/setup-micromamba@v3
+        id: science
         with:
+          micromamba-url: https://github.com/mamba-org/micromamba-releases/releases/download/2.3.3-0/micromamba-win-64.exe
           environment-file: environment.yml
           environment-name: insilico
           init-shell: none
-          generate-run-shell: true
+          generate-run-shell: false
       - name: Install build tools
-        run: python -m pip install 'pyinstaller>=6.22,<7' 'pywebview>=6.2,<7' 'meeko>=0.7,<0.8' gemmi playwright
+        run: micromamba run -p "${{ steps.science.outputs.environment-path }}" python -m pip install 'pyinstaller>=6.22,<7' 'pywebview>=6.2,<7' 'meeko>=0.7,<0.8' gemmi playwright
       - name: Source tests
-        run: python -m unittest discover -s tests -v
+        run: micromamba run -p "${{ steps.science.outputs.environment-path }}" python -m unittest discover -s tests -v
       - name: Install installer compiler
         shell: pwsh
         run: choco install nsis --yes --no-progress
       - name: Build and verify application
-        run: python build_desktop.py
+        run: micromamba run -p "${{ steps.science.outputs.environment-path }}" python build_desktop.py
       - name: Build setup
         shell: pwsh
         run: |
           $env:PATH += ';C:\Program Files (x86)\NSIS'
-          micromamba run -n insilico python build_setup.py
+          micromamba run -p "${{ steps.science.outputs.environment-path }}" python build_setup.py
       - name: Verify isolated installation, native window and exported downloads
-        run: python verify_setup.py
+        run: micromamba run -p "${{ steps.science.outputs.environment-path }}" python verify_setup.py
       - uses: actions/upload-artifact@v4
         with:
           name: release-windows
@@ -92,6 +95,7 @@ jobs:
       - uses: actions/checkout@v6
       - uses: mamba-org/setup-micromamba@v3
         with:
+          micromamba-url: https://github.com/mamba-org/micromamba-releases/releases/download/2.3.3-0/micromamba-${{ matrix.arch == 'arm64' && 'osx-arm64' || 'osx-64' }}
           environment-file: environment-macos.yml
           init-shell: none
           generate-run-shell: true
