@@ -1,0 +1,145 @@
+name: Build and publish Docking Studio
+
+on:
+  push:
+    tags: ['v1.4.*']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  research-code:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    defaults:
+      run:
+        shell: micromamba-shell {0}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: mamba-org/setup-micromamba@v3
+        with:
+          environment-file: environment-research-check.yml
+          init-shell: none
+          generate-run-shell: true
+      - name: Execute exported docking code and a short MD execution check
+        run: python verify_research_code.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: research-code-verification
+          path: .verification/research-code/verification.json
+          if-no-files-found: ignore
+
+  windows:
+    runs-on: windows-2022
+    timeout-minutes: 60
+    defaults:
+      run:
+        shell: micromamba-shell {0}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: mamba-org/setup-micromamba@v3
+        with:
+          environment-file: environment.yml
+          environment-name: insilico
+          init-shell: none
+          generate-run-shell: true
+      - name: Install build tools
+        run: python -m pip install 'pyinstaller>=6.22,<7' 'pywebview>=6.2,<7' 'meeko>=0.7,<0.8' gemmi playwright
+      - name: Source tests
+        run: python -m unittest discover -s tests -v
+      - name: Install installer compiler
+        shell: pwsh
+        run: choco install nsis --yes --no-progress
+      - name: Build and verify application
+        run: python build_desktop.py
+      - name: Build setup
+        shell: pwsh
+        run: |
+          $env:PATH += ';C:\Program Files (x86)\NSIS'
+          micromamba run -n insilico python build_setup.py
+      - name: Verify isolated installation, native window and exported downloads
+        run: python verify_setup.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-windows
+          path: dist/InSilicoDockingStudio-1.4.0-Windows-Setup.exe
+          if-no-files-found: error
+          compression-level: 0
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: windows-verification
+          path: build/desktop/*verification*.json
+          if-no-files-found: ignore
+
+  macos:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: macos-15
+            arch: arm64
+          - runner: macos-15-intel
+            arch: x86_64
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 60
+    defaults:
+      run:
+        shell: micromamba-shell {0}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: mamba-org/setup-micromamba@v3
+        with:
+          environment-file: environment-macos.yml
+          init-shell: none
+          generate-run-shell: true
+      - name: Source tests
+        run: python -m unittest discover -s tests -v
+      - name: Build and verify native application
+        run: python build_macos.py --arch ${{ matrix.arch }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-macos-${{ matrix.arch }}
+          path: dist/macos/${{ matrix.arch }}/*.dmg
+          if-no-files-found: error
+          compression-level: 0
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: macos-${{ matrix.arch }}-verification
+          path: |
+            build/macos/${{ matrix.arch }}/*.json
+            dist/macos/${{ matrix.arch }}/release-manifest.json
+          if-no-files-found: ignore
+
+  publish:
+    needs: [windows, macos, research-code]
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: release-*
+          merge-multiple: true
+          path: release-downloads
+      - name: Check installer set and create checksums
+        run: |
+          python - <<'PY'
+          import hashlib
+          from pathlib import Path
+          root = Path('release-downloads')
+          files = sorted(root.iterdir())
+          assert len(files) == 3, [f.name for f in files]
+          assert sum(f.suffix == '.exe' for f in files) == 1
+          assert sum(f.suffix == '.dmg' for f in files) == 2
+          (root / 'SHA256SUMS.txt').write_text(''.join(hashlib.sha256(f.read_bytes()).hexdigest() + '  ' + f.name + '\n' for f in files))
+          PY
+      - name: Publish verified release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" release-downloads/* --title "In Silico Docking Studio ${GITHUB_REF_NAME#v}" --notes-file RELEASE_NOTES.md --latest --verify-tag

@@ -1,0 +1,19 @@
+name: research-check
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - openmm>=8.1,<9
+  - openmmforcefields
+  - openff-toolkit
+  - ambertools
+  - rdkit
+  - pdbfixer
+  - vina=1.2.7
+  - numpy
+  - scipy
+  - pyyaml
+  - gemmi
+  - pip
+  - pip:
+      - meeko>=0.7,<0.8

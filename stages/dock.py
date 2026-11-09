@@ -733,18 +733,16 @@ def decoy_verdict(user_score: float, decoy_scores: list[float],
             name="Does it beat an arbitrary molecule?",
             verdict=Verdict.FAIL,
             plain_verdict=(
-                f"No. {user_name} scored {user_score}, and an arbitrary "
-                f"molecule of the same size and greasiness scored "
-                f"{best_decoy:.2f} - better. The leading compound did not "
-                "outperform this small baseline. This weakens the "
-                "score-based argument, but does not identify its cause."
+                f"Score comparison needs review. {user_name} scored {user_score}, "
+                f"while the best matched comparison scored {best_decoy:.2f}. "
+                "This run did not favour the leading drug over that comparison. "
+                "This does not overturn experimental evidence for a known drug and target. "
+                "The comparison molecules are not proven nonbinders."
             ),
             what_to_do=(
-                "Do not report this molecule as a hit. This is a real "
-                "result to report. Your options: review a "
-                "different molecule; or check the two steps above (was the "
-                "box in the right place, was a cofactor removed) in case "
-                "the setup is at fault rather than the molecule."
+                "Report the comparison and inspect both poses, preparation and search box. "
+                "For a known reference drug, use this result to review the method. "
+                "A new hit claim needs additional evidence. The score alone does not establish binding strength."
             ),
             detail=detail,
             blocks_progress=True,
@@ -1205,23 +1203,32 @@ class DockStage(Stage):
 
     @staticmethod
     def _ligand_pdbqt(smiles: str, folder: Path, name: str,
-                      seed: int = DEFAULT_SEED) -> tuple[Path | None, str]:
+                      seed: int = DEFAULT_SEED, prepared_file: str = "") -> tuple[Path | None, str]:
         from meeko import MoleculePreparation, PDBQTWriterLegacy
         from rdkit import Chem
         from rdkit.Chem import AllChem
 
-        mol = Chem.MolFromSmiles(smiles)
+        mol = (next(iter(Chem.SDMolSupplier(prepared_file, removeHs=False)), None)
+               if prepared_file else Chem.MolFromSmiles(smiles))
         if mol is None:
             return None, f"{name}: the structure could not be read."
-        mol = Chem.AddHs(mol)
-        params = AllChem.ETKDGv3()
-        params.randomSeed = seed
-        if AllChem.EmbedMolecule(mol, params) != 0:
-            return None, f"{name}: no 3D shape could be built."
-        try:
-            AllChem.MMFFOptimizeMolecule(mol, maxIters=500)
-        except Exception:  # noqa: BLE001
-            pass
+        if prepared_file:
+            expected = Chem.MolFromSmiles(smiles)
+            if expected is None or Chem.MolToSmiles(Chem.RemoveHs(mol)) != Chem.MolToSmiles(expected):
+                return None, f"{name}: the prepared structure and recorded identity differ. Prepare the drug again."
+            if not mol.GetNumConformers():
+                return None, f"{name}: the prepared drug has no 3D coordinates."
+            mol = Chem.AddHs(mol, addCoords=True)
+        else:
+            mol = Chem.AddHs(mol)
+            params = AllChem.ETKDGv3()
+            params.randomSeed = seed
+            if AllChem.EmbedMolecule(mol, params) != 0:
+                return None, f"{name}: no 3D shape could be built."
+            try:
+                AllChem.MMFFOptimizeMolecule(mol, maxIters=500)
+            except Exception:  # noqa: BLE001
+                pass
         setups = MoleculePreparation().prepare(mol)
         text, ok, err = PDBQTWriterLegacy.write_string(setups[0])
         if not ok:
@@ -1263,7 +1270,7 @@ class DockStage(Stage):
         results: list[dict[str, Any]] = []
         for item in prepared:
             lig, why = self._ligand_pdbqt(item["smiles"], folder,
-                                          item.get("name", "molecule"))
+                                          item.get("name", "molecule"), prepared_file=item.get("file", ""))
             if lig is None:
                 results.append({"name": item.get("name", ""), "error": why})
                 continue
@@ -1281,6 +1288,7 @@ class DockStage(Stage):
                 "poses": [{"rank": p.rank, "score": p.score}
                           for p in dr.poses[:5]],
                 "file": str(out),
+                "input_file": str(lig),
             })
 
         scored = [r for r in results if "score" in r]
@@ -1392,6 +1400,8 @@ class DockStage(Stage):
                      f"{best['name']} at {best['score']} kcal/mol"),
             values={"results": results, "box": box,
                     "receptor": str(receptor),
+                    "settings": {"exhaustiveness": exhaustiveness, "seed": DEFAULT_SEED,
+                                 "n_poses": DEFAULT_POSES, "vina_version": self._vina_version()},
                     "box_source": box_source,
                     "redock_rmsd": rmsd,
                     "redock_molecule": redocked_name,

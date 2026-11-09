@@ -24,11 +24,11 @@ RequestExecutionLevel user
 SetCompressor /SOLID lzma
 SetCompressorDictSize 32
 BrandingText "Medical education · Learn, explore and interpret"
-VIProductVersion "1.3.0.0"
+VIProductVersion "1.4.0.0"
 VIAddVersionKey "ProductName" "In-Silico Docking Studio"
 VIAddVersionKey "FileDescription" "In-Silico Docking Studio Setup"
-VIAddVersionKey "ProductVersion" "1.3.0"
-VIAddVersionKey "FileVersion" "1.3.0"
+VIAddVersionKey "ProductVersion" "1.4.0"
+VIAddVersionKey "FileVersion" "1.4.0"
 VIAddVersionKey "LegalCopyright" "Dr Manu Kumar Shetty, 2026"
 
 !define MUI_ICON "assets\icon.ico"
@@ -128,7 +128,7 @@ Section "Teaching Suite" MainSection
   CreateShortcut "$SMPROGRAMS\In-Silico Teaching Suite\Uninstall.lnk" "$INSTDIR\Uninstall.exe"
   WriteRegStr HKCU "Software\InSilicoTeachingSuite" "InstallDir" "$INSTDIR"
   WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\InSilicoTeachingSuite" "DisplayName" "In-Silico Docking Studio"
-  WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\InSilicoTeachingSuite" "DisplayVersion" "1.3.0"
+  WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\InSilicoTeachingSuite" "DisplayVersion" "1.4.0"
   WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\InSilicoTeachingSuite" "Publisher" "Dr Manu Kumar Shetty and Dr Pratibha Nadig"
   WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\InSilicoTeachingSuite" "UninstallString" '$\"$INSTDIR\Uninstall.exe$\"'
   WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\InSilicoTeachingSuite" "DisplayIcon" "$INSTDIR\InSilicoTeachingSuite.exe"

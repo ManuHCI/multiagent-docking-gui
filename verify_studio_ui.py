@@ -205,10 +205,18 @@ def main() -> int:
                     if time.monotonic()>deadline:
                         raise TimeoutError("The prepared example did not become ready for docking")
                     page.wait_for_timeout(250)
-                page.frame_locator("iframe").locator("#status").filter(has_text="3D ready").wait_for(timeout=30000)
+                for frame_index in range(4):
+                    page.frame_locator("iframe").nth(frame_index).locator("#status").filter(has_text="3D ready").wait_for(timeout=30000)
+                page.get_by_text("Protein before preparation", exact=True).wait_for()
+                page.get_by_text("Protein after preparation", exact=True).wait_for()
+                page.get_by_text("Prepared drug structure", exact=True).wait_for()
                 no_questions(page)
                 page.evaluate("window.scrollTo(0,0)")
                 screenshot(page,"preparation.png",True)
+                page.locator("iframe").nth(2).scroll_into_view_if_needed()
+                page.frame_locator("iframe").nth(2).get_by_role("button", name="Show whole structure", exact=True).click()
+                page.wait_for_timeout(300)
+                page.locator("iframe").nth(2).screenshot(path=output/"prepared-drug.png")
                 checks.append("real offline molecule preparation, per-target binding region and local 3D")
 
                 page.get_by_role("button",name="Continue to docking",exact=True).click()
@@ -239,6 +247,21 @@ def main() -> int:
                     if "AutoDock Vina" not in methods or "Search box:" not in methods:
                         raise AssertionError("The exported methods omit actual docking provenance")
                 checks.append("CSV, full project package, actual methods and references exported")
+                for button, filename in [("Download simple docking report", "Docking_report.txt"),
+                                         ("Download docking code and inputs", "Docking_Colab.zip"),
+                                         ("Download MD code and inputs", "MD_Colab.zip")]:
+                    with page.expect_download(timeout=60000) as download_info:
+                        page.get_by_role("button", name=button, exact=True).click()
+                    download_info.value.save_as(output / filename)
+                for filename, required in [("Docking_Colab.zip", {"job.json", "ligand.pdbqt", "receptor.pdbqt", "Run_Docking.ipynb", "run_docking.py"}),
+                                           ("MD_Colab.zip", {"job.json", "protein.pdb", "ligand.sdf", "Run_MD.ipynb", "run_md.py"})]:
+                    with zipfile.ZipFile(output / filename) as package:
+                        if not required.issubset(package.namelist()):
+                            raise AssertionError("Selected pair code export is incomplete: " + filename)
+                        job = json.loads(package.read("job.json"))
+                        if job["target"] != "EGFR (wild type)" and job.get("pdb_id") != "1M17":
+                            raise AssertionError("The code export uses the wrong protein")
+                checks.append("before and after protein views, prepared drug, simple report and selected docking/MD Colab packages")
                 for index in range(1,6):
                     page.get_by_role("button",name=re.compile(rf"^{index}\. ")).click()
                     page.get_by_test_id("project-step").filter(has_text=f"Step {index} of 5").wait_for()
@@ -294,8 +317,14 @@ def main() -> int:
                 if browser_errors:
                     raise AssertionError("Browser errors: "+"; ".join(browser_errors))
                 log.flush()
-                if "Traceback (most recent call last)" in (output/"server.log").read_text(encoding="utf-8",errors="replace"):
-                    raise AssertionError("An unhandled application exception was recorded in the server log")
+                log_text = (output/"server.log").read_text(encoding="utf-8",errors="replace")
+                for trace in log_text.split("Traceback (most recent call last):")[1:]:
+                    frames = re.findall(r'File "([^"]+)"', trace)
+                    normal_disconnect = ("ConnectionResetError: [WinError 10054]" in trace
+                                         and "_call_connection_lost" in trace and len(frames) == 2
+                                         and all(Path(frame).name in {"events.py", "proactor_events.py"} for frame in frames))
+                    if not normal_disconnect:
+                        raise AssertionError("An unhandled application exception was recorded in the server log")
                 browser.close()
                 browser = None
             report["passed"] = True

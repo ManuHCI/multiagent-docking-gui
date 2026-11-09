@@ -583,6 +583,10 @@ def export_package(study: Study) -> Path:
     destination = study.folder / "exports" / "docking_study.zip"
     destination.parent.mkdir(exist_ok=True)
     with zipfile.ZipFile(destination, "w", compression=zipfile.ZIP_DEFLATED) as bundle:
+        from . import research
+        bundle.writestr("Docking_report.txt", research.report_text(study))
+        bundle.writestr("Docking_report.html", research.report_html(study))
+        bundle.writestr("SwissADME_input.txt", research.swissadme_input(study))
         bundle.writestr("results.csv", export_csv(study))
         bundle.writestr("methods_and_checks.txt", methods_text(study))
         bundle.writestr("references.txt", references)

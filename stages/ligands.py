@@ -51,6 +51,7 @@ class Prepared:
     smiles: str = ""              # after preparation
     changes: list[str] = field(default_factory=list)
     properties: dict[str, float] = field(default_factory=dict)
+    preparation: dict = field(default_factory=dict)
     sdf_path: Path | None = None
     error: str = ""
 
@@ -189,10 +190,18 @@ def prepare_one(
             "related structure."
         )
         return out
-    try:
-        AllChem.MMFFOptimizeMolecule(mol_h, maxIters=500)
-    except Exception:  # noqa: BLE001
-        AllChem.UFFOptimizeMolecule(mol_h, maxIters=500)
+    method = "MMFF"
+    if AllChem.MMFFHasAllMoleculeParams(mol_h):
+        status = AllChem.MMFFOptimizeMolecule(mol_h, maxIters=500)
+    else:
+        method = "UFF"
+        if not AllChem.UFFHasAllMoleculeParams(mol_h):
+            out.error = "The available methods cannot relax this molecule. Review its chemistry."
+            return out
+        status = AllChem.UFFOptimizeMolecule(mol_h, maxIters=500)
+    out.preparation = {"hydrogens_added": mol_h.GetNumAtoms() - mol.GetNumAtoms(),
+                       "shape_method": "ETKDGv3", "seed": seed,
+                       "relaxation_method": method, "relaxation_converged": status == 0}
 
     out._mol3d = mol_h  # type: ignore[attr-defined]
     return out
@@ -375,6 +384,7 @@ class LigandStage(Stage):
                         "input_smiles": r.input_smiles,
                         "changes": r.changes,
                         "properties": r.properties,
+                        "preparation": r.preparation,
                         "file": str(r.sdf_path) if r.sdf_path else "",
                     }
                     for r in good

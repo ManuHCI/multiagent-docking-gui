@@ -22,7 +22,7 @@ import urllib.request
 from core.runtime import configure, data_root, resource_root
 
 TITLE = "In-Silico Docking Studio"
-VERSION = "1.3.0"
+VERSION = "1.4.0"
 
 
 def webview_backend() -> tuple[str | None, str]:

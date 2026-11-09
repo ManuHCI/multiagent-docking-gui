@@ -1,4 +1,4 @@
-# Windows desktop edition — Docking Studio v1.3.0
+# Windows desktop edition: Docking Studio v1.4.0
 
 Docking Studio opens in its own window at Home. Its menu always reads
 Home · Projects · Reference · About. Home starts a new docking project;
@@ -15,7 +15,7 @@ There are no quiz questions or required prediction/discussion forms.
 1. Use Windows 10/11 x64 with Microsoft Edge WebView2 Runtime. WebView2 is a
    stated Windows prerequisite rather than a bundled system runtime.
 2. Close running copies before updating, then run
-   dist/InSilicoTeachingSuite-1.3.0-Setup.exe. The installer refuses an in-use
+   dist/InSilicoDockingStudio-1.4.0-Windows-Setup.exe. The installer refuses an in-use
    update and verifies the copied executable before updating version metadata.
 3. Open **In-Silico Teaching Suite** from its shortcut. It starts Docking
    Studio at /study.
@@ -63,8 +63,9 @@ and external services require internet. WebGL supports the 3D viewer.
 
 A completed calculation can have a failed scientific check. Scores do not
 establish potency, clinical benefit or safety. Raw scores across different
-proteins do not establish selectivity. ADME descriptors and optional MD
-exports remain available in previous individual projects.
+proteins do not establish selectivity. Prepared structures, simple reports,
+SwissADME input and selected-pair docking and MD code exports are available
+in the main study workflow. Membrane MD requires a separately prepared lipid system.
 
 ## Build and verify
 
@@ -75,7 +76,7 @@ PyInstaller and pywebview. Project-local tools may live in .build-tools/.
     python build_setup.py
 
 The first command bundles and checks dist/InSilicoTeachingSuite/; the second
-creates the v1.3.0 setup EXE. Use python build_desktop.py --zip for a complete
+creates the v1.4.0 setup EXE. Use python build_desktop.py --zip for a complete
 portable ZIP. build-manifest.json records hashes, versions and packaged
 checks. NSIS 3.11 or newer is needed; build_setup.py can verify and extract
 the official nsis-3.11.zip from .build-tools/.

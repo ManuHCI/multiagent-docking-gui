@@ -1,6 +1,6 @@
 # Install on a Mac
 
-Download the Mac installer from the [public release page](https://github.com/ManuHCI/multiagent-docking-gui/releases/tag/v1.3.0).
+Download the Mac installer from the [public release page](https://github.com/ManuHCI/multiagent-docking-gui/releases/tag/v1.4.0).
 
 Choose **macOS-arm64.dmg** for an Apple silicon Mac (M1 or newer), or
 **macOS-x86_64.dmg** for an Intel Mac. macOS 15 or newer is required.

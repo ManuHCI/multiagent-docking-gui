@@ -27,7 +27,8 @@ def main() -> int:
     installed = case / "Teaching Suite"
     if not installed.resolve().is_relative_to(parent.resolve()):
         raise RuntimeError("Installation test must stay in the workspace QA directory.")
-    setup = ROOT / "dist" / "InSilicoTeachingSuite-1.3.0-Setup.exe"
+    from desktop import VERSION
+    setup = ROOT / "dist" / f"InSilicoDockingStudio-{VERSION}-Windows-Setup.exe"
     # NSIS requires /D last, without quotes around its value, even with spaces.
     command = subprocess.list2cmdline([str(setup), "/S", "/NOINTEGRATION"]) + " /D=" + str(installed)
     subprocess.run(command, cwd=ROOT, timeout=180, check=True)

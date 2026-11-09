@@ -9,7 +9,7 @@ from uuid import uuid4
 
 from nicegui import ui
 
-from core import viewer
+from core import viewer, research
 from core.education_ui import DEVELOPERS, apply_theme
 from core.settings import projects_root
 
@@ -357,9 +357,12 @@ def register_study() -> None:
             control = json.loads(row.get("control_json") or "{}")
             if not control:
                 return
+            if sid in {"03_receptor", "04_site", "06_dock"}:
+                from core.workshop import teaching_check
+                control = teaching_check(sid, control, recorded=json.loads(row.get("values_json") or "{}"))
             verdict = control.get("verdict", "not_applicable")
             colours = {"pass":"#26754d", "warn":"#a86a10", "fail":"#b63d48", "not_applicable":"#62798a"}
-            labels = {"pass":"Checked", "warn":"Warning", "fail":"Check failed", "not_applicable":"Not checked"}
+            labels = {"pass":"Checked", "warn":"Needs review", "fail":"Criterion not met", "not_applicable":"Not checked"}
             def display_text(value):
                 text = str(value)
                 for drug in sorted(active.data.get("drugs", []), key=lambda item:len(item.get("internal_name", "")), reverse=True):
@@ -368,8 +371,8 @@ def register_study() -> None:
                         text = text.replace(internal, drug["name"])
                 return text
             with ui.card().classes("w-full gap-2 p-4").style(f"box-shadow:none;border:1px solid #dce7ec;border-left:4px solid {colours.get(verdict,'#62798a')}"):
-                heading = {"03_receptor":"Preparation changes", "04_site":"Site geometry", "06_dock":"Docking checks"}.get(sid,"Scientific check")
-                ui.label(labels.get(verdict, verdict) + " · " + heading).classes("font-semibold")
+                heading = {"03_receptor":"Preparation changes", "04_site":"Site geometry", "06_dock":"Docking review"}.get(sid,"Scientific check")
+                ui.label(("Review recorded checks" if sid == "06_dock" else labels.get(verdict, verdict)) + " · " + heading).classes("font-semibold")
                 ui.label(display_text(control.get("plain_verdict", ""))).classes("text-sm").style("line-height:1.65")
                 if control.get("what_to_do"):
                     ui.label("Next action: " + display_text(control["what_to_do"])).classes("text-sm font-medium")
@@ -379,7 +382,13 @@ def register_study() -> None:
                     for name, check in checks.items():
                         status = check.get("verdict", "not_applicable")
                         status = getattr(status,"value",status)
-                        ui.label(f"{name.capitalize()} · {labels.get(status,status)}: {display_text(check.get('plain_verdict',''))}").classes("text-sm")
+                        label = {"baseline":"Score comparison", "re-docking":"Known pose recovery", "size":"Effect of molecular size"}.get(name, name.capitalize())
+                        ui.label(f"{label} · {labels.get(status,status)}: {display_text(check.get('plain_verdict',''))}").classes("text-sm")
+                        if name == "baseline":
+                            detail = check.get("detail", {})
+                            if "best decoy" in detail:
+                                ui.label(f"Best comparison score: {detail['best decoy']} kcal/mol. Comparison molecules run: {detail.get('decoys run', 'Not recorded')}.").classes("text-sm")
+                    ui.label("A score comparison does not overturn experimental evidence for a known drug and target. Comparison molecules are not proven nonbinders.").classes("text-sm")
 
         def inspect(stage):
             nonlocal selected_target, selected_drug
@@ -410,7 +419,53 @@ def register_study() -> None:
                                 selected_drug = event.value
                                 render()
                             ui.select(options, value=selected_drug, label="Docked drug to view", on_change=choose_drug).props("outlined").classes("w-full")
-                    viewer.render(project, stage, selected_drug)
+                    if stage == "04_site":
+                        with ui.row().classes("w-full items-start gap-4 flex-wrap"):
+                            for original, label in [(True, "Protein before preparation"), (False, "Protein after preparation")]:
+                                with ui.column().classes("gap-2").style("flex:1;min-width:300px"):
+                                    ui.label(label).classes("font-semibold")
+                                    viewer.render(project, "03_receptor", original=original)
+                        ui.label("Use Show atoms to inspect the added atoms. Small red spheres show water molecules. Other retained components are shown as sticks.").classes("text-sm edu-muted")
+                        review = research.preparation_review(project)
+                        if review:
+                            ui.label("What preparation changed").classes("text-lg font-semibold")
+                            ui.table(columns=[{"name":"change","label":"Change","field":"change","align":"left"},
+                                              {"name":"value","label":"Number","field":"value"},
+                                              {"name":"meaning","label":"Simple meaning","field":"meaning","align":"left"}],
+                                     rows=review, row_key="change").classes("w-full").props("flat wrap-cells")
+                            receptor = viewer.values(project, "03_receptor")
+                            for key, label in [("kept", "Components kept"), ("removed", "Components removed")]:
+                                ui.label(label + ": " + (", ".join(x.get("label", "") + " " + x.get("what", "") for x in receptor.get(key, [])) or "None recorded")).classes("text-sm")
+                        for sid, key, label in [("02_structure", "local_file", "Download original protein"), ("03_receptor", "prepared_file", "Download prepared protein")]:
+                            data = viewer.values(project, sid)
+                            filename = (data.get("chosen", {}) if sid == "02_structure" else data).get(key, "")
+                            if viewer.local_text(project, filename):
+                                ui.button(label, on_click=lambda path=filename: ui.download(path)).props("outline no-caps icon=download")
+                        ui.label("Prepared drug structure").classes("text-lg font-semibold")
+                        prepared = viewer.values(project, "05_ligands").get("prepared", [])
+                        if prepared:
+                            names = {d["internal_name"]: d["name"] for d in active.data["drugs"]}
+                            options = {d["name"]: names.get(d["name"], d["name"]) for d in prepared}
+                            if selected_drug not in options:
+                                selected_drug = next(iter(options))
+                            def choose_prepared(event):
+                                nonlocal selected_drug
+                                selected_drug = event.value
+                                render()
+                            ui.select(options, value=selected_drug, label="Prepared drug to inspect", on_change=choose_prepared).props("outlined").classes("w-full")
+                            molecule = next(d for d in prepared if d["name"] == selected_drug)
+                            viewer.render(project, "05_ligands", selected_drug)
+                            for line in research.drug_review(molecule).splitlines():
+                                ui.label(line).classes("text-sm")
+                            ui.label("Prepared SMILES: " + molecule["smiles"]).classes("text-xs edu-muted").style("overflow-wrap:anywhere")
+                            if viewer.local_text(project, molecule.get("file", "")):
+                                ui.button("Download prepared drug SDF", on_click=lambda path=molecule["file"]: ui.download(path)).props("outline no-caps icon=download")
+                        else:
+                            ui.label("Prepare the drug to see its 3D structure and recorded changes.").classes("text-sm")
+                        ui.label("Protein pocket and docking box").classes("text-lg font-semibold")
+                        viewer.render(project, stage)
+                    else:
+                        viewer.render(project, stage, selected_drug)
                     for sid in (["03_receptor", "04_site"] if stage == "04_site" else ["06_dock"]):
                         render_control(project, sid)
                 finally:
@@ -618,6 +673,7 @@ def register_study() -> None:
                     project.close()
             except (OSError,ValueError):
                 pass
+            render_swissadme()
             ui.label("Changing a binding region makes earlier docking results outdated. Run docking again after applying a change.").classes("edu-info text-sm w-full")
             ready = any(target.get("status") in {"prepared","docked","partial"} and target.get("site_status") not in {"needs_input","fail"} for target in active.data["targets"])
             ui.button("Continue to docking", on_click=lambda: navigate(3)).props("unelevated color=primary no-caps icon-right=arrow_forward").set_enabled(ready)
@@ -652,6 +708,44 @@ def register_study() -> None:
                 with client:
                     ui.download(str(package))
 
+        def render_swissadme():
+            with ui.expansion("Drug behaviour in the body and SwissADME", icon="medication").classes("study-card w-full"):
+                ui.label("SwissADME predicts properties related to gut absorption, entry into the brain and drug metabolism. These predictions are not measured pharmacokinetics or dose advice.").classes("text-sm")
+                ui.label("Open SwissADME, paste the SMILES below and press Run. You can download its report as CSV from that website.").classes("text-sm")
+                ui.link("Open SwissADME", research.SWISSADME_URL, new_tab=True)
+                smiles = research.swissadme_input(active)
+                ui.code(smiles.decode("utf-8")).classes("w-full").style("max-height:220px;overflow:auto")
+                ui.button("Download SMILES for SwissADME", on_click=lambda: ui.download(smiles, filename="SwissADME_input.txt")).props("outline no-caps icon=download")
+
+        def render_code_exports():
+            with ui.card().classes("study-card w-full gap-3"):
+                ui.label("Download code for a selected protein and drug").classes("text-lg font-semibold")
+                targets = {t["id"]: t["name"] for t in active.data["targets"]}
+                drugs = {d["id"]: d["name"] for d in active.data["drugs"]}
+                target_field = ui.select(targets, value=selected_target if selected_target in targets else next(iter(targets)), label="Protein for code export").props("outlined").classes("w-full")
+                selected_id = next((d["id"] for d in active.data["drugs"] if d["internal_name"] == selected_drug), next(iter(drugs)))
+                drug_field = ui.select(drugs, value=selected_id, label="Drug for code export").props("outlined").classes("w-full")
+                async def export_code(kind):
+                    target_id, drug_id = target_field.value, drug_field.value
+                    mode, duration = system_field.value, duration_field.value
+                    package = await operation("Preparing the selected code package…", lambda: research.export_pair(active, target_id, drug_id, kind, system_type=mode, nanoseconds=duration))
+                    if package:
+                        with client:
+                            ui.download(package, filename="Docking_Colab.zip" if kind == "docking" else "MD_Colab.zip")
+                ui.label("Docking code includes the actual prepared inputs, search box, recorded settings and a notebook for Google Colab. The package reruns the selected pair. It keeps the original comparison outcomes in its report.").classes("text-sm")
+                with ui.row().classes("gap-3 flex-wrap"):
+                    ui.button("Download docking code and inputs", on_click=lambda: export_code("docking")).props("unelevated color=primary no-caps icon=download")
+                    ui.button("Download docking notebook", on_click=lambda: ui.download(research.notebook("Dock your selected protein and drug", "run_docking.py"), filename="Run_Docking.ipynb")).props("outline no-caps")
+                ui.label("MD simulation code").classes("font-semibold")
+                system_field = ui.select({"water":"Soluble protein in water", "membrane":"Membrane protein such as SV2A"}, value="membrane" if any("SV2" in t["name"].upper() for t in active.data["targets"]) else "water", label="MD system").props("outlined").classes("w-full")
+                duration_field = ui.number("Production simulation length in ns", value=1.0, min=0.001, max=1000).props("outlined").classes("w-full")
+                ui.label("The MD package contains the selected docked drug with its chemical bond information. Membrane mode needs a separately prepared lipid system. Code is exported here; the simulation runs in Colab or on your own computer.").classes("text-sm")
+                ui.link("Membrane system preparation with CHARMM GUI", "https://www.charmm-gui.org/", new_tab=True)
+                with ui.row().classes("gap-3 flex-wrap"):
+                    ui.button("Download MD code and inputs", on_click=lambda: export_code("md")).props("unelevated color=primary no-caps icon=download")
+                    ui.button("Download MD notebook", on_click=lambda: ui.download(research.notebook("MD for your selected protein and drug", "run_md.py", md=True), filename="Run_MD.ipynb")).props("outline no-caps")
+                ui.link("Open Google Colab", "https://colab.research.google.com/", new_tab=True)
+
         def render_results():
             summary()
             rows = engine.results_rows(active)
@@ -662,7 +756,7 @@ def register_study() -> None:
                     "drug":row.get("drug",row.get("drug_name",row.get("molecule",""))),
                     "score":row.get("score",row.get("score_kcal_mol","")),
                     "status":{"completed":"Completed","failed":"Failed","pending":"Not run","needs_updating":"Needs updating","running":"Running","interrupted":"Interrupted"}.get(row.get("status"),row.get("status","")),
-                    "scientific_status":{"pass":"Checked","warn":"Review warning","fail":"Check failed","not_applicable":"Not checked","not_checked":"Not checked","not_current":"Needs updating"}.get(row.get("scientific_status"),row.get("scientific_status","Not checked")),
+                    "scientific_status":{"pass":"Recorded criteria met","warn":"Needs review","fail":"Needs review","not_applicable":"Not checked","not_checked":"Not checked","not_current":"Needs updating"}.get(row.get("scientific_status"),row.get("scientific_status","Not checked")),
                     "detail":row.get("error") or row.get("check_scope") or row.get("check") or row.get("validation") or ""})
             ui.label("Compare scores within the same target and setup. Scores from different targets do not establish selectivity.").classes("edu-info text-sm w-full")
             ui.table(columns=[{"name":"target","label":"Protein target","field":"target","align":"left","sortable":True},
@@ -675,10 +769,16 @@ def register_study() -> None:
             with ui.row().classes("gap-3 flex-wrap"):
                 ui.button("Download results CSV",on_click=lambda:ui.download(engine.export_csv(active),filename="docking_results.csv")).props("unelevated color=primary no-caps icon=download")
                 ui.button("Download complete study",on_click=download_package).props("outline no-caps icon=folder_zip")
+                ui.button("Download simple docking report", on_click=lambda: ui.download(research.report_text(active).encode("utf-8"), filename="Docking_report.txt")).props("outline no-caps icon=description")
+                ui.button("Download printable report", on_click=lambda: ui.download(research.report_html(active), filename="Docking_report.html")).props("outline no-caps icon=print")
                 ui.button("References and methods",on_click=lambda:show_section("Reference")).props("outline no-caps icon=menu_book")
             with ui.card().classes("study-card w-full gap-4"):
                 ui.label("Inspect docked poses and scientific checks").classes("text-lg font-semibold")
                 inspect("06_dock")
+            with ui.expansion("Read the docking report in simple words", icon="description").classes("study-card w-full"):
+                ui.label(research.report_text(active)).classes("text-sm").style("white-space:pre-wrap;overflow-wrap:anywhere")
+            render_code_exports()
+            render_swissadme()
             ui.button("Return to docking settings",on_click=lambda:navigate(3)).props("flat no-caps icon=arrow_back")
 
         def render_home():
