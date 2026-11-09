@@ -39,10 +39,10 @@ def _now() -> str:
 
 
 def _slug(name: str) -> str:
-    # Legacy Windows has a 260-character file-path limit, including the user
-    # profile and project directories. IDs already disambiguate each target
-    # and drug; full human-readable names are retained in study.json.
-    limit = 12 if os.environ.get("INSILICO_LEGACY_SHORT_PATHS") == "1" else 55
+    # Native scientific libraries can retain the classic Windows path limit
+    # on modern systems too. IDs disambiguate shortened names; the full names
+    # displayed to the user are retained in study.json.
+    limit = 12 if os.name == "nt" or os.environ.get("INSILICO_LEGACY_SHORT_PATHS") == "1" else 55
     return (re.sub(r"[^A-Za-z0-9_-]+", "_", name).strip("_") or "item")[:limit]
 
 
@@ -583,6 +583,10 @@ def export_package(study: Study) -> Path:
     destination = study.folder / "exports" / "docking_study.zip"
     destination.parent.mkdir(exist_ok=True)
     with zipfile.ZipFile(destination, "w", compression=zipfile.ZIP_DEFLATED) as bundle:
+        from . import research
+        bundle.writestr("Docking_report.txt", research.report_text(study))
+        bundle.writestr("Docking_report.html", research.report_html(study))
+        bundle.writestr("SwissADME_input.txt", research.swissadme_input(study))
         bundle.writestr("results.csv", export_csv(study))
         bundle.writestr("methods_and_checks.txt", methods_text(study))
         bundle.writestr("references.txt", references)

@@ -1,0 +1,177 @@
+name: Build and publish Docking Studio
+
+on:
+  push:
+    branches: [codex/studio-1.4.0]
+    tags: ['v1.4.*']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: studio-release-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  research-code:
+    runs-on: ubuntu-24.04
+    env:
+      CONDA_OVERRIDE_CUDA: '0'
+      INSILICO_EXPORT_CHECK_TIMEOUT: '900'
+    timeout-minutes: 45
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v6
+      - name: Download verified build tool
+        shell: bash
+        run: python3 ci/bootstrap_micromamba.py --platform linux-64 --destination "${{ runner.temp }}/micromamba"
+      - name: Create research code environment
+        run: |
+          "${{ runner.temp }}/micromamba" create --yes --prefix "${{ runner.temp }}/science" --file environment-research-check.yml --override-channels --channel conda-forge
+      - name: Execute exported docking code and a short MD execution check
+        run: |
+          "${{ runner.temp }}/micromamba" run --prefix "${{ runner.temp }}/science" python verify_research_code.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: research-code-verification
+          path: .verification/research-code/verification.json
+          if-no-files-found: ignore
+          include-hidden-files: true
+
+  windows:
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: windows-2022
+    timeout-minutes: 60
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - uses: actions/checkout@v6
+      - name: Download verified build tool
+        run: python ci/bootstrap_micromamba.py --platform win-64 --destination "${{ runner.temp }}/micromamba.exe"
+      - name: Create scientific build environment
+        run: |
+          & "${{ runner.temp }}/micromamba.exe" create --yes --prefix "${{ runner.temp }}/science" --file environment.yml --override-channels --channel conda-forge
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          if (-not (Test-Path -LiteralPath "${{ runner.temp }}/science/python.exe")) { throw 'The build Python was not created.' }
+          "${{ runner.temp }}/science/Library/bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          "${{ runner.temp }}/science/Scripts" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          "${{ runner.temp }}/science" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+      - name: Install build tools
+        run: |
+          & "${{ runner.temp }}/science/python.exe" -m pip install 'nicegui>=3.18,<4' 'pyinstaller>=6.22,<7' 'pywebview>=6.2,<7' 'meeko>=0.7,<0.8' gemmi playwright
+      - name: Source tests
+        run: |
+          & "${{ runner.temp }}/science/python.exe" -m unittest discover -s tests -v
+      - name: Install installer compiler
+        shell: pwsh
+        run: choco install nsis --yes --no-progress
+      - name: Build and verify application
+        run: |
+          & "${{ runner.temp }}/science/python.exe" build_desktop.py
+      - name: Build setup
+        shell: pwsh
+        run: |
+          $env:PATH += ';C:\Program Files (x86)\NSIS'
+          & "${{ runner.temp }}/science/python.exe" build_setup.py
+      - name: Verify isolated installation, native window and exported downloads
+        run: |
+          & "${{ runner.temp }}/science/python.exe" verify_setup.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-windows
+          path: dist/InSilicoDockingStudio-1.4.0-Windows-Setup.exe
+          if-no-files-found: error
+          compression-level: 0
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: windows-verification
+          path: |
+            build/desktop/*verification*.json
+            .verification/studio/*.json
+            .verification/studio/*.log
+            .verification/studio/failure-page.txt
+          if-no-files-found: ignore
+          include-hidden-files: true
+
+  macos:
+    if: startsWith(github.ref, 'refs/tags/')
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: macos-15
+            arch: arm64
+          - runner: macos-15-intel
+            arch: x86_64
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 60
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v6
+      - name: Download verified build tool
+        shell: bash
+        run: python3 ci/bootstrap_micromamba.py --platform ${{ matrix.arch == 'arm64' && 'osx-arm64' || 'osx-64' }} --destination "${{ runner.temp }}/micromamba"
+      - name: Create native scientific build environment
+        run: |
+          "${{ runner.temp }}/micromamba" create --yes --prefix "${{ runner.temp }}/science" --file environment-macos.yml --override-channels --channel conda-forge
+      - name: Source tests
+        run: |
+          "${{ runner.temp }}/micromamba" run --prefix "${{ runner.temp }}/science" python -m unittest discover -s tests -v
+      - name: Build and verify native application
+        run: |
+          "${{ runner.temp }}/micromamba" run --prefix "${{ runner.temp }}/science" python build_macos.py --arch ${{ matrix.arch }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-macos-${{ matrix.arch }}
+          path: dist/macos/${{ matrix.arch }}/*.dmg
+          if-no-files-found: error
+          compression-level: 0
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: macos-${{ matrix.arch }}-verification
+          path: |
+            build/macos/${{ matrix.arch }}/*.json
+            dist/macos/${{ matrix.arch }}/release-manifest.json
+          if-no-files-found: ignore
+
+  publish:
+    needs: [windows, macos, research-code]
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: release-*
+          merge-multiple: true
+          path: release-downloads
+      - name: Check installer set and create checksums
+        run: |
+          python - <<'PY'
+          import hashlib
+          from pathlib import Path
+          root = Path('release-downloads')
+          files = sorted(root.iterdir())
+          assert len(files) == 3, [f.name for f in files]
+          assert sum(f.suffix == '.exe' for f in files) == 1
+          assert sum(f.suffix == '.dmg' for f in files) == 2
+          (root / 'SHA256SUMS.txt').write_text(''.join(hashlib.sha256(f.read_bytes()).hexdigest() + '  ' + f.name + '\n' for f in files))
+          PY
+      - name: Publish verified release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git fetch --depth=1 origin "refs/tags/$GITHUB_REF_NAME"
+          test "$(git rev-parse 'FETCH_HEAD^{commit}')" = "$GITHUB_SHA"
+          gh release create "$GITHUB_REF_NAME" release-downloads/* --title "In Silico Docking Studio ${GITHUB_REF_NAME#v}" --notes-file RELEASE_NOTES.md --latest --verify-tag

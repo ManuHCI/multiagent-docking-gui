@@ -1,23 +1,28 @@
-# In-Silico Docking Studio
+# In Silico Docking Studio
 
-Molecular docking software for medical education, with a clear five-step
-workflow and local AutoDock Vina calculations. No quiz questions or written
-answers are required. An LLM or Ollama installation is not needed.
+This app helps students and teachers prepare proteins and drug molecules,
+run docking, view structures in 3D and save reports.
+
+Developed by Dr Manu Kumar Shetty, Professor, Department of Pharmacology,
+Maulana Azad Medical College, New Delhi, and Dr Pratibha Nadig, Founder,
+Akshaisarathi Healthcare.
 
 ## Download and install
 
-**[Public release and all downloads](https://github.com/ManuHCI/multiagent-docking-gui/releases/tag/v1.3.0)**
+**[Download version 1.4.0](https://github.com/ManuHCI/multiagent-docking-gui/releases/tag/v1.4.0)**
+
+Download only one installer for your computer. You do not need all files in Assets.
 
 | Computer | Installer |
 | --- | --- |
-| Windows 10/11, 64-bit | [Download Windows setup](https://github.com/ManuHCI/multiagent-docking-gui/releases/download/v1.3.0/InSilicoTeachingSuite-1.3.0-Setup.exe) |
-| Mac with Apple silicon, macOS 15 or newer | [Download Apple silicon DMG](https://github.com/ManuHCI/multiagent-docking-gui/releases/download/v1.3.0/InSilicoDockingStudio-1.3.0-macOS-arm64.dmg) |
-| Intel Mac, macOS 15 or newer | [Download Intel Mac DMG](https://github.com/ManuHCI/multiagent-docking-gui/releases/download/v1.3.0/InSilicoDockingStudio-1.3.0-macOS-x86_64.dmg) |
+| Windows 10 or 11, 64 bit | [Download Windows setup](https://github.com/ManuHCI/multiagent-docking-gui/releases/download/v1.4.0/InSilicoDockingStudio-1.4.0-Windows-Setup.exe) |
+| Mac with an Apple chip, macOS 15 or newer | [Download Apple Mac installer](https://github.com/ManuHCI/multiagent-docking-gui/releases/download/v1.4.0/InSilicoDockingStudio-1.4.0-macOS-arm64.dmg) |
+| Intel Mac, macOS 15 or newer | [Download Intel Mac installer](https://github.com/ManuHCI/multiagent-docking-gui/releases/download/v1.4.0/InSilicoDockingStudio-1.4.0-macOS-x86_64.dmg) |
 
 The installers include Python and the scientific tools. On Windows, run
 setup and open the installed shortcut; [Microsoft Edge WebView2 Runtime](https://developer.microsoft.com/en-us/microsoft-edge/webview2/) is
-required. On Mac, open the DMG and drag the app into Applications. Mac ZIP
-alternatives and SHA256 checksums are also listed in the release.
+required. On Mac, open the DMG and drag the app into Applications. The checksum
+file is optional and is not needed for installation.
 
 The public binaries are not signed with a publisher certificate or notarized
 by Apple. Windows may display a publisher prompt. On Mac, first launch may
@@ -57,6 +62,33 @@ Each target keeps its own preparation, binding box, results and scientific
 checks. Review poses in 3D and export a CSV or complete project ZIP with
 structures, methods, parameters, sources and references.
 
+## Structure views, reports and research code
+
+Prepare and inspect shows the protein before and after preparation, the
+prepared drug, added atoms, removed waters, retained components and unresolved
+gaps. Use Show atoms to inspect details. The drug coordinates shown here are
+the coordinates passed to docking. The original and prepared files can be downloaded.
+
+Results provides a simple text report and a printable HTML report. Pose
+recovery and score comparison are explained separately. A failed comparison
+does not overturn experimental evidence for an established drug and target.
+
+Select a protein and drug to export its docking inputs, actual search settings,
+Python code and Colab notebook. The selected-pair rerun keeps the original
+comparison checks in the report; it does not rerun those controls. Differences
+between platforms and processor counts may affect scores.
+
+SwissADME is available through a link with prepared SMILES to copy or download.
+The app does not automatically obtain SwissADME predictions. Its local chemical
+descriptors are not measured pharmacokinetics.
+
+MD export supplies the selected docked drug with chemical bond orders, the
+protein, a starting OpenMM protocol and a Colab notebook. No simulation is run
+inside the desktop app. Soluble proteins can use the water protocol after
+review of chemistry and missing regions. Membrane proteins such as SV2A need
+a separately prepared and parameterised lipid system. The membrane runner
+stops until that system is provided. Review the README inside each package.
+
 Local PDB/mmCIF files, SMILES/SDF molecules and the bundled EGFR example work
 offline. New RCSB/PubChem retrieval requires internet. A completed calculation
 can still have a failed scientific check; the outcome stays visible.
@@ -73,13 +105,6 @@ Saved projects occupy disk space; their molecular data is loaded when opened.
 Export a complete ZIP before deleting a project or moving it between machines.
 Earlier individual projects remain available from Projects. Your own projects
 and settings are excluded from this public source repository.
-
-## Developers
-
-**Dr Manu Kumar Shetty**, Professor, Department of Pharmacology,
-Maulana Azad Medical College, New Delhi.
-
-**Dr Pratibha Nadig**, Founder, Akshaisarathi Healthcare.
 
 ## Source and builds
 

@@ -66,7 +66,8 @@ def main() -> int:
                              key=lambda p: len(p.parts), reverse=True)
         lines.extend('RMDir "$INSTDIR\\' + quote_nsis(str(p.relative_to(payload))) + '"' for p in directories)
         includes.write_text("\n".join(lines) + "\n", encoding="utf-8-sig")
-        output = ROOT / "dist" / "InSilicoTeachingSuite-1.3.0-Setup.exe"
+        from desktop import VERSION
+        output = ROOT / "dist" / f"InSilicoDockingStudio-{VERSION}-Windows-Setup.exe"
         executable_hash = hashlib.sha256((payload / "InSilicoTeachingSuite.exe").read_bytes()).hexdigest()
         subprocess.run([str(compiler()), "/V3", "/INPUTCHARSET", "UTF8", f"/DPAYLOAD={payload}",
                         f"/DEXE_SHA256={executable_hash}",

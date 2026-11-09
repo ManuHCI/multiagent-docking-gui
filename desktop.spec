@@ -22,7 +22,7 @@ datas = [(str(ROOT / "assets"), "assets"), (str(ROOT / "LICENSE"), "."),
          (str(ROOT / "DESKTOP.md"), ".")]
 binaries = [(str(ROOT / "vina.exe"), ".")]
 hiddenimports = [
-    "app", "forms", "workshop_ui", "study_ui", "core.study", "core.references", "core.project_library",
+    "app", "forms", "workshop_ui", "study_ui", "core.study", "core.references", "core.project_library", "core.research",
     "core.contract", "core.install", "core.mmcif", "core.pdbqt",
     "core.project", "core.receptor_pdbqt", "core.selftest", "core.settings",
     "core.station", "core.viewer", "core.web", "core.workshop",

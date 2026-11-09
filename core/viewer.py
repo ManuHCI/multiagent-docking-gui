@@ -49,16 +49,18 @@ def payload(project: Project, stage_id: str, molecule: str = "", original: bool 
     prepared = local_text(project, receptor.get("prepared_file", ""))
     protein = raw if original or stage_id == "02_structure" else prepared or raw
     ref = reference_atoms(protein, receptor.get("ligand") or structure.get("best_ligand", ""))
+    ref_lines = set(ref.splitlines())
+    extras = "\n".join(line for line in protein.splitlines() if line.startswith("HETATM") and line not in ref_lines)
     # Keep all waters/cofactors out of the blue cartoon. The green reference
     # is loaded separately so its identity and colour are unambiguous.
     protein = "\n".join(line for line in protein.splitlines()
                         if line.startswith(("ATOM", "TER", "HELIX", "SHEET")))
-    data = {"protein": protein, "reference": ref, "ligand": "", "format": "pdb",
+    data = {"protein": protein, "reference": ref, "extras": extras, "ligand": "", "format": "pdb",
             "box": {}, "name": molecule, "focus": bool(ref), "overlay": False}
     if stage_id == "05_ligands":
         prepared_mols = values(project, "05_ligands").get("prepared", [])
         chosen = next((m for m in prepared_mols if m["name"] == molecule), next(iter(prepared_mols), {}))
-        data.update(protein="", reference="", ligand=local_text(project, chosen.get("file", "")),
+        data.update(protein="", reference="", extras="", ligand=local_text(project, chosen.get("file", "")),
                     format="sdf", name=chosen.get("name", ""), focus=False)
     elif stage_id in {"04_site", "06_dock"}:
         data["box"] = values(project, "04_site").get("box", {})
@@ -84,15 +86,15 @@ def document(data: dict) -> str:
     encoded = json.dumps(data).replace("<", "\\u003c").replace("&", "\\u0026")
     return '''<!doctype html><html lang="en"><head><meta charset="utf-8">
 <style>
-body{margin:0;background:#f6f9fc;font:14px system-ui;color:#21354b}
-#view{width:100%;height:340px;position:relative}
-.tools{display:flex;gap:8px;padding:10px;flex-wrap:wrap;border-top:1px solid #dce5ec}
+body{margin:0;background:#f6f9fc;font:14px system-ui;color:#21354b;display:flex;flex-direction:column;height:100vh}
+#view{width:100%;flex:1;min-height:200px;position:relative}
+.tools{display:flex;gap:8px;padding:10px;flex-wrap:wrap;flex-shrink:0;border-top:1px solid #dce5ec}
 button{background:white;border:1px solid #c3d3df;border-radius:7px;padding:8px 12px;color:#193d60;cursor:pointer}
-button:focus-visible{outline:3px solid #1a73e8}#status{padding:8px 12px;font-size:12px}
+button:focus-visible{outline:3px solid #1a73e8}#status{padding:8px 12px;font-size:12px;flex-shrink:0}
 </style><script src="/assets/vendor/3Dmol-min.js"></script></head><body>
 <div id="view" role="img" aria-label="Interactive molecular model. Drag to rotate and scroll to zoom."></div>
 <div class="tools"><button id="whole">Show whole structure</button><button id="pocket">Focus on pocket</button>
-<button id="box">Hide search box</button><button id="protein">Hide protein</button></div>
+<button id="box">Hide search box</button><button id="protein">Hide protein</button><button id="atoms">Show atoms</button></div>
 <div id="status" role="status">Loading local 3D model…</div>
 <script>
 const data = ''' + encoded + ''';
@@ -100,9 +102,10 @@ const status = document.getElementById('status');
 try {
  if (!window.$3Dmol) throw new Error('The bundled 3D library is missing.');
  const viewer = $3Dmol.createViewer(document.getElementById('view'), {backgroundColor:'#f6f9fc', antialias:true});
- let protein, reference, ligand, atomCount=0;
+ let protein, reference, ligand, atomCount=0, atomsVisible=false;
  if (data.protein) { protein=viewer.addModel(data.protein,'pdb'); protein.setStyle({}, {cartoon:{color:'#6f9fcd',opacity:0.8}}); atomCount+=protein.selectedAtoms({}).length; }
  if (data.reference) { reference=viewer.addModel(data.reference,'pdb'); reference.setStyle({}, {stick:{color:'#219653',radius:0.2}}); atomCount+=reference.selectedAtoms({}).length; }
+ if (data.extras) { const extras=viewer.addModel(data.extras,'pdb'); extras.setStyle({}, {stick:{colorscheme:'Jmol',radius:0.12}}); extras.setStyle({resn:['HOH','WAT','DOD']},{sphere:{radius:0.18,color:'#c65e65'}}); atomCount+=extras.selectedAtoms({}).length; }
  if (data.ligand) { ligand=viewer.addModel(data.ligand,data.format); ligand.setStyle({}, {stick:{colorscheme:'orangeCarbon',radius:0.2}}); atomCount+=ligand.selectedAtoms({}).length; }
  const b=data.box; let boxVisible=true, proteinVisible=true, lines=[];
  function drawBox() {
@@ -120,7 +123,11 @@ try {
  document.getElementById('box').hidden=!b||!b.size_x;
  document.getElementById('box').onclick=e=>{boxVisible=!boxVisible;drawBox();e.target.textContent=boxVisible?'Hide search box':'Show search box';viewer.render();};
  document.getElementById('protein').hidden=!protein;
- document.getElementById('protein').onclick=e=>{proteinVisible=!proteinVisible;proteinVisible?protein.show():protein.hide();e.target.textContent=proteinVisible?'Hide protein':'Show protein';viewer.render();};
+ document.getElementById('protein').onclick=e=>{if(!protein)return;proteinVisible=!proteinVisible;proteinVisible?protein.show():protein.hide();e.target.textContent=proteinVisible?'Hide protein':'Show protein';viewer.render();};
+ document.getElementById('atoms').onclick=e=>{if(!protein)return;atomsVisible=!atomsVisible;protein.setStyle({},atomsVisible?{stick:{colorscheme:'Jmol',radius:0.10}}:{cartoon:{color:'#6f9fcd',opacity:0.8}});e.target.textContent=atomsVisible?'Show ribbon':'Show atoms';viewer.render();};
+ if(!protein) { document.getElementById('protein').hidden=true; document.getElementById('atoms').hidden=true; document.getElementById('pocket').textContent='Focus on molecule'; }
+ new ResizeObserver(()=>{viewer.resize();viewer.render();}).observe(document.getElementById('view'));
+ new IntersectionObserver(entries=>{if(entries.some(e=>e.isIntersecting)){viewer.resize();viewer.render();}}).observe(document.getElementById('view'));
  window.addEventListener('resize',()=>{viewer.resize();viewer.render();});
  if(!atomCount) throw new Error('No current structure is available. Run this step or load the saved example.');
  status.textContent='3D ready · '+atomCount+' atoms · Drag to rotate; scroll or pinch to zoom.';

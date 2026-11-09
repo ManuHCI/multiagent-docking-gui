@@ -34,27 +34,25 @@ jobs:
     timeout-minutes: 60
     defaults:
       run:
-        shell: micromamba-shell {0}
+        shell: bash
     steps:
       - name: Check out source
         uses: actions/checkout@v6
+      - name: Download verified build tool
+        shell: bash
+        run: python3 ci/bootstrap_micromamba.py --platform ${{ matrix.arch == 'arm64' && 'osx-arm64' || 'osx-64' }} --destination "${{ runner.temp }}/micromamba"
       - name: Create native scientific build environment
-        uses: mamba-org/setup-micromamba@v3
-        with:
-          environment-file: environment-macos.yml
-          cache-environment: true
-          cache-environment-key: macos-${{ matrix.arch }}-${{ hashFiles('environment-macos.yml') }}
-          init-shell: none
-          generate-run-shell: true
-          post-cleanup: all
+        run: |
+          "${{ runner.temp }}/micromamba" create --yes --prefix "${{ runner.temp }}/science" --file environment-macos.yml --override-channels --channel conda-forge
       - name: Check architecture and source tests
         env:
           EXPECTED_ARCH: ${{ matrix.arch }}
         run: |
-          python -c "import os,platform; assert platform.machine() == os.environ['EXPECTED_ARCH'], platform.machine()"
-          python -m unittest discover -s tests -v
+          "${{ runner.temp }}/micromamba" run --prefix "${{ runner.temp }}/science" python -c "import os,platform; assert platform.machine() == os.environ['EXPECTED_ARCH'], platform.machine()"
+          "${{ runner.temp }}/micromamba" run --prefix "${{ runner.temp }}/science" python -m unittest discover -s tests -v
       - name: Build app, run native and scientific checks, create DMG and ZIP
-        run: python build_macos.py --arch ${{ matrix.arch }}
+        run: |
+          "${{ runner.temp }}/micromamba" run --prefix "${{ runner.temp }}/science" python build_macos.py --arch ${{ matrix.arch }}
       - name: Upload verified macOS downloads
         uses: actions/upload-artifact@v4
         with:

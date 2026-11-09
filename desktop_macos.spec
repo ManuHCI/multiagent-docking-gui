@@ -22,7 +22,7 @@ datas = [
 ]
 binaries = [(str(PREFIX / "bin/vina"), "bin")]
 hiddenimports = [
-    "app", "forms", "workshop_ui", "study_ui", "core.study", "core.references", "core.project_library",
+    "app", "forms", "workshop_ui", "study_ui", "core.study", "core.references", "core.project_library", "core.research",
     "core.contract", "core.install", "core.mmcif", "core.pdbqt", "core.desktop_checks", "core.study_checks",
     "core.project", "core.receptor_pdbqt", "core.selftest", "core.settings",
     "core.station", "core.viewer", "core.web", "core.workshop",
