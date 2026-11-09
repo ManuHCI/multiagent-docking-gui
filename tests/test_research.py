@@ -107,6 +107,9 @@ class ResearchExportTests(unittest.TestCase):
             research.export_pair(self.study, target["id"], drug["id"], "md", system_type="water")
         with zipfile.ZipFile(io.BytesIO(research.export_pair(self.study, target["id"], drug["id"], "md", system_type="membrane"))) as archive:
             self.assertIn("membrane_system.xml", archive.read("README.txt").decode())
+            job = json.loads(archive.read("job.json"))
+            self.assertIn("supplied membrane System", job["protein_forcefield"])
+            self.assertIsNone(job["salt_M"])
 
     def test_prepared_drug_coordinates_are_used_without_reembedding(self):
         self.record_dock()

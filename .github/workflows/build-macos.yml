@@ -45,6 +45,7 @@ jobs:
         uses: mamba-org/setup-micromamba@v3
         with:
           download-micromamba: false
+          micromamba-version: '2.3.3-0'
           micromamba-binary-path: ${{ runner.temp }}/micromamba
           environment-file: environment-macos.yml
           cache-environment: true

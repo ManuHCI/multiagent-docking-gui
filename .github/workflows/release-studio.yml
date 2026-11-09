@@ -27,6 +27,7 @@ jobs:
       - uses: mamba-org/setup-micromamba@v3
         with:
           download-micromamba: false
+          micromamba-version: '2.3.3-0'
           micromamba-binary-path: ${{ runner.temp }}/micromamba
           environment-file: environment-research-check.yml
           init-shell: none
@@ -54,6 +55,7 @@ jobs:
         id: science
         with:
           download-micromamba: false
+          micromamba-version: '2.3.3-0'
           micromamba-binary-path: ${{ runner.temp }}/micromamba.exe
           environment-file: environment.yml
           environment-name: insilico
@@ -110,6 +112,7 @@ jobs:
       - uses: mamba-org/setup-micromamba@v3
         with:
           download-micromamba: false
+          micromamba-version: '2.3.3-0'
           micromamba-binary-path: ${{ runner.temp }}/micromamba
           environment-file: environment-macos.yml
           init-shell: none

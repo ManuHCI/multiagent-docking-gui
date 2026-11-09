@@ -23,7 +23,8 @@ def main():
     url = f"https://github.com/mamba-org/micromamba-releases/releases/download/2.3.3-0/micromamba-{args.platform}.tar.bz2"
     for attempt in range(1, 11):
         try:
-            with urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent": "DockingStudio-build"}), timeout=90) as response:
+            request_url = url + f"?download=1&studio_attempt={attempt}"
+            with urllib.request.urlopen(urllib.request.Request(request_url, headers={"User-Agent": "DockingStudio-build"}), timeout=90) as response:
                 data = response.read()
             if hashlib.sha256(data).hexdigest() != HASHES[args.platform]:
                 raise ValueError("The build tool archive does not match its published SHA256.")

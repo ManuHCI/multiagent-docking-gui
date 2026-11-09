@@ -43,6 +43,8 @@ def main():
             raise ValueError("Membrane proteins need lipids, water, ions and appropriate parameters. Read README.txt and provide membrane_system.xml and membrane.pdb. No simulation has started.")
         pdb = app.PDBFile("membrane.pdb")
         system = mm.XmlSerializer.deserialize(Path("membrane_system.xml").read_text())
+        job["external_membrane_inputs_sha256"] = {name: hashlib.sha256(Path(name).read_bytes()).hexdigest()
+                                                   for name in ("membrane_system.xml", "membrane.pdb")}
         topology, positions = pdb.topology, pdb.positions
         if system.getNumParticles() != topology.getNumAtoms():
             raise ValueError("The membrane System and topology have different particle counts.")

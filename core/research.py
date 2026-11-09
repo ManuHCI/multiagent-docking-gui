@@ -171,9 +171,13 @@ def export_pair(study, target_id: str, drug_id: str, kind: str = "docking", *, s
         raise ValueError("This pair needs a current completed docking run before export.")
     if kind not in {"docking", "md"} or system_type not in {"water", "membrane"}:
         raise ValueError("Choose docking or MD and a supported system type.")
-    nanoseconds = float(nanoseconds)
-    if not math.isfinite(nanoseconds) or not 0 < nanoseconds <= 1000:
-        raise ValueError("Enter an MD duration greater than zero and no more than 1000 ns.")
+    if kind == "md":
+        try:
+            nanoseconds = float(nanoseconds)
+        except (TypeError, ValueError):
+            raise ValueError("Enter an MD duration greater than zero and no more than 1000 ns.") from None
+        if not math.isfinite(nanoseconds) or not 0 < nanoseconds <= 1000:
+            raise ValueError("Enter an MD duration greater than zero and no more than 1000 ns.")
     project = target_project(study, target_id)
     try:
         dock = viewer.values(project, "06_dock")
@@ -216,6 +220,11 @@ def export_pair(study, target_id: str, drug_id: str, kind: str = "docking", *, s
             job.update(system_type=system_type, nanoseconds=nanoseconds, timestep_fs=2.0, temperature_K=310,
                        salt_M=0.15, padding_nm=1.0, seed=2026, protein_forcefield="AMBER ff14SB", ligand_forcefield="OpenFF 2.2.1 with AM1-BCC",
                        purpose="MD starting protocol, not an executed simulation")
+            job["water_model"] = "TIP3P"
+            if system_type == "membrane":
+                job.update(protein_forcefield="Defined in the supplied membrane System; record builder details",
+                           ligand_forcefield="Defined in the supplied membrane System; record builder details",
+                           water_model="Defined in the supplied membrane System", salt_M=None, padding_nm=None)
         job["input_sha256"] = {name: hashlib.sha256(data).hexdigest() for name, data in files.items() if name.endswith((".pdbqt", ".pdb", ".sdf"))}
         files["job.json"] = json.dumps(job, indent=2, ensure_ascii=False).encode("utf-8")
         return _zip(files)
