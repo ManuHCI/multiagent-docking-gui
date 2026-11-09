@@ -12,28 +12,27 @@ concurrency:
   group: studio-release-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  MAMBA_ROOT_PREFIX: ${{ runner.temp }}/mamba-root
+
 jobs:
   research-code:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     defaults:
       run:
-        shell: micromamba-shell {0}
+        shell: bash
     steps:
       - uses: actions/checkout@v6
       - name: Download verified build tool
         shell: bash
         run: python3 ci/bootstrap_micromamba.py --platform linux-64 --destination "${{ runner.temp }}/micromamba"
-      - uses: mamba-org/setup-micromamba@v3
-        with:
-          download-micromamba: false
-          micromamba-version: '2.3.3-0'
-          micromamba-binary-path: ${{ runner.temp }}/micromamba
-          environment-file: environment-research-check.yml
-          init-shell: none
-          generate-run-shell: true
+      - name: Create research code environment
+        run: |
+          "${{ runner.temp }}/micromamba" create --yes --prefix "${{ runner.temp }}/science" --file environment-research-check.yml --override-channels --channel conda-forge
       - name: Execute exported docking code and a short MD execution check
-        run: python verify_research_code.py
+        run: |
+          "${{ runner.temp }}/micromamba" run --prefix "${{ runner.temp }}/science" python verify_research_code.py
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -51,32 +50,29 @@ jobs:
       - uses: actions/checkout@v6
       - name: Download verified build tool
         run: python ci/bootstrap_micromamba.py --platform win-64 --destination "${{ runner.temp }}/micromamba.exe"
-      - uses: mamba-org/setup-micromamba@v3
-        id: science
-        with:
-          download-micromamba: false
-          micromamba-version: '2.3.3-0'
-          micromamba-binary-path: ${{ runner.temp }}/micromamba.exe
-          environment-file: environment.yml
-          environment-name: insilico
-          init-shell: none
-          generate-run-shell: false
+      - name: Create scientific build environment
+        run: |
+          & "${{ runner.temp }}/micromamba.exe" create --yes --prefix "${{ runner.temp }}/science" --file environment.yml --override-channels --channel conda-forge
       - name: Install build tools
-        run: micromamba run -p "${{ steps.science.outputs.environment-path }}" python -m pip install 'pyinstaller>=6.22,<7' 'pywebview>=6.2,<7' 'meeko>=0.7,<0.8' gemmi playwright
+        run: |
+          & "${{ runner.temp }}/micromamba.exe" run --prefix "${{ runner.temp }}/science" python -m pip install 'pyinstaller>=6.22,<7' 'pywebview>=6.2,<7' 'meeko>=0.7,<0.8' gemmi playwright
       - name: Source tests
-        run: micromamba run -p "${{ steps.science.outputs.environment-path }}" python -m unittest discover -s tests -v
+        run: |
+          & "${{ runner.temp }}/micromamba.exe" run --prefix "${{ runner.temp }}/science" python -m unittest discover -s tests -v
       - name: Install installer compiler
         shell: pwsh
         run: choco install nsis --yes --no-progress
       - name: Build and verify application
-        run: micromamba run -p "${{ steps.science.outputs.environment-path }}" python build_desktop.py
+        run: |
+          & "${{ runner.temp }}/micromamba.exe" run --prefix "${{ runner.temp }}/science" python build_desktop.py
       - name: Build setup
         shell: pwsh
         run: |
           $env:PATH += ';C:\Program Files (x86)\NSIS'
-          micromamba run -p "${{ steps.science.outputs.environment-path }}" python build_setup.py
+          & "${{ runner.temp }}/micromamba.exe" run --prefix "${{ runner.temp }}/science" python build_setup.py
       - name: Verify isolated installation, native window and exported downloads
-        run: micromamba run -p "${{ steps.science.outputs.environment-path }}" python verify_setup.py
+        run: |
+          & "${{ runner.temp }}/micromamba.exe" run --prefix "${{ runner.temp }}/science" python verify_setup.py
       - uses: actions/upload-artifact@v4
         with:
           name: release-windows
@@ -103,24 +99,21 @@ jobs:
     timeout-minutes: 60
     defaults:
       run:
-        shell: micromamba-shell {0}
+        shell: bash
     steps:
       - uses: actions/checkout@v6
       - name: Download verified build tool
         shell: bash
         run: python3 ci/bootstrap_micromamba.py --platform ${{ matrix.arch == 'arm64' && 'osx-arm64' || 'osx-64' }} --destination "${{ runner.temp }}/micromamba"
-      - uses: mamba-org/setup-micromamba@v3
-        with:
-          download-micromamba: false
-          micromamba-version: '2.3.3-0'
-          micromamba-binary-path: ${{ runner.temp }}/micromamba
-          environment-file: environment-macos.yml
-          init-shell: none
-          generate-run-shell: true
+      - name: Create native scientific build environment
+        run: |
+          "${{ runner.temp }}/micromamba" create --yes --prefix "${{ runner.temp }}/science" --file environment-macos.yml --override-channels --channel conda-forge
       - name: Source tests
-        run: python -m unittest discover -s tests -v
+        run: |
+          "${{ runner.temp }}/micromamba" run --prefix "${{ runner.temp }}/science" python -m unittest discover -s tests -v
       - name: Build and verify native application
-        run: python build_macos.py --arch ${{ matrix.arch }}
+        run: |
+          "${{ runner.temp }}/micromamba" run --prefix "${{ runner.temp }}/science" python build_macos.py --arch ${{ matrix.arch }}
       - uses: actions/upload-artifact@v4
         with:
           name: release-macos-${{ matrix.arch }}
