@@ -8,6 +8,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: studio-release-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   research-code:
     runs-on: ubuntu-latest
@@ -17,9 +21,13 @@ jobs:
         shell: micromamba-shell {0}
     steps:
       - uses: actions/checkout@v6
+      - name: Download verified build tool
+        shell: bash
+        run: python3 ci/bootstrap_micromamba.py --platform linux-64 --destination "${{ runner.temp }}/micromamba"
       - uses: mamba-org/setup-micromamba@v3
         with:
-          micromamba-url: https://github.com/mamba-org/micromamba-releases/releases/download/2.3.3-0/micromamba-linux-64
+          download-micromamba: false
+          micromamba-binary-path: ${{ runner.temp }}/micromamba
           environment-file: environment-research-check.yml
           init-shell: none
           generate-run-shell: true
@@ -40,10 +48,13 @@ jobs:
         shell: pwsh
     steps:
       - uses: actions/checkout@v6
+      - name: Download verified build tool
+        run: python ci/bootstrap_micromamba.py --platform win-64 --destination "${{ runner.temp }}/micromamba.exe"
       - uses: mamba-org/setup-micromamba@v3
         id: science
         with:
-          micromamba-url: https://github.com/mamba-org/micromamba-releases/releases/download/2.3.3-0/micromamba-win-64.exe
+          download-micromamba: false
+          micromamba-binary-path: ${{ runner.temp }}/micromamba.exe
           environment-file: environment.yml
           environment-name: insilico
           init-shell: none
@@ -93,9 +104,13 @@ jobs:
         shell: micromamba-shell {0}
     steps:
       - uses: actions/checkout@v6
+      - name: Download verified build tool
+        shell: bash
+        run: python3 ci/bootstrap_micromamba.py --platform ${{ matrix.arch == 'arm64' && 'osx-arm64' || 'osx-64' }} --destination "${{ runner.temp }}/micromamba"
       - uses: mamba-org/setup-micromamba@v3
         with:
-          micromamba-url: https://github.com/mamba-org/micromamba-releases/releases/download/2.3.3-0/micromamba-${{ matrix.arch == 'arm64' && 'osx-arm64' || 'osx-64' }}
+          download-micromamba: false
+          micromamba-binary-path: ${{ runner.temp }}/micromamba
           environment-file: environment-macos.yml
           init-shell: none
           generate-run-shell: true
@@ -146,4 +161,7 @@ jobs:
       - name: Publish verified release
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release create "$GITHUB_REF_NAME" release-downloads/* --title "In Silico Docking Studio ${GITHUB_REF_NAME#v}" --notes-file RELEASE_NOTES.md --latest --verify-tag
+        run: |
+          git fetch --depth=1 origin "refs/tags/$GITHUB_REF_NAME"
+          test "$(git rev-parse 'FETCH_HEAD^{commit}')" = "$GITHUB_SHA"
+          gh release create "$GITHUB_REF_NAME" release-downloads/* --title "In Silico Docking Studio ${GITHUB_REF_NAME#v}" --notes-file RELEASE_NOTES.md --latest --verify-tag

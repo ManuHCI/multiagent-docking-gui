@@ -36,6 +36,10 @@ def register_study() -> None:
         message = ""
         selected_target = ""
         selected_drug = ""
+        selected_export_target = ""
+        selected_export_drug = ""
+        selected_export_system = ""
+        selected_export_duration = 1.0
         section = {name.lower(): name for name in ("Home", "Projects", "Reference", "About")}.get(section.lower(), "Home")
         workflow = False
         draft_started = False
@@ -718,13 +722,32 @@ def register_study() -> None:
                 ui.button("Download SMILES for SwissADME", on_click=lambda: ui.download(smiles, filename="SwissADME_input.txt")).props("outline no-caps icon=download")
 
         def render_code_exports():
+            nonlocal selected_export_target, selected_export_drug, selected_export_system
             with ui.card().classes("study-card w-full gap-3"):
                 ui.label("Download code for a selected protein and drug").classes("text-lg font-semibold")
                 targets = {t["id"]: t["name"] for t in active.data["targets"]}
                 drugs = {d["id"]: d["name"] for d in active.data["drugs"]}
-                target_field = ui.select(targets, value=selected_target if selected_target in targets else next(iter(targets)), label="Protein for code export").props("outlined").classes("w-full")
+                if selected_export_target not in targets:
+                    selected_export_target = selected_target if selected_target in targets else next(iter(targets))
                 selected_id = next((d["id"] for d in active.data["drugs"] if d["internal_name"] == selected_drug), next(iter(drugs)))
-                drug_field = ui.select(drugs, value=selected_id, label="Drug for code export").props("outlined").classes("w-full")
+                if selected_export_drug not in drugs:
+                    selected_export_drug = selected_id
+                if not selected_export_system:
+                    selected_export_system = "membrane" if "SV2" in targets[selected_export_target].upper() else "water"
+                def select_export(event, field):
+                    nonlocal selected_export_target, selected_export_drug, selected_export_system, selected_export_duration
+                    if field == "target":
+                        selected_export_target = event.value
+                        if "SV2" in targets.get(event.value, "").upper():
+                            system_field.set_value("membrane")
+                    elif field == "drug":
+                        selected_export_drug = event.value
+                    elif field == "system":
+                        selected_export_system = event.value
+                    else:
+                        selected_export_duration = event.value
+                target_field = ui.select(targets, value=selected_export_target, label="Protein for code export", on_change=lambda e: select_export(e, "target")).props("outlined").classes("w-full")
+                drug_field = ui.select(drugs, value=selected_export_drug, label="Drug for code export", on_change=lambda e: select_export(e, "drug")).props("outlined").classes("w-full")
                 async def export_code(kind):
                     target_id, drug_id = target_field.value, drug_field.value
                     mode, duration = system_field.value, duration_field.value
@@ -737,8 +760,8 @@ def register_study() -> None:
                     ui.button("Download docking code and inputs", on_click=lambda: export_code("docking")).props("unelevated color=primary no-caps icon=download")
                     ui.button("Download docking notebook", on_click=lambda: ui.download(research.notebook("Dock your selected protein and drug", "run_docking.py"), filename="Run_Docking.ipynb")).props("outline no-caps")
                 ui.label("MD simulation code").classes("font-semibold")
-                system_field = ui.select({"water":"Soluble protein in water", "membrane":"Membrane protein such as SV2A"}, value="membrane" if any("SV2" in t["name"].upper() for t in active.data["targets"]) else "water", label="MD system").props("outlined").classes("w-full")
-                duration_field = ui.number("Production simulation length in ns", value=1.0, min=0.001, max=1000).props("outlined").classes("w-full")
+                system_field = ui.select({"water":"Soluble protein in water", "membrane":"Membrane protein such as SV2A"}, value=selected_export_system, label="MD system", on_change=lambda e: select_export(e, "system")).props("outlined").classes("w-full")
+                duration_field = ui.number("Production simulation length in ns", value=selected_export_duration, min=0.001, max=1000, on_change=lambda e: select_export(e, "duration")).props("outlined").classes("w-full")
                 ui.label("The MD package contains the selected docked drug with its chemical bond information. Membrane mode needs a separately prepared lipid system. Code is exported here; the simulation runs in Colab or on your own computer.").classes("text-sm")
                 ui.link("Membrane system preparation with CHARMM GUI", "https://www.charmm-gui.org/", new_tab=True)
                 with ui.row().classes("gap-3 flex-wrap"):

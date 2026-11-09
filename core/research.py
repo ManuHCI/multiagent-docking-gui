@@ -23,8 +23,8 @@ def preparation_review(project) -> list[dict]:
         ("Hydrogen atoms added", r.get("hydrogens_added"), "These small atoms help describe chemical bonding and hydrogen bonds."),
         ("Missing atoms added", r.get("missing_atoms_added"), "Missing atoms in existing amino acids were modelled. Their positions are estimates."),
         ("Water molecules removed", r.get("waters_removed"), "These water molecules are absent from the prepared receptor. Important pocket waters may need a separate review."),
-        ("Gaps repaired", r.get("gaps_repaired"), "A repaired protein segment is a model rather than an experimentally observed structure."),
-        ("Gaps left open", len(r["gaps_left_open"]) if "gaps_left_open" in r else None, "These missing protein segments remain missing. Check whether they are near the drug pocket."),
+        ("Missing amino acids modelled", r.get("gaps_repaired"), "These amino acids were modelled rather than experimentally observed."),
+        ("Protein segments left missing", len(r["gaps_left_open"]) if "gaps_left_open" in r else None, "These missing protein segments remain missing. Check whether they are near the drug pocket."),
     ]
     return [{"change": name, "value": "Not recorded" if value is None else value, "meaning": meaning}
             for name, value, meaning in rows]

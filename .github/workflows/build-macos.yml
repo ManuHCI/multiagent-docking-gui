@@ -38,10 +38,14 @@ jobs:
     steps:
       - name: Check out source
         uses: actions/checkout@v6
+      - name: Download verified build tool
+        shell: bash
+        run: python3 ci/bootstrap_micromamba.py --platform ${{ matrix.arch == 'arm64' && 'osx-arm64' || 'osx-64' }} --destination "${{ runner.temp }}/micromamba"
       - name: Create native scientific build environment
         uses: mamba-org/setup-micromamba@v3
         with:
-          micromamba-url: https://github.com/mamba-org/micromamba-releases/releases/download/2.3.3-0/micromamba-${{ matrix.arch == 'arm64' && 'osx-arm64' || 'osx-64' }}
+          download-micromamba: false
+          micromamba-binary-path: ${{ runner.temp }}/micromamba
           environment-file: environment-macos.yml
           cache-environment: true
           cache-environment-key: macos-${{ matrix.arch }}-${{ hashFiles('environment-macos.yml') }}

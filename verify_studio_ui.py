@@ -247,6 +247,9 @@ def main() -> int:
                     if "AutoDock Vina" not in methods or "Search box:" not in methods:
                         raise AssertionError("The exported methods omit actual docking provenance")
                 checks.append("CSV, full project package, actual methods and references exported")
+                page.get_by_label("Drug for code export", exact=True).click()
+                page.get_by_role("option", name="Gefitinib", exact=True).click()
+                page.get_by_label("Production simulation length in ns", exact=True).fill("0.5")
                 for button, filename in [("Download simple docking report", "Docking_report.txt"),
                                          ("Download docking code and inputs", "Docking_Colab.zip"),
                                          ("Download MD code and inputs", "MD_Colab.zip")]:
@@ -259,6 +262,10 @@ def main() -> int:
                         if not required.issubset(package.namelist()):
                             raise AssertionError("Selected pair code export is incomplete: " + filename)
                         job = json.loads(package.read("job.json"))
+                        if job["drug"] != "Gefitinib":
+                            raise AssertionError("Code export lost the selected drug after a download")
+                        if filename == "MD_Colab.zip" and job["nanoseconds"] != 0.5:
+                            raise AssertionError("MD export lost the selected simulation length")
                         if job["target"] != "EGFR (wild type)" and job.get("pdb_id") != "1M17":
                             raise AssertionError("The code export uses the wrong protein")
                 checks.append("before and after protein views, prepared drug, simple report and selected docking/MD Colab packages")
