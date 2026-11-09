@@ -19,9 +19,6 @@ concurrency:
   group: macos-${{ github.ref }}
   cancel-in-progress: true
 
-env:
-  MAMBA_ROOT_PREFIX: ${{ runner.temp }}/mamba-root
-
 jobs:
   build:
     name: macOS ${{ matrix.arch }}

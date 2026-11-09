@@ -12,9 +12,6 @@ concurrency:
   group: studio-release-${{ github.ref }}
   cancel-in-progress: true
 
-env:
-  MAMBA_ROOT_PREFIX: ${{ runner.temp }}/mamba-root
-
 jobs:
   research-code:
     runs-on: ubuntu-latest
