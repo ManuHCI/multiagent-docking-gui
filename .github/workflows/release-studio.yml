@@ -87,7 +87,12 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: release-windows
-          path: dist/InSilicoDockingStudio-1.4.0-Windows-Setup.exe
+          # Globbed, not pinned. This path named 1.4.0 outright, so the
+          # first build of 1.4.1 produced a correct installer and then
+          # failed here with "no files found", which skipped publish and
+          # lost the release. The macOS job always used a glob and was
+          # unaffected. The filename comes from VERSION in desktop.py.
+          path: dist/InSilicoDockingStudio-*-Windows-Setup.exe
           if-no-files-found: error
           compression-level: 0
       - uses: actions/upload-artifact@v4

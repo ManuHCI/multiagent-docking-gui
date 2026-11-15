@@ -71,6 +71,7 @@ def main() -> int:
         executable_hash = hashlib.sha256((payload / "InSilicoTeachingSuite.exe").read_bytes()).hexdigest()
         subprocess.run([str(compiler()), "/V3", "/INPUTCHARSET", "UTF8", f"/DPAYLOAD={payload}",
                         f"/DEXE_SHA256={executable_hash}",
+                        f"/DAPPVERSION={VERSION}",
                         f"/DOUTPUT={output}", f"/DUNINSTALL_FILES={includes}",
                         str(ROOT / "installer" / "desktop.nsi")],
                        cwd=ROOT / "installer", check=True)

@@ -24,11 +24,19 @@ RequestExecutionLevel user
 SetCompressor /SOLID lzma
 SetCompressorDictSize 32
 BrandingText "Medical education · Learn, explore and interpret"
-VIProductVersion "1.4.0.0"
+; The version comes from VERSION in desktop.py, passed in by
+; build_setup.py. It used to be typed here as well, so the 1.4.1
+; installer was correctly named and then told Windows it was 1.4.0 in
+; its file properties and in Apps and features.
+!ifndef APPVERSION
+  !define APPVERSION "0.0.0"
+!endif
+
+VIProductVersion "${APPVERSION}.0"
 VIAddVersionKey "ProductName" "In-Silico Docking Studio"
 VIAddVersionKey "FileDescription" "In-Silico Docking Studio Setup"
-VIAddVersionKey "ProductVersion" "1.4.0"
-VIAddVersionKey "FileVersion" "1.4.0"
+VIAddVersionKey "ProductVersion" "${APPVERSION}"
+VIAddVersionKey "FileVersion" "${APPVERSION}"
 VIAddVersionKey "LegalCopyright" "Dr Manu Kumar Shetty, 2026"
 
 !define MUI_ICON "assets\icon.ico"
@@ -128,7 +136,7 @@ Section "Teaching Suite" MainSection
   CreateShortcut "$SMPROGRAMS\In-Silico Teaching Suite\Uninstall.lnk" "$INSTDIR\Uninstall.exe"
   WriteRegStr HKCU "Software\InSilicoTeachingSuite" "InstallDir" "$INSTDIR"
   WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\InSilicoTeachingSuite" "DisplayName" "In-Silico Docking Studio"
-  WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\InSilicoTeachingSuite" "DisplayVersion" "1.4.0"
+  WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\InSilicoTeachingSuite" "DisplayVersion" "${APPVERSION}"
   WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\InSilicoTeachingSuite" "Publisher" "Dr Manu Kumar Shetty and Dr Pratibha Nadig"
   WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\InSilicoTeachingSuite" "UninstallString" '$\"$INSTDIR\Uninstall.exe$\"'
   WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\InSilicoTeachingSuite" "DisplayIcon" "$INSTDIR\InSilicoTeachingSuite.exe"
