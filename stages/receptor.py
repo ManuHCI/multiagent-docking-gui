@@ -491,7 +491,8 @@ class ReceptorStage(Stage):
                                [h.label for h in kept], repair_gaps,
                                max_gap_length,
                                ligand_coords=(found["ligand"].coords
-                                              if found["ligand"] else None))
+                                              if found["ligand"] else None),
+                               remove_waters=remove_waters)
         except ModuleNotFoundError as exc:
             # Tell the truth about which kind of failure this is.
             #
@@ -573,6 +574,7 @@ class ReceptorStage(Stage):
              keep_labels: list[str], repair_gaps: bool,
              max_gap_length: int,
              ligand_coords: list[tuple[float, float, float]] | None = None,
+             remove_waters: bool = True,
              ) -> dict[str, Any]:
         from openmm.app import PDBFile
         from pdbfixer import PDBFixer
@@ -635,13 +637,24 @@ class ReceptorStage(Stage):
         for chain in fixer.topology.chains():
             for residue in chain.residues():
                 name = residue.name.strip().upper()
+                label = f"{name} {chain.id}{residue.id}".strip()
                 if name in WATER:
-                    continue   # handled by the caller's water setting
+                    # Water is deleted HERE or nowhere. An earlier
+                    # version skipped it with the note "handled by the
+                    # caller's water setting", but the caller never
+                    # passed one and _fix had no parameter to receive
+                    # it: every water survived preparation, was given
+                    # hydrogens by addMissingHydrogens, and was written
+                    # into the prepared PDB -- while the report said
+                    # the waters had been removed. A water the user
+                    # deliberately kept is on keep_set and still stays.
+                    if remove_waters and label not in keep_set:
+                        to_delete.append(residue)
+                    continue
                 kind, _ = classify(name)
                 if kind == "protein":
                     continue
-                label = f"{name} {chain.id}{residue.id}".strip()
-                if name in WATER or label in keep_set:
+                if label in keep_set:
                     continue
                 if _is_standard_residue(name):
                     continue
