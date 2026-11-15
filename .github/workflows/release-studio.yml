@@ -180,4 +180,17 @@ jobs:
         run: |
           git fetch --depth=1 origin "refs/tags/$GITHUB_REF_NAME"
           test "$(git rev-parse 'FETCH_HEAD^{commit}')" = "$GITHUB_SHA"
-          gh release create "$GITHUB_REF_NAME" release-downloads/* --title "In Silico Docking Studio ${GITHUB_REF_NAME#v}" --notes-file RELEASE_NOTES.md --latest --verify-tag
+          TITLE="In Silico Docking Studio ${GITHUB_REF_NAME#v}"
+          # The release may already exist: creating a tag through the
+          # GitHub web form makes the release at the same moment, and a
+          # re-run after a flaky installer build finds the release left
+          # by the first attempt. `gh release create` fails on both, so
+          # the installers would be built and never attached. Upload to
+          # whatever is there instead, and only create when nothing is.
+          if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
+            echo "Release $GITHUB_REF_NAME exists; attaching installers to it."
+            gh release upload "$GITHUB_REF_NAME" release-downloads/* --clobber
+            gh release edit "$GITHUB_REF_NAME" --title "$TITLE" --notes-file RELEASE_NOTES.md --latest
+          else
+            gh release create "$GITHUB_REF_NAME" release-downloads/* --title "$TITLE" --notes-file RELEASE_NOTES.md --latest --verify-tag
+          fi
