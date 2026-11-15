@@ -9,10 +9,173 @@ import math
 from pathlib import Path
 import zipfile
 
+from . import contacts as contact_analysis
 from . import viewer
 from .runtime import resource_root
 
 SWISSADME_URL = "https://www.swissadme.ch/index.php"
+
+
+def _complex_pdb(receptor_pdb: str, ligand_pdb: str) -> str:
+    """
+    The protein and the docked pose in one file, for a 3D viewer.
+
+    The export already carries receptor.pdbqt and recorded_pose.pdbqt,
+    but PDBQT is a docking format that viewers read poorly, and neither
+    file holds both molecules -- so a student had no way to look at the
+    drug sitting in the pocket, which is the one result of a docking run
+    worth looking at.
+    """
+    lines, serial = [], 0
+    for line in receptor_pdb.splitlines():
+        if line.startswith(("ATOM", "HETATM")):
+            serial += 1
+            lines.append(f"{line[:6]}{serial:5d}{line[11:]}")
+        elif line.startswith(("TER", "HELIX", "SHEET", "SSBOND", "LINK")):
+            lines.append(line)
+    lines.append("TER")
+    # Vina names every ligand atom after its element alone, so a drug
+    # arrives as "C, C, C, N, O, C ...". Inside one residue those are
+    # duplicate atom names, and a PDB reader is entitled to drop the
+    # repeats -- OpenMM silently discarded 26 of erlotinib's 29 atoms
+    # from an earlier version of this file, which would have shown the
+    # student a broken molecule. Numbering them per element fixes it.
+    seen: dict[str, int] = {}
+    for line in ligand_pdb.splitlines():
+        if not line.startswith(("ATOM", "HETATM")):
+            continue
+        serial += 1
+        element = (line[76:78].strip() or line[12:16].strip()[:1]).upper()
+        seen[element] = seen.get(element, 0) + 1
+        atom = f"{element.capitalize()}{seen[element]}"[:4]
+        # A one- or two-letter element starts in column 14, not 13.
+        name = atom.ljust(4) if len(atom) == 4 else f" {atom:<3}"
+        lines.append(f"HETATM{serial:5d} {name}{line[16:]}"[:80])
+    lines.append("END")
+    return "\n".join(lines) + "\n"
+
+
+def _chimerax_script(reference: str) -> str:
+    """
+    A ChimeraX session that opens on the binding site.
+
+    Hydrogen bonds are drawn by ChimeraX's own `hbonds`, which checks
+    donor-hydrogen-acceptor geometry. contacts.txt in the same folder
+    lists distances only and says so. The two will not always agree,
+    and where they differ ChimeraX is the one to believe.
+    """
+    resname = (reference.split()[0].upper() if reference.strip() else "")
+    crystal = ""
+    if resname and resname != "LIG":
+        crystal = f"""
+# The molecule from the crystal structure, in green, for comparison.
+# Orange is where the computer predicted the drug would sit; green is
+# where the experiment found it. If your re-docking check passed, the
+# two should sit almost on top of each other.
+show :{resname}
+style :{resname} stick
+color :{resname} green
+"""
+    return f"""# Binding site view -- In-Silico Docking Studio
+#
+# HOW TO USE THIS
+#   1. Install ChimeraX (free for academic use) from
+#      https://www.rbvi.ucsf.edu/chimerax/download.html
+#   2. Start ChimeraX, then choose File > Open and pick this file.
+#      Keep complex.pdb in the same folder.
+#
+# Every line below is one ChimeraX command, and each is explained. If
+# any single line fails on your version, delete it and open the file
+# again; the rest will still work.
+
+# Load the protein with the docked drug already inside it.
+open complex.pdb
+
+# Start from a clean, plain white ribbon of the protein.
+hide atoms
+show cartoons
+color white
+
+# The docked drug, in orange.
+show :LIG
+style :LIG stick
+color :LIG orange
+{crystal}
+# Every amino acid with an atom within 4.5 angstroms of the drug.
+# These are the residues the drug is touching. Coloured by element:
+# red is oxygen, blue is nitrogen, yellow is sulphur.
+show :LIG :<4.5
+style :LIG :<4.5 stick
+color :LIG :<4.5 byhetero
+
+# Hydrogen bonds between the drug and the protein, drawn as red dashes
+# with the distance written on them. "restrict cross" means only bonds
+# with one atom in the drug and one in the protein, not bonds inside
+# the drug itself. ChimeraX checks the angles here, which the
+# contacts.txt list in this folder does not.
+hbonds :LIG restrict cross reveal true color red dashes 6 showDist true log true
+
+# Name tags on the contacting residues. Delete this line if the view
+# gets crowded.
+label :LIG :<4.5 residues
+
+# Point the camera at the drug.
+view :LIG
+
+# WHAT TO LOOK FOR
+#   Which amino acids line the pocket, and are they the ones the
+#   literature names for this target?
+#   Is the drug buried, or sitting on the surface? A pose on the
+#   outside of the protein is usually a wrong answer.
+#   Are the red dashes going to sensible places -- an oxygen or
+#   nitrogen at both ends?
+#   Does the oily part of the drug face the oily part of the pocket?
+#
+# The H-bond list is written in the ChimeraX Log window (Tools >
+# General > Log) because of "log true" above.
+"""
+
+
+def _chimera_script(reference: str) -> str:
+    """The same view for the retired UCSF Chimera, whose syntax differs."""
+    resname = (reference.split()[0].upper() if reference.strip() else "")
+    crystal = (f"display :{resname}\ncolor green :{resname}\n"
+               if resname and resname != "LIG" else "")
+    return f"""# Binding site view -- for the older UCSF Chimera
+#
+# Use this only if you have the retired UCSF Chimera. If you have
+# ChimeraX, which is the current program, use view_in_chimerax.cxc
+# instead -- it is better explained and better tested.
+#
+# In Chimera: File > Open, then pick this file. Keep complex.pdb beside it.
+
+open complex.pdb
+~display
+ribbon
+color white
+display :LIG
+represent stick :LIG
+color orange :LIG
+{crystal}display :LIG zr<4.5
+represent stick :LIG zr<4.5
+findhbond makePseudobonds true color red lineWidth 2 log true
+focus :LIG
+"""
+
+
+def contact_files(receptor_pdb: str, ligand_pdb: str, reference: str,
+                  target: str = "", drug: str = "",
+                  score: float | None = None) -> dict[str, bytes]:
+    """complex.pdb, the two viewer scripts and the written contact list."""
+    residues = contact_analysis.find(receptor_pdb, ligand_pdb,
+                                     exclude=reference)
+    return {
+        "complex.pdb": _complex_pdb(receptor_pdb, ligand_pdb).encode("utf-8"),
+        "view_in_chimerax.cxc": _chimerax_script(reference).encode("utf-8"),
+        "view_in_chimera.com": _chimera_script(reference).encode("utf-8"),
+        "contacts.txt": contact_analysis.report(
+            residues, target, drug, score).encode("utf-8"),
+    }
 
 
 def preparation_review(project) -> list[dict]:
@@ -131,6 +294,181 @@ def _file(project, filename: str) -> Path:
     return path
 
 
+def _opening(title: str, md: bool) -> str:
+    """The first thing a student reads. Plain words, no jargon unexplained."""
+    if md:
+        return (
+            "# " + title + "\n\n"
+            "## What this notebook does\n\n"
+            "Docking gave you a **still photograph**: one picture of the drug\n"
+            "sitting in the pocket. It cannot tell you whether the drug would\n"
+            "stay there. Molecular dynamics (MD) is the moving picture. It\n"
+            "gives every atom of the protein, the drug and the surrounding\n"
+            "water a push, works out the forces between them, and takes one\n"
+            "tiny step forward in time. Then it does that again, two\n"
+            "femtoseconds at a time, millions of times over.\n\n"
+            "The question MD answers is: **does the pose survive?** A drug\n"
+            "that slides out of the pocket in the first few nanoseconds was\n"
+            "never really bound, whatever score docking gave it. A drug whose\n"
+            "position settles and whose hydrogen bonds hold for most of the\n"
+            "run is a real prediction.\n\n"
+            "## Before you start\n\n"
+            "Choose **Runtime > Change runtime type > GPU**. On a GPU this\n"
+            "takes hours; on the ordinary processor it can take days for the\n"
+            "same work.\n\n"
+            "## What this notebook is not\n\n"
+            "It is a starting protocol, not a finished study. Read `job.json`\n"
+            "and `README.txt` to see every setting that was chosen for you.\n"
+            "A simulation that runs without crashing is not evidence that the\n"
+            "drug binds; it is evidence that the model did not fall apart.\n"
+        )
+    return (
+        "# " + title + "\n\n"
+        "## What this notebook does\n\n"
+        "Molecular docking takes one protein and one drug molecule and asks\n"
+        "two questions. **Where does the drug sit, and in what shape?** That\n"
+        "answer is called the *pose*. **How tightly does it hold?** That\n"
+        "answer is called the *score*, and it is printed in kilocalories per\n"
+        "mole (kcal/mol), where a more negative number means the program\n"
+        "thinks the binding is stronger.\n\n"
+        "The program does not do an experiment. It takes a still photograph\n"
+        "of the protein, treats your drug as a bendable object, tries a very\n"
+        "large number of ways of fitting one into the other, and keeps the\n"
+        "best few.\n\n"
+        "## What is already decided for you\n\n"
+        "Everything in the ZIP came from your own run on the desktop: the\n"
+        "prepared protein, the prepared drug, the search box, and the search\n"
+        "settings. This notebook re-runs that same job here so that you can\n"
+        "see the code and change it. It does **not** download a new protein\n"
+        "or a new drug.\n\n"
+        "## One warning before you read any score\n\n"
+        "A ten-fold change in binding strength is worth only about **1.4\n"
+        "kcal/mol**, and this program's own error is about **2.5 kcal/mol**.\n"
+        "So a score of -8.4 against -8.1 is not a difference; it is noise.\n"
+        "Read `Docking_report.txt` in the ZIP for the checks that tell you\n"
+        "how far your particular run can be trusted. Those checks are not\n"
+        "repeated here.\n"
+    )
+
+
+def _install_text(md: bool) -> str:
+    tools = ("OpenMM, which does the physics, along with the force fields\n"
+             "that say how strongly each pair of atoms pulls on the other"
+             if md else
+             "AutoDock Vina, the docking program itself")
+    return (
+        "## Step 2. Install the scientific software\n\n"
+        "Google Colab gives you a plain Python. It does not have " + tools
+        + ".\n\nThis cell installs them. It does so inside a **separate**\n"
+        "Python 3.11 of its own, in a folder under `/content`, instead of\n"
+        "changing the Python that Colab itself runs on. That is deliberate:\n"
+        "installing scientific packages over Colab's own Python usually ends\n"
+        "with a demand to restart the runtime, and then you lose your\n"
+        "uploaded files and start again.\n\n"
+        "`micromamba` is a small program that fetches packages from\n"
+        "conda-forge, a public store of scientific software.\n\n"
+        "**This is the slow cell** -- usually three to six minutes. There is\n"
+        "nothing to do but wait. A lot of text will scroll past; that is\n"
+        "normal.\n"
+    )
+
+
+def _code_text(script: str, md: bool) -> str:
+    """Show the student the actual science, instead of hiding it."""
+    if md:
+        return (
+            "## Step 3. The code, and what it does\n\n"
+            "The cell below prints `" + script + "` so you can read it before\n"
+            "you run it. Follow it from the top. In order, it:\n\n"
+            "1. **Checks the files have not changed** since the desktop wrote\n"
+            "   them, by comparing a fingerprint of each one.\n"
+            "2. **Builds the system**: your protein, the docked drug, a box of\n"
+            "   water around them, and enough sodium and chloride to reach the\n"
+            "   0.15 molar salt of body fluid.\n"
+            "3. **Assigns a force field** -- AMBER ff14SB for the protein and\n"
+            "   OpenFF for the drug. A force field is the set of rules saying\n"
+            "   how stiff each bond is and how strongly each pair of atoms\n"
+            "   attracts or repels.\n"
+            "4. **Minimises the energy**, which pushes apart any atoms that\n"
+            "   were placed too close together.\n"
+            "5. **Warms the system up** to 310 K, body temperature, holding\n"
+            "   the volume fixed, then lets the pressure settle.\n"
+            "6. **Runs the production simulation**, saving the positions every\n"
+            "   so often so you have a trajectory to look at afterwards.\n\n"
+            "Change the code if you want to. That is the whole reason it is\n"
+            "here rather than hidden inside the application.\n"
+        )
+    return (
+        "## Step 3. The code, and what it does\n\n"
+        "The cell below prints `" + script + "` so you can read it before you\n"
+        "run it. This is the part worth your attention -- it is short, and\n"
+        "the five lines in the middle are the whole of docking.\n\n"
+        "```python\n"
+        "vina = Vina(sf_name=\"vina\", cpu=0, seed=...)   # the program\n"
+        "vina.set_receptor(\"receptor.pdbqt\")            # your protein\n"
+        "vina.set_ligand_from_file(\"ligand.pdbqt\")      # your drug\n"
+        "vina.compute_vina_maps(center=..., box_size=...)  # where to search\n"
+        "vina.dock(exhaustiveness=..., n_poses=...)     # try, score, repeat\n"
+        "```\n\n"
+        "Taking those in turn:\n\n"
+        "- **PDBQT** is the file format AutoDock uses. It is an ordinary PDB\n"
+        "  coordinate file with two extra columns: the partial electrical\n"
+        "  charge on each atom, and its atom type.\n"
+        "- **compute_vina_maps** builds the search box. Nothing outside the\n"
+        "  box is ever considered, which is what makes the search possible at\n"
+        "  all -- searching a whole protein surface would take months.\n"
+        "- **exhaustiveness** is how many independent attempts the program\n"
+        "  makes, each starting from a random position. The default is 8.\n"
+        "  Raise it to 32 if your molecule has many rotatable bonds.\n"
+        "- **seed** is what makes the run repeatable. The search uses random\n"
+        "  numbers, so the same seed gives the same answer twice. Change the\n"
+        "  seed, run again, and compare: if the two scores differ by more\n"
+        "  than about 0.2 kcal/mol, the search has not settled and you should\n"
+        "  raise exhaustiveness.\n\n"
+        "Try changing a number and running it again. That experiment teaches\n"
+        "more about docking than reading about it does.\n"
+    )
+
+
+def _results_text(md: bool) -> str:
+    if md:
+        return (
+            "## Step 4. Take your results away\n\n"
+            "Colab deletes everything when the session closes, so download\n"
+            "before you leave. The ZIP contains the trajectory, the final\n"
+            "structure and a log of temperature, pressure and energy.\n\n"
+            "**What to look at first.** Plot how far the drug has moved from\n"
+            "its starting pose against time. If that distance rises and keeps\n"
+            "rising, the drug left the pocket and the docking pose was wrong.\n"
+            "If it rises for a nanosecond or two and then stays flat, the pose\n"
+            "is holding, which is the result you were testing for.\n"
+        )
+    return (
+        "## Step 4. Take your results away, and read them honestly\n\n"
+        "Colab deletes everything when the session closes, so download now.\n\n"
+        "**What is in the ZIP**\n\n"
+        "- `docked.pdbqt` -- the predicted poses, best first. Several poses,\n"
+        "  not one. If the top two score within 0.5 kcal/mol of each other but\n"
+        "  sit in different places, the program is telling you it cannot\n"
+        "  decide, and you should report that rather than pick one.\n"
+        "- `results.json` -- the scores and the settings used. The\n"
+        "  `energies_kcal_mol` list has one row per pose; the first number in\n"
+        "  each row is the score.\n\n"
+        "**Before you write anything down**\n\n"
+        "You may fairly write: *the molecule is predicted to occupy this\n"
+        "pocket, making contact with these residues*. Open `contacts.txt` and\n"
+        "`view_in_chimerax.cxc` from the ZIP to see exactly which residues\n"
+        "those are.\n\n"
+        "You may **not** write that the score is an affinity, or that a\n"
+        "compound scoring -8.4 binds more strongly than one scoring -8.1.\n"
+        "With an error bar of 2.5 kcal/mol, a printed score of -8.0 is\n"
+        "consistent with a real potency anywhere between about 40 nanomolar\n"
+        "and 133 micromolar. That is a three-thousand-fold range.\n\n"
+        "Docking is a way of deciding what to test. It is not a way of\n"
+        "avoiding the test.\n"
+    )
+
+
 def notebook(title: str, script: str, md: bool = False) -> bytes:
     def cell(kind, source):
         return {"cell_type": kind, "id": hashlib.sha256(source.encode("utf-8")).hexdigest()[:12], "metadata": {}, "source": source.splitlines(keepends=True),
@@ -143,17 +481,47 @@ def notebook(title: str, script: str, md: bool = False) -> bytes:
                "subprocess.run([sys.executable, 'install_environment.py', '--platform', 'linux-64', '--destination', str(micromamba)], check=True)\n"
                "subprocess.run([str(micromamba), 'create', '--yes', '--prefix', str(science), '--override-channels', '--channel', 'conda-forge', 'python=3.11', "
                + ", ".join(repr(p) for p in packages) + "], env=environment, check=True)\n")
-    cells = [cell("markdown", "# " + title + "\nUpload this notebook at https://colab.research.google.com/. Run the cells in order.\n"
-                  + "The notebook creates a separate Python 3.11 scientific environment. It keeps Colab's Python unchanged and does not restart the runtime.\n"
-                  + ("For MD, choose a GPU in Runtime > Change runtime type when available.\n"
-                     "This notebook is a starting protocol. Review job.json and README.txt. Membrane proteins such as SV2A need a prepared lipid membrane system.\n" if md else
-                     "This uses the recorded receptor, drug input, box and settings. Scores can differ between platforms and processor counts. Comparison checks are recorded in the report and are not rerun by this selected-pair notebook.\n"))]
-    cells += [cell("markdown", "Upload the matching ZIP downloaded from Docking Studio. The ZIP contains the selected protein, selected drug, code and recorded settings.\n"),
+    # Every code cell gets a plain-English cell above it saying what it
+    # does and why. An earlier version of this notebook explained only
+    # how to operate it -- "run the cells in order" -- and the science
+    # itself ran inside a subprocess the student never saw. They could
+    # execute the whole thing and learn nothing from it.
+    cells = [cell("markdown", _opening(title, md))]
+    cells += [cell("markdown",
+                   "## Step 1. Bring in your files\n\n"
+                   "The ZIP you downloaded from Docking Studio holds everything this\n"
+                   "notebook needs: your protein, your drug, the code, and the exact\n"
+                   "settings used on the desktop. Nothing is downloaded from the\n"
+                   "internet, so you are working on your own molecules and not on an\n"
+                   "example.\n\n"
+                   "Run the cell below. A **Choose Files** button appears. Pick the ZIP.\n"
+                   "The cell unpacks it and prints `README.txt`, which names the\n"
+                   "protein and drug so you can check you uploaded the right one.\n"),
               cell("code", "from google.colab import files\nfrom pathlib import Path\nimport zipfile, os, tempfile\nuploaded = files.upload()\narchives = [name for name in uploaded if name.endswith('.zip')]\nassert len(archives) == 1, 'Upload exactly one Docking Studio ZIP.'\nwork = Path(tempfile.mkdtemp(prefix='studio_job_', dir='/content')).resolve()\nwith zipfile.ZipFile(archives[0]) as archive:\n    for member in archive.infolist():\n        assert (work / member.filename).resolve().is_relative_to(work), 'Unsafe archive path'\n    archive.extractall(work)\nos.chdir(work)\nprint(Path('README.txt').read_text())\n")]
     if md:
-        cells.append(cell("code", "import json\nif json.loads(Path('job.json').read_text())['system_type'] == 'membrane':\n    print('Upload the reviewed membrane_system.xml and matching membrane.pdb described in README.txt.')\n    files.upload()\n    assert all(Path(name).is_file() for name in ['membrane_system.xml', 'membrane.pdb']), 'Both prepared membrane files are required.'\n"))
-    cells += [cell("code", install),
+        cells += [cell("markdown",
+                       "### If your protein sits in a membrane\n\n"
+                       "A receptor such as SV2A does not float in water. It sits in the\n"
+                       "fatty membrane of the cell, and simulating it in water alone\n"
+                       "would be simulating something that does not exist. Building a\n"
+                       "membrane is a separate job, done in CHARMM-GUI or a similar\n"
+                       "tool, and this notebook will stop until you supply the result.\n\n"
+                       "For a protein that really is soluble, this cell does nothing.\n"),
+                  cell("code", "import json\nif json.loads(Path('job.json').read_text())['system_type'] == 'membrane':\n    print('Upload the reviewed membrane_system.xml and matching membrane.pdb described in README.txt.')\n    files.upload()\n    assert all(Path(name).is_file() for name in ['membrane_system.xml', 'membrane.pdb']), 'Both prepared membrane files are required.'\n")]
+    cells += [cell("markdown", _install_text(md)),
+              cell("code", install),
+              cell("markdown", _code_text(script, md)),
+              cell("code", "print(Path('" + script + "').read_text())\n"),
+              cell("markdown",
+                   "### Now run it\n\n"
+                   "This hands the script to the scientific environment built above.\n"
+                   + ("Expect anything from several minutes to several hours, depending\n"
+                      "on how many nanoseconds you asked for and whether you have a GPU.\n"
+                      if md else
+                      "It usually takes under a minute. The output appears below the cell\n"
+                      "as it runs.\n")),
               cell("code", "import subprocess\nsubprocess.run([str(micromamba), 'run', '--prefix', str(science), 'python', '-u', '" + script + "'], env=environment, check=True)\n"),
+              cell("markdown", _results_text(md)),
               cell("code", "import shutil\nfrom google.colab import files\nshutil.make_archive('/content/studio_results', 'zip', 'output')\nfiles.download('/content/studio_results.zip')\n")]
     return json.dumps({"nbformat": 4, "nbformat_minor": 5, "metadata": {"kernelspec": {"name": "python3", "display_name": "Python 3"}, "colab": {"provenance": []}}, "cells": cells}, indent=2).encode("utf-8")
 
@@ -213,6 +581,20 @@ def export_pair(study, target_id: str, drug_id: str, kind: str = "docking", *, s
         files = {"receptor.pdbqt": receptor.read_bytes(), "ligand.pdbqt": ligand_input.read_bytes(), "recorded_pose.pdbqt": pose.read_bytes(),
                  "install_environment.py": (resource_root() / "assets/templates/bootstrap_micromamba.py").read_bytes(),
                  "Docking_report.txt": report_text(study).encode("utf-8")}
+        # Something the student can actually look at. A missing or
+        # unreadable prepared structure must not lose them the whole
+        # export, so the viewer files are best-effort.
+        try:
+            from stages.md import pdbqt_pose_to_pdb
+            receptor_step = viewer.values(project, "03_receptor")
+            prepared_pdb = _file(project, receptor_step.get("prepared_file", "")
+                                 ).read_text(errors="replace")
+            files.update(contact_files(
+                prepared_pdb, pdbqt_pose_to_pdb(pose.read_text(errors="replace")),
+                receptor_step.get("ligand") or "",
+                target["name"], drug["name"], result.get("score")))
+        except (ValueError, OSError, KeyError):
+            pass
         if kind == "docking":
             files["run_docking.py"] = (resource_root() / "assets/templates/run_docking.py").read_bytes()
             files["Run_Docking.ipynb"] = notebook("Dock your selected protein and drug", "run_docking.py")
@@ -222,7 +604,20 @@ def export_pair(study, target_id: str, drug_id: str, kind: str = "docking", *, s
                 "It runs AutoDock Vina through its Python interface. It does not repeat preparation or the comparison controls.\n"
                 "The desktop uses the Vina command line interface. Differences in processors, platforms and interfaces can affect results.\n"
                 "The original checks remain in job.json and Docking_report.txt. Interpret scores with those checks.\n"
-                "Local Linux use: install vina==1.2.7, then run python run_docking.py in this folder.\n").encode("utf-8")
+                "Local Linux use: install vina==1.2.7, then run python run_docking.py in this folder.\n"
+                "\n"
+                "TO LOOK AT THE RESULT\n"
+                "complex.pdb holds the protein and the docked drug together in one file.\n"
+                "Open view_in_chimerax.cxc in ChimeraX (free for academic use, from\n"
+                "https://www.rbvi.ucsf.edu/chimerax/download.html) to see the drug in its\n"
+                "pocket with the contacting amino acids labelled and the hydrogen bonds\n"
+                "drawn. view_in_chimera.com does the same for the older UCSF Chimera.\n"
+                "contacts.txt lists the same contacts as text, with distances, for anyone\n"
+                "who has neither program installed.\n"
+                "\n"
+                "Contacts in contacts.txt are distances only. A hydrogen bond also needs the\n"
+                "right angle, which ChimeraX checks and that list does not. Where the two\n"
+                "disagree, believe ChimeraX.\n").encode("utf-8")
         else:
             files.update(_md_files(project, pose, drug, target, system_type, nanoseconds))
             job.update(system_type=system_type, nanoseconds=nanoseconds, timestep_fs=2.0, temperature_K=310,

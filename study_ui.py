@@ -10,7 +10,7 @@ from uuid import uuid4
 from nicegui import ui
 
 from core import viewer, research
-from core.education_ui import DEVELOPERS, apply_theme
+from core.education_ui import apply_theme, credits_block, score_panel
 from core.settings import projects_root
 
 
@@ -27,6 +27,8 @@ def register_study() -> None:
     @ui.page("/study")
     def study_page(section: str = "home"):
         from core import study as engine
+        from core import contacts as contact_analysis
+        from core import glossary
         from core import references
 
         client = ui.context.client
@@ -393,6 +395,55 @@ def register_study() -> None:
                             if "best decoy" in detail:
                                 ui.label(f"Best comparison score: {detail['best decoy']} kcal/mol. Comparison molecules run: {detail.get('decoys run', 'Not recorded')}.").classes("text-sm")
                     ui.label("A score comparison does not overturn experimental evidence for a known drug and target. Comparison molecules are not proven nonbinders.").classes("text-sm")
+                    score_panel(json.loads(row.get("values_json") or "{}").get("results", []),
+                                display=display_text)
+
+        def render_contacts(project, drug_name):
+            """
+            Which amino acids the drug is touching.
+
+            The score has an error bar wider than the range it measures.
+            The pose, once the re-docking check has passed, is usually
+            right to about 2 angstroms. So this list is the part of a
+            docking result a student can actually reason about -- and
+            until now it was invisible unless they installed PyMOL.
+            """
+            try:
+                from stages.md import pdbqt_pose_to_pdb
+                dock = viewer.values(project, "06_dock")
+                result = next((r for r in dock.get("results", [])
+                               if r.get("name") == drug_name and r.get("file")), None)
+                if result is None:
+                    return
+                pose_text = viewer.local_text(project, result["file"])
+                receptor_step = viewer.values(project, "03_receptor")
+                receptor_text = viewer.local_text(
+                    project, receptor_step.get("prepared_file", ""))
+                if not pose_text or not receptor_text:
+                    return
+                residues = contact_analysis.find(
+                    receptor_text, pdbqt_pose_to_pdb(pose_text),
+                    exclude=receptor_step.get("ligand") or "")
+            except Exception:                       # noqa: BLE001
+                return
+            if not residues:
+                return
+            ui.label("Which amino acids the drug is touching").classes("text-lg font-semibold")
+            ui.label(contact_analysis.summary(residues)).classes("text-sm").style("line-height:1.65")
+            ui.table(columns=[
+                {"name": "residue", "label": "Residue", "field": "residue", "align": "left"},
+                {"name": "name", "label": "Amino acid", "field": "name", "align": "left"},
+                {"name": "distance", "label": "Closest (Å)", "field": "distance"},
+                {"name": "kind", "label": "Contact", "field": "kind", "align": "left"},
+            ], rows=contact_analysis.rows(residues), row_key="residue").classes(
+                "w-full").props("flat dense wrap-cells")
+            ui.label(
+                "These are distances. A hydrogen bond also needs the right "
+                "angle, which is why polar contacts are listed as possible "
+                "rather than confirmed. Download the code package for this "
+                "pair to get complex.pdb and a ChimeraX script that works "
+                "the hydrogen bonds out properly."
+            ).classes("edu-info text-sm").style("line-height:1.6")
 
         def inspect(stage):
             nonlocal selected_target, selected_drug
@@ -470,6 +521,8 @@ def register_study() -> None:
                         viewer.render(project, stage)
                     else:
                         viewer.render(project, stage, selected_drug)
+                        if stage == "06_dock" and selected_drug:
+                            render_contacts(project, selected_drug)
                     for sid in (["03_receptor", "04_site"] if stage == "04_site" else ["06_dock"]):
                         render_control(project, sid)
                 finally:
@@ -933,6 +986,16 @@ def register_study() -> None:
                     with ui.column().classes("gap-1 py-2"):
                         ui.link(reference["title"], reference["url"], new_tab=True).classes("font-medium")
                         ui.label(reference["citation"]).classes("text-sm edu-muted")
+            with ui.card().classes("study-card w-full gap-3"):
+                ui.label("Glossary").classes("text-xl font-semibold")
+                ui.label("The words used in this application, in plain English. "
+                         "Each one ends with the part that is most often got "
+                         "wrong.").classes("text-sm edu-muted")
+                for entry in glossary.entries():
+                    with ui.expansion(entry["term"]).classes("w-full").props("dense"):
+                        ui.label(entry["meaning"]).classes("text-sm")
+                        ui.label("Watch out: " + entry["caution"]).classes(
+                            "text-sm edu-info").style("margin-top:6px")
 
         def render_about():
             ui.label("About").classes("study-title")
@@ -942,8 +1005,7 @@ def register_study() -> None:
                 ui.label("Step-by-step molecular docking for medical education and in-silico studies.").classes("study-instruction")
                 ui.separator()
                 ui.label("Developed by").classes("edu-kicker")
-                for developer in DEVELOPERS:
-                    ui.label(developer).classes("text-base font-medium").style("line-height:1.7")
+                credits_block()
                 ui.link("Akshaisarathi Healthcare", "https://akshaisarathi.com/", new_tab=True)
                 ui.label("Scientific tools, methods and source links are listed in Reference and included with project exports.").classes("edu-info text-sm")
 
