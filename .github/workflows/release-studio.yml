@@ -43,7 +43,10 @@ jobs:
           include-hidden-files: true
 
   windows:
-    if: startsWith(github.ref, 'refs/tags/')
+    # Also build on a manual run, so an installer can be tested before
+    # anything is published. The publish job below stays tag-only, so a
+    # manual run produces downloadable artifacts and no release.
+    if: startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch'
     runs-on: windows-2022
     timeout-minutes: 60
     defaults:
@@ -100,7 +103,10 @@ jobs:
           include-hidden-files: true
 
   macos:
-    if: startsWith(github.ref, 'refs/tags/')
+    # Also build on a manual run, so an installer can be tested before
+    # anything is published. The publish job below stays tag-only, so a
+    # manual run produces downloadable artifacts and no release.
+    if: startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch'
     strategy:
       fail-fast: false
       matrix:
