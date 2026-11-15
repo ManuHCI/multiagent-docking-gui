@@ -1,0 +1,126 @@
+"""Preparation must actually do what its report claims about water.
+
+The bug this guards against shipped in 1.4.0 and was invisible to every
+other test. ReceptorStage.run() took a remove_waters flag, recorded
+"waters_removed" in the report and listed each water under "Components
+removed" -- but never passed the flag to _fix(), whose deletion loop
+skipped water entirely with the note "handled by the caller's water
+setting". Nothing deleted it. The waters stayed in the topology,
+addMissingHydrogens protonated them, and they were written into the
+prepared PDB that the viewer shows and the student downloads.
+
+Docking was unharmed, because the PDBQT converter drops water on its
+own. The teaching was harmed: the screen said the waters were gone and
+the picture showed them still sitting there.
+
+So these tests assert the file, not the report.
+"""
+from pathlib import Path
+import tempfile
+import unittest
+
+from stages.receptor import (KIND_COFACTOR, KIND_METAL, KIND_WATER,
+                             ReceptorStage, survey)
+
+STRUCTURE = (Path(__file__).resolve().parent.parent
+             / "assets/workshop/egfr/steps/02_structure/1M17.pdb")
+WATER_NAMES = {"HOH", "WAT", "DOD"}
+
+
+def residue_names(path: Path) -> list[str]:
+    return [line[17:20].strip().upper()
+            for line in path.read_text().splitlines()
+            if line.startswith(("ATOM", "HETATM"))]
+
+
+def water_atoms(path: Path) -> int:
+    return sum(1 for name in residue_names(path) if name in WATER_NAMES)
+
+
+class PreparationWaterTests(unittest.TestCase):
+    """_fix is exercised directly: it is where the deletion must happen."""
+
+    @classmethod
+    def setUpClass(cls):
+        try:
+            import openmm  # noqa: F401
+            import pdbfixer  # noqa: F401
+        except ModuleNotFoundError as exc:      # pragma: no cover
+            raise unittest.SkipTest(f"needs {exc.name}") from exc
+        cls.assertTrue(STRUCTURE.is_file(),
+                       f"missing bundled structure {STRUCTURE}")
+
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temp.cleanup)
+        self.text = STRUCTURE.read_text(errors="ignore")
+        self.found = survey(self.text, restrict_chains=["A"])
+
+    def prepare(self, remove_waters: bool) -> Path:
+        """Mirror what run() decides to keep, then call the real _fix."""
+        kept = []
+        for het in self.found["hets"]:
+            if het.kind == KIND_WATER:
+                if not remove_waters:
+                    kept.append(het)
+            elif (self.found["ligand"] is not None
+                  and het is self.found["ligand"]):
+                kept.append(het)
+            elif het.kind in (KIND_METAL, KIND_COFACTOR) and het.in_site:
+                kept.append(het)
+        out = Path(self.temp.name) / f"prepared_{remove_waters}.pdb"
+        stage = ReceptorStage.__new__(ReceptorStage)   # _fix needs only PH
+        ReceptorStage._fix(
+            stage, self.text, out, ["A"], [h.label for h in kept],
+            False, 3,
+            ligand_coords=(self.found["ligand"].coords
+                           if self.found["ligand"] else None),
+            remove_waters=remove_waters)
+        return out
+
+    def test_source_actually_contains_water(self):
+        """Guard the guard: a dry input would make every test below pass."""
+        self.assertGreater(water_atoms(STRUCTURE), 0)
+
+    def test_waters_are_gone_from_the_prepared_file(self):
+        out = self.prepare(remove_waters=True)
+        self.assertEqual(
+            water_atoms(out), 0,
+            "preparation reported the waters removed but left them in the "
+            "prepared PDB")
+
+    def test_keeping_waters_keeps_them(self):
+        """The checkbox must change the file, or it is decoration."""
+        out = self.prepare(remove_waters=False)
+        self.assertGreater(
+            water_atoms(out), 0,
+            "remove_waters=False still deleted the waters")
+
+    def test_the_two_settings_differ(self):
+        dry = water_atoms(self.prepare(remove_waters=True))
+        wet = water_atoms(self.prepare(remove_waters=False))
+        self.assertNotEqual(dry, wet)
+
+    def test_the_bound_ligand_survives_either_way(self):
+        """Deleting water must not take the reference ligand with it."""
+        label = self.found["ligand"].label.split()[0]
+        for remove in (True, False):
+            with self.subTest(remove_waters=remove):
+                names = residue_names(self.prepare(remove_waters=remove))
+                self.assertIn(label, names)
+
+    def test_no_hydrogens_are_added_to_deleted_waters(self):
+        """Deletion has to happen before addMissingHydrogens, not after."""
+        out = self.prepare(remove_waters=True)
+        self.assertNotIn("HOH", set(residue_names(out)))
+
+
+# The committed worked-example structures under assets/workshop were
+# generated by the broken code and still contain their water. That is
+# checked by verify_example_assets.py rather than here, because it is a
+# data problem to be fixed by regenerating the examples, not a code
+# problem, and a permanently red test suite teaches people to ignore red.
+
+
+if __name__ == "__main__":
+    unittest.main()
