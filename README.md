@@ -9,15 +9,15 @@ Akshaisarathi Healthcare.
 
 ## Download and install
 
-**[Download version 1.4.0](https://github.com/ManuHCI/multiagent-docking-gui/releases/tag/v1.4.0)**
+**[Download version 1.4.1](https://github.com/ManuHCI/multiagent-docking-gui/releases/tag/v1.4.1)**
 
 Download only one installer for your computer. You do not need all files in Assets.
 
 | Computer | Installer |
 | --- | --- |
-| Windows 10 or 11, 64 bit | [Download Windows setup](https://github.com/ManuHCI/multiagent-docking-gui/releases/download/v1.4.0/InSilicoDockingStudio-1.4.0-Windows-Setup.exe) |
-| Mac with an Apple chip, macOS 15 or newer | [Download Apple Mac installer](https://github.com/ManuHCI/multiagent-docking-gui/releases/download/v1.4.0/InSilicoDockingStudio-1.4.0-macOS-arm64.dmg) |
-| Intel Mac, macOS 15 or newer | [Download Intel Mac installer](https://github.com/ManuHCI/multiagent-docking-gui/releases/download/v1.4.0/InSilicoDockingStudio-1.4.0-macOS-x86_64.dmg) |
+| Windows 10 or 11, 64 bit | [Download Windows setup](https://github.com/ManuHCI/multiagent-docking-gui/releases/download/v1.4.1/InSilicoDockingStudio-1.4.1-Windows-Setup.exe) |
+| Mac with an Apple chip, macOS 15 or newer | [Download Apple Mac installer](https://github.com/ManuHCI/multiagent-docking-gui/releases/download/v1.4.1/InSilicoDockingStudio-1.4.1-macOS-arm64.dmg) |
+| Intel Mac, macOS 15 or newer | [Download Intel Mac installer](https://github.com/ManuHCI/multiagent-docking-gui/releases/download/v1.4.1/InSilicoDockingStudio-1.4.1-macOS-x86_64.dmg) |
 
 The installers include Python and the scientific tools. On Windows, run
 setup and open the installed shortcut; [Microsoft Edge WebView2 Runtime](https://developer.microsoft.com/en-us/microsoft-edge/webview2/) is

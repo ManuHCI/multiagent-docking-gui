@@ -9,8 +9,8 @@ authors:
   - family-names: Nadig
     given-names: Pratibha
     affiliation: "Akshaisarathi Healthcare"
-version: 1.4.0
-date-released: 2026-11-09
+version: 1.4.1
+date-released: 2026-11-15
 license: MIT
 repository-code: "https://github.com/ManuHCI/multiagent-docking-gui"
 url: "https://github.com/ManuHCI/multiagent-docking-gui/releases"
